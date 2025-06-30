@@ -1,0 +1,15 @@
+
+  "en": {
+    "app_title": "Celebrating",
+    "toggle_theme": "Toggle Theme",
+    "toggle_language": "Toggle Language",
+    "hello": "Hello!"
+  },
+  "es": {
+    "app_title": "Celebrando",
+    "toggle_theme": "Cambiar tema",
+    "toggle_language": "Cambiar idioma",
+    "hello": "¡Hola!"
+  }
+}
+// This file is no longer used. All localization is now handled by ARB files. You can safely delete this file.

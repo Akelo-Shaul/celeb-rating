@@ -1,0 +1,518 @@
+import 'dart:ui';
+
+import 'package:celebrating/models/post.dart';
+import 'package:celebrating/widgets/app_buttons.dart';
+import 'package:celebrating/widgets/profile_avatar.dart';
+import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
+
+import '../models/comment.dart';
+import 'comments_modal.dart';
+
+class PostCard extends StatefulWidget {
+  final Post post;
+  const PostCard({super.key, required this.post});
+
+  @override
+  State<PostCard> createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard> {
+  late int _currentRating;
+  late int _currentPage;
+  late PageController _pageController;
+  late VideoPlayerController? _videoPlayerController;
+  late Future<void>? _initializeVideoPlayerFuture;
+  late bool _isContentExpanded;  //For text expansion in view more
+  late bool _isRatingSectionActive;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentRating = widget.post.initialRating;
+    _currentPage = 0;
+    _pageController = PageController();
+    _videoPlayerController = null;
+    _initializeVideoPlayerFuture = null;
+    _isContentExpanded = false;
+    _initializeVideoPlayer(0);  // Initialize the first media item if it's a video
+    _isRatingSectionActive = false; //Initially set rating opacity to low
+
+  }
+
+  void _initializeVideoPlayer(int index){
+    // Ensure index is valid and media exists
+    if(widget.post.media.isNotEmpty && index >=0 && index < widget.post.media.length){
+      final mediaItem = widget.post.media[index];
+      if(mediaItem.type == 'video' && mediaItem.url.isNotEmpty) {
+        // Only reinitialize if the new media item is a video and it is different from current
+        if(_videoPlayerController == null || _videoPlayerController!.dataSource != mediaItem.url){
+          _videoPlayerController?.dispose(); // Dispose controller of previous if exists
+          try {
+            _videoPlayerController = VideoPlayerController.networkUrl(
+              Uri.parse(mediaItem.url)
+            );
+            _initializeVideoPlayerFuture = _videoPlayerController!.initialize().then((_){
+              if(mounted) setState(() {});  // Rerender once video is initialized, check if mounted
+            });
+            _videoPlayerController!.setLooping(true);
+            _videoPlayerController!.setVolume(0.0); // Mute by default
+            _videoPlayerController!.play();
+          } catch (e) {
+            // If initialization fails, clean up
+            _videoPlayerController = null;
+            _initializeVideoPlayerFuture = null;
+          }
+        }
+      } else {
+        // Not a video or invalid URL, dispose if exists
+        if (_videoPlayerController != null) {
+          _videoPlayerController!.pause();
+          _videoPlayerController!.dispose();
+          _videoPlayerController = null;
+          _initializeVideoPlayerFuture = null;
+        }
+      }
+    } else {
+      // No media or invalid index, dispose if exists
+      if (_videoPlayerController != null) {
+        _videoPlayerController!.pause();
+        _videoPlayerController!.dispose();
+        _videoPlayerController = null;
+        _initializeVideoPlayerFuture = null;
+      }
+    }
+  }
+
+  void _showCommentsModal(BuildContext context, List<Comment> comments) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Allows the modal to take up more height
+      builder: (BuildContext context) {
+        return FractionallySizedBox(
+          heightFactor: 0.85, // Adjust this to control how much screen height the modal takes
+          child: CommentsModal(
+            comments: comments,
+            postId: widget.post.id,
+          ),
+        );
+      },
+    );
+  }
+
+
+  @override
+  void didUpdateWidget(covariant PostCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if(oldWidget.post.id != widget.post.id){
+      _currentRating = widget.post.initialRating;
+      _currentPage = 0;
+      _pageController = PageController(); // Re-initialize page controller for new post
+      _videoPlayerController?.dispose(); // Dispose old controller
+      _videoPlayerController = null;
+      _initializeVideoPlayerFuture = null;
+      _isContentExpanded = false; // Reset expansion for new post
+      _initializeVideoPlayer(0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _videoPlayerController?.dispose();
+    _videoPlayerController = null;
+    _initializeVideoPlayerFuture = null;
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(),
+          _buildPostContent(),
+          _buildMediaSection(), // Add media section with safe video player usage
+          _buildBottomActions()
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ProfileAvatar(
+          radius: 20, // Consistent size for post author avatar
+          imageUrl: widget.post.from.profileImageUrl,
+        ),
+        const SizedBox(width: 12,),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    widget.post.from.username,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16),),
+                  const SizedBox(width: 4,),
+                  const Icon(Icons.verified, color: Colors.orange, size: 16,)
+                ],
+              ),
+              Text(
+                widget.post.from.username,
+                style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 14),)
+            ],
+          )
+        ),
+        ResizableButton(
+          text: "Follow",
+          onPressed: () {},
+          width: 100,
+          height: 35,
+        )
+      ],
+    );
+  }
+
+  Widget _buildPostContent() {
+    final maxLines = 3;
+    final content = widget.post.content;
+    final textStyle = const TextStyle(fontSize: 14);
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final moreColor = Colors.grey[600];
+    final span = TextSpan(text: content, style: textStyle);
+    final tp = TextPainter(
+      text: span,
+      maxLines: maxLines,
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: MediaQuery.of(context).size.width - 70);
+
+    final bool isOverflow = tp.didExceedMaxLines;
+    String visibleText = content;
+    if (!_isContentExpanded && isOverflow) {
+      int endIndex = tp.getPositionForOffset(Offset(tp.width, tp.height)).offset;
+      if (endIndex < content.length) {
+        int lastSpace = content.lastIndexOf(' ', endIndex);
+        if (lastSpace > 0) endIndex = lastSpace;
+      }
+      visibleText = content.substring(0, endIndex).trim();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.post.timeAgo,
+          style: TextStyle(color: Colors.grey[500], fontSize: 12),
+        ),
+        if (!_isContentExpanded && isOverflow)
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _isContentExpanded = true;
+              });
+            },
+            child: RichText(
+              text: TextSpan(
+                style: textStyle.copyWith(color: isDark ? Colors.white : Colors.black),
+                children: [
+                  TextSpan(text: visibleText),
+                  TextSpan(
+                    text: '       ... more',
+                    style: textStyle.copyWith(
+                      color: moreColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              maxLines: maxLines,
+              overflow: TextOverflow.ellipsis,
+            ),
+          )
+        else
+          GestureDetector(
+            onTap: () {
+              if (isOverflow) {
+                setState(() {
+                  _isContentExpanded = false;
+                });
+              }
+            },
+            child: RichText(
+              text: TextSpan(
+                style: textStyle.copyWith(color: isDark ? Colors.white : Colors.black),
+                children: [
+                  TextSpan(text: content),
+                  if (isOverflow)
+                    TextSpan(
+                      text: '  show less',
+                      style: textStyle.copyWith(
+                        color: moreColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildMediaSection() {
+    if (widget.post.media.isEmpty) {
+      return SizedBox.shrink();
+    }
+    
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+      elevation: 2.0,
+      clipBehavior: Clip.antiAlias,
+      margin: EdgeInsets.all(0.0),
+      child: AspectRatio(
+        aspectRatio: 16/12,
+        child: Stack(
+          children: [
+            PageView.builder(
+                controller: _pageController,
+                itemCount: widget.post.media.length, // Prevent scrolling past media count
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                    _initializeVideoPlayer(index); // Re-init video if needed
+                  });
+                },
+                itemBuilder: (context, i){
+                  final mediaItem = widget.post.media[i];
+                  if(mediaItem.type == 'image'){
+                    return Image.network(
+                      mediaItem.url,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress){
+                        if(loadingProgress == null) return child;
+                        return Center(
+                          //TODO: Return a blurred thumbnail
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
+                      //TODO: also return blurred tumbnail for error or loading shimmer
+                      errorBuilder: (context, error, stackTrace) => const Center(
+                        child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                      ),
+                    );
+                  } else if (mediaItem.type == 'video'){
+                    return FutureBuilder(
+                        future: _initializeVideoPlayerFuture,
+                        builder: (context, snapshot){
+                          if(snapshot.connectionState == ConnectionState.done && _videoPlayerController != null){
+                            return GestureDetector(
+                              onTap: (){
+                                setState(() {
+                                  if (_videoPlayerController!.value.isPlaying){
+                                    _videoPlayerController!.pause();
+                                  } else {
+                                    _videoPlayerController!.play();
+                                  }
+                                });
+                              },
+                              child: AspectRatio(
+                                aspectRatio: _videoPlayerController!.value.aspectRatio,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    VideoPlayer(_videoPlayerController!),
+                                    //Show play button when paused
+                                    if (!_videoPlayerController!.value.isPlaying)
+                                      Container(
+                                        // color: Colors.black.withOpacity(0.3),
+                                        color: Colors.black.withValues(alpha: 0.5),
+                                        child: Center(
+                                          child: Icon(
+                                            Icons.play_circle_fill,
+                                            color: Colors.grey[400],
+                                            size: 70,),),)
+                                  ],
+                                ),),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(child: Text('Error loading video: ${snapshot.error}'));
+                          } else {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                        }
+                    );
+                  }
+                  return const SizedBox.shrink();
+                }
+            ),
+            if(widget.post.media.isNotEmpty && widget.post.media.length > 1)
+              Positioned(
+                  top: 10,
+                  right: 10,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.circular(12)
+                    ),
+                    child: Text(
+                      '${_currentPage + 1}/${widget.post.media.length}',
+                      style: TextStyle(color: Colors.white, fontSize: 13,fontWeight: FontWeight.bold),),)),
+            if(widget.post.media.isNotEmpty && widget.post.media[_currentPage].type == 'video' && _videoPlayerController!= null)
+              Positioned(
+                  bottom: 10,
+                  right: 10,
+                  child: GestureDetector(
+                    onTap: (){
+                      setState(() {
+                        if(_videoPlayerController!.value.volume == 0){
+                          _videoPlayerController!.setVolume(1.0);
+                        } else {
+                          _videoPlayerController!.setVolume(0.0);
+                        }
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      // decoration: ,
+                      child: Icon(_videoPlayerController!.value.volume > 0 ? Icons.volume_up : Icons.volume_off),
+                    ),)),
+            Positioned(bottom: 10, left: 10, child: _buildRatingSection(),)
+
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRatingSection() {
+    // If the user has already rated, show static stars and do not allow further rating
+    final bool hasRated = widget.post.initialRating > 0;
+    final int rating = hasRated ? widget.post.initialRating : _currentRating;
+    return GestureDetector(
+      onTapDown: (_) { // When the finger goes down
+        setState(() {
+          _isRatingSectionActive = true;
+        });
+      },
+      onTapUp: (_) { // When the finger comes up
+        setState(() {
+          _isRatingSectionActive = false;
+        });
+      },
+      onTapCancel: () { // If the tap is cancelled (e.g., finger slides off)
+        setState(() {
+          _isRatingSectionActive = false;
+        });
+      },
+      child: Opacity(
+        opacity: _isRatingSectionActive ? 1.0 : 0.5,
+        child: Container(
+          padding: const EdgeInsets.all(3.0),
+          decoration: BoxDecoration(
+              color: Colors.black54,
+              borderRadius: BorderRadius.circular(12)
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(5, (index) {
+              final isRated = rating >= (index + 1);
+              final starColor = isRated ? Colors.orange : Colors.grey[400];
+              if (hasRated) {
+                // Show static stars if already rated
+                return Icon(
+                  Icons.star_rounded,
+                  color: starColor,
+                  size: 30,
+                );
+              } else {
+                // Allow rating if not rated yet
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _currentRating = index + 1;
+                      // You can add logic here to send the rating to your backend
+                      print('User rated: $_currentRating stars for post ID: ${widget.post.id}');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('You rated ${index + 1} stars!')),
+                      );
+                    });
+                  },
+                  child: Icon(
+                    Icons.star_rounded,
+                    color: starColor,
+                    size: 30,
+                  ),
+                );
+              }
+            }),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomActions() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            PostActionButton(
+              icon: Icons.thumb_up_alt_outlined, // Outlined icon for non-selected state
+              text: '${widget.post.likes.length}',
+              onPressed: () {
+                //TODO: Add liking functionality
+                print('Like toggled for Post ${widget.post.id}. Current likes: ${widget.post.likes.length}');
+              },
+            ),
+            // Comment Button
+            PostActionButton(
+              icon: Icons.comment_outlined,
+              text: '${widget.post.comments.length}',
+              onPressed: () {
+                _showCommentsModal(context, widget.post.comments);
+              },
+            ),
+          ],
+        ),
+        // Repost Button
+        Row(
+          children: [
+            PostActionButton(
+              icon: Icons.repeat_outlined,
+              onPressed: () {
+                print('Repost Post ${widget.post.id}');
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Post Reposted!')));
+              },
+            ),
+            // Send Button
+            PostActionButton(
+              icon: Icons.send_outlined,
+              onPressed: () {
+                print('Send Post ${widget.post.id}');
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Post Sent!')));
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}

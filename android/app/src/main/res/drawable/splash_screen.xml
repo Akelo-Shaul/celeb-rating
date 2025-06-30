@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:gravity="center"> <!-- Center the image -->
+        <bitmap
+            android:src="@mipmap/launch_image"
+            android:scaleType="centerInside" /> <!-- Scale to fit inside -->
+    </item>
+</layer-list>
