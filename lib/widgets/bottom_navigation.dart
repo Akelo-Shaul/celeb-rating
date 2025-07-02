@@ -64,7 +64,7 @@ class BottomNavigation extends StatelessWidget {
           NavigationDestination(
             icon: Icon(Icons.movie_outlined, color: unselectedIconColor),
             selectedIcon: Icon(Icons.movie, color: selectedIconColor),
-            label: 'Reels',
+            label: 'Flicks',
           ),
           NavigationDestination(
             icon: Icon(Icons.live_tv_outlined, color: unselectedIconColor),

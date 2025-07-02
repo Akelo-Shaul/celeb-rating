@@ -41,6 +41,10 @@ dependencies:
     sdk: flutter
   intl: ^0.20.2
   video_player: ^2.10.0
+  just_audio:
+#  carousel_slider:
+
+
 
 dev_dependencies:
   flutter_test:

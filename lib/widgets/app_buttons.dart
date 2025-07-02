@@ -277,3 +277,35 @@ class PostActionButton extends StatelessWidget {
     );
   }
 }
+
+class AppTextButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+  final TextStyle? textStyle; // Optional: allow overriding the default style
+  final Color? textColor; // Optional: for setting text color easily
+
+  const AppTextButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.textStyle,
+    this.textColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Define the default text style as per your request
+    final TextStyle defaultTextStyle = TextStyle(
+      fontWeight: FontWeight.w900,
+      fontSize: 18,
+    );
+
+    return TextButton(
+      onPressed: onPressed,
+      child: Text(
+        text, // Capitalize the text
+        style: textStyle ?? defaultTextStyle, // Use custom style if provided, otherwise default
+      ),
+    );
+  }
+}

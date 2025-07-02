@@ -1,7 +1,21 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Created `AudioCard` widget for audio post playback with real audio using just_audio, animated waveform, and speed control.
+- Added a moving orange indicator to the waveform progress bar in `AudioCard` that tracks audio progress in real time.
+- Implemented dummy data for audio posts with working audio URLs and thumbnails.
+- Integrated play/pause, speed toggle, and progress bar with time display in `AudioCard`.
+- Added bottom action buttons (like, comment, share, send) to `AudioCard`.
+- Implemented TikTok/Reels-like live stream experience for `LiveStreamCard` and live stream detail page.
+- Created `LiveStreamVideoManager` service to manage video controllers globally, ensuring only one video plays at a time and controllers persist across navigation.
+- Refactored `LiveStreamCard` to use the video manager, autoplay only when visible, and wrap the video in a `Hero` for smooth transition.
+- Added `LiveStreamDetailPage` that receives the same video controller and animates the video to fullscreen, unmuting and continuing playback seamlessly.
+- Tapping a live stream card now triggers a smooth Hero transition to the detail page, with uninterrupted video playback and unmuting.
+
 ### Changed
+- Enhanced `_buildWaveformProgress` in `AudioCard` to overlay a moving orange indicator that follows audio playback progress.
+- Improved layout and overflow handling in `AudioCard` for better responsiveness.
 - Refactored `AuthScreen` to use `AppState` ChangeNotifier from Provider for theme and locale changes, instead of using Provider for callbacks.
 - Removed all Provider lookups for `VoidCallback` and `ValueChanged<Locale>` in `auth_screen.dart`.
 - Now uses `appState.toggleTheme()` for theme changes.
@@ -29,12 +43,9 @@
 - Connected login and registration forms in `AuthScreen` to backend APIs using `UserService` after validation.
 - Added a top error banner (styled as in the design) to the login, signup, and onboarding forms for consistent error display.
 - Improved `ProfilePage` UI: removed unnecessary space above the posts/followers row and made the TabBar responsive for both light and dark mode, matching the provided design. TabBar now uses an underline indicator and adapts its colors and text styles based on the theme.
-### Added
-- Added `fetchUser(String userId)` method to `UserService` to fetch a user by ID using the User model.
-- Added `CelebrityUser` class extending `User` with fields: occupation, location, bio, website, followers, and posts.
-- Updated `UserService.fetchUser` to support returning a dummy celebrity user with these fields when `isCelebrity` is true.
-- Added new fields to `CelebrityUser` model: `socials`, `publicImageDescription`, `controversyMedia`, and `fashionStyle`.
-- Populated these fields with realistic dummy data in `fetchUser` for celebrity users.
+- Flicks tab now reliably displays dummy data when switching tabs or on first open.
+- All dummy flicks video links in `SearchService.searchFlicks` updated to use only working, reliable MP4 URLs (sample-videos.com, w3schools.com, learningcontainer.com).
+
 ### Fixed
 - Removed duplicate definition of `SupportedLanguage` and `supportedLanguages` from `auth_screen.dart` and now use the shared import from `l10n/supported_languages.dart`.
 - Fixed null safety error by using `currentLocale?.languageCode` in the language dropdown.
@@ -42,6 +53,7 @@
 - Fixed FeedScreen to avoid calling setState directly in initState and only update posts/isLoading after a delay, preventing null errors in ListView.
 - `UserService.fetchUser` now returns a dummy user for demonstration purposes instead of making a real API call.
 - Fix: Modal now reliably closes when the blurred area/background is tapped (outside the modal content), using a full-screen GestureDetector with HitTestBehavior.opaque in showSlideUpDialog.
+- Ensured the waveform progress bar and indicator update smoothly as audio plays, with no overflow or layout issues.
 
 ## [June 28, 2025]
 - Initial changelog creation.

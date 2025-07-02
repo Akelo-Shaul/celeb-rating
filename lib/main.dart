@@ -1,4 +1,4 @@
-import 'package:celebrating/screens/auth_screen.dart';
+import 'package:celebrating/screens/splash_screen.dart';
 import 'package:celebrating/theme/app_theme.dart';
 import 'package:celebrating/utils/route.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +26,8 @@ class MyApp extends StatelessWidget {
       title: 'Celebrating',
       theme: AppTheme.lightTheme,
       onGenerateRoute: RouteGenerator.generateRoute,
-      initialRoute: '/auth',
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/',
       darkTheme: AppTheme.darkTheme,
       themeMode: appState.themeMode,
       locale: appState.locale,
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: const AuthScreen(),
+      home: const SplashScreen(),
     );
   }
 }

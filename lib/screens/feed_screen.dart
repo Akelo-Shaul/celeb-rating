@@ -13,6 +13,7 @@ import '../widgets/app_dropdown.dart';
 import '../widgets/post_card.dart'; // Your reusable AppDropdown widget
 import '../widgets/bottom_navigation.dart';
 import '../utils/route.dart';
+import '../widgets/video_player_widget.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
@@ -25,6 +26,9 @@ class _FeedScreenState extends State<FeedScreen> {
   List<Post> posts = [];
   bool isLoading = false;
   int _selectedIndex = 0;
+
+  // Global mute state for feed videos
+  static final ValueNotifier<bool> feedMuteNotifier = ValueNotifier<bool>(true); // true = muted by default
 
   // Fetch feed from FeedService and update posts
   Future<void> fetchFeed() async {
@@ -50,6 +54,23 @@ class _FeedScreenState extends State<FeedScreen> {
     super.initState();
     posts = FeedService.generateDummyPosts();
     isLoading = false;
+  }
+
+  //TODO: Video sound is still playing when I navigate to another page. Use widget lifecycle to fix this
+  @override
+  void deactivate() {
+    // Pause and dispose video when this screen is deactivated (e.g., tab switch, navigation shell)
+    PostCardVideoPlaybackManager().pauseCurrent();
+    PostCardVideoPlaybackManager().disposeCurrentController();
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    // Clean up all video playback when leaving the feed screen
+    PostCardVideoPlaybackManager().pauseCurrent();
+    PostCardVideoPlaybackManager().disposeCurrentController();
+    super.dispose();
   }
 
   @override
@@ -114,7 +135,10 @@ class _FeedScreenState extends State<FeedScreen> {
       ),
       body: ListView.builder(
         itemCount: posts.length,
-        itemBuilder: (context, i) => PostCard(post: posts[i]),
+        itemBuilder: (context, i) => PostCard(
+          post: posts[i],
+          feedMuteNotifier: feedMuteNotifier,
+        ),
       ),
     );
   }

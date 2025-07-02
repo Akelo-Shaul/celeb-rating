@@ -93,6 +93,7 @@ class UserService {
         initialRating: 4,
         likes: [],
         comments: comments,
+        location: 'Los Angeles, USA',
       ),
       Post(
         id: '2',
@@ -119,6 +120,7 @@ class UserService {
         initialRating: 5,
         likes: [],
         comments: [],
+        location: 'New York, USA',
       ),
       Post(
         id: '3',
@@ -145,6 +147,7 @@ class UserService {
         initialRating: 5,
         likes: [],
         comments: [],
+        location: 'Berlin, Germany',
       ),
       Post(
         id: '4',
@@ -169,6 +172,7 @@ class UserService {
         initialRating: 4,
         likes: [],
         comments: [],
+        location: 'London, UK',
       ),
       Post(
         id: '5',
@@ -195,6 +199,7 @@ class UserService {
         initialRating: 3,
         likes: [],
         comments: [],
+        location: 'Paris, France',
       ),
       Post(
         id: '6',
@@ -221,6 +226,7 @@ class UserService {
         initialRating: 5,
         likes: [],
         comments: [],
+        location: 'Tokyo, Japan',
       ),
       Post(
         id: '7',
@@ -245,6 +251,7 @@ class UserService {
         initialRating: 4,
         likes: [],
         comments: [],
+        location: 'Sydney, Australia',
       ),
     ];
 

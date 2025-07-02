@@ -8,10 +8,12 @@ import 'package:video_player/video_player.dart';
 
 import '../models/comment.dart';
 import 'comments_modal.dart';
+import 'video_player_widget.dart';
 
 class PostCard extends StatefulWidget {
   final Post post;
-  const PostCard({super.key, required this.post});
+  final ValueNotifier<bool>? feedMuteNotifier; // Add this for feed mute state
+  const PostCard({super.key, required this.post, this.feedMuteNotifier});
 
   @override
   State<PostCard> createState() => _PostCardState();
@@ -21,10 +23,9 @@ class _PostCardState extends State<PostCard> {
   late int _currentRating;
   late int _currentPage;
   late PageController _pageController;
-  late VideoPlayerController? _videoPlayerController;
-  late Future<void>? _initializeVideoPlayerFuture;
   late bool _isContentExpanded;  //For text expansion in view more
   late bool _isRatingSectionActive;
+  ValueNotifier<bool>? _muteNotifier;
 
   @override
   void initState() {
@@ -32,56 +33,14 @@ class _PostCardState extends State<PostCard> {
     _currentRating = widget.post.initialRating;
     _currentPage = 0;
     _pageController = PageController();
-    _videoPlayerController = null;
-    _initializeVideoPlayerFuture = null;
     _isContentExpanded = false;
-    _initializeVideoPlayer(0);  // Initialize the first media item if it's a video
-    _isRatingSectionActive = false; //Initially set rating opacity to low
-
+    _isRatingSectionActive = false;
+    _muteNotifier = widget.feedMuteNotifier;
+    _muteNotifier?.addListener(_onMuteChanged);
   }
 
-  void _initializeVideoPlayer(int index){
-    // Ensure index is valid and media exists
-    if(widget.post.media.isNotEmpty && index >=0 && index < widget.post.media.length){
-      final mediaItem = widget.post.media[index];
-      if(mediaItem.type == 'video' && mediaItem.url.isNotEmpty) {
-        // Only reinitialize if the new media item is a video and it is different from current
-        if(_videoPlayerController == null || _videoPlayerController!.dataSource != mediaItem.url){
-          _videoPlayerController?.dispose(); // Dispose controller of previous if exists
-          try {
-            _videoPlayerController = VideoPlayerController.networkUrl(
-              Uri.parse(mediaItem.url)
-            );
-            _initializeVideoPlayerFuture = _videoPlayerController!.initialize().then((_){
-              if(mounted) setState(() {});  // Rerender once video is initialized, check if mounted
-            });
-            _videoPlayerController!.setLooping(true);
-            _videoPlayerController!.setVolume(0.0); // Mute by default
-            _videoPlayerController!.play();
-          } catch (e) {
-            // If initialization fails, clean up
-            _videoPlayerController = null;
-            _initializeVideoPlayerFuture = null;
-          }
-        }
-      } else {
-        // Not a video or invalid URL, dispose if exists
-        if (_videoPlayerController != null) {
-          _videoPlayerController!.pause();
-          _videoPlayerController!.dispose();
-          _videoPlayerController = null;
-          _initializeVideoPlayerFuture = null;
-        }
-      }
-    } else {
-      // No media or invalid index, dispose if exists
-      if (_videoPlayerController != null) {
-        _videoPlayerController!.pause();
-        _videoPlayerController!.dispose();
-        _videoPlayerController = null;
-        _initializeVideoPlayerFuture = null;
-      }
-    }
+  void _onMuteChanged() {
+    setState(() {}); // Rebuild to update mute state in video widgets
   }
 
   void _showCommentsModal(BuildContext context, List<Comment> comments) {
@@ -108,20 +67,16 @@ class _PostCardState extends State<PostCard> {
       _currentRating = widget.post.initialRating;
       _currentPage = 0;
       _pageController = PageController(); // Re-initialize page controller for new post
-      _videoPlayerController?.dispose(); // Dispose old controller
-      _videoPlayerController = null;
-      _initializeVideoPlayerFuture = null;
       _isContentExpanded = false; // Reset expansion for new post
-      _initializeVideoPlayer(0);
     }
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-    _videoPlayerController?.dispose();
-    _videoPlayerController = null;
-    _initializeVideoPlayerFuture = null;
+    _muteNotifier?.removeListener(_onMuteChanged);
+    // Only pause (do not dispose) the current video when this post card is disposed
+    PostCardVideoPlaybackManager().pauseCurrent();
     super.dispose();
   }
 
@@ -173,12 +128,13 @@ class _PostCardState extends State<PostCard> {
             ],
           )
         ),
-        ResizableButton(
-          text: "Follow",
-          onPressed: () {},
-          width: 100,
-          height: 35,
-        )
+        AppTextButton(
+          text: 'Follow',
+          onPressed: () {
+            print('Follow button pressed!');
+            // Add your follow logic here
+          },
+        ),
       ],
     );
   }
@@ -290,7 +246,6 @@ class _PostCardState extends State<PostCard> {
                 onPageChanged: (index) {
                   setState(() {
                     _currentPage = index;
-                    _initializeVideoPlayer(index); // Re-init video if needed
                   });
                 },
                 itemBuilder: (context, i){
@@ -302,7 +257,6 @@ class _PostCardState extends State<PostCard> {
                       loadingBuilder: (context, child, loadingProgress){
                         if(loadingProgress == null) return child;
                         return Center(
-                          //TODO: Return a blurred thumbnail
                           child: CircularProgressIndicator(
                             value: loadingProgress.expectedTotalBytes != null
                                 ? loadingProgress.cumulativeBytesLoaded /
@@ -311,51 +265,24 @@ class _PostCardState extends State<PostCard> {
                           ),
                         );
                       },
-                      //TODO: also return blurred tumbnail for error or loading shimmer
                       errorBuilder: (context, error, stackTrace) => const Center(
                         child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
                       ),
                     );
                   } else if (mediaItem.type == 'video'){
-                    return FutureBuilder(
-                        future: _initializeVideoPlayerFuture,
-                        builder: (context, snapshot){
-                          if(snapshot.connectionState == ConnectionState.done && _videoPlayerController != null){
-                            return GestureDetector(
-                              onTap: (){
-                                setState(() {
-                                  if (_videoPlayerController!.value.isPlaying){
-                                    _videoPlayerController!.pause();
-                                  } else {
-                                    _videoPlayerController!.play();
-                                  }
-                                });
-                              },
-                              child: AspectRatio(
-                                aspectRatio: _videoPlayerController!.value.aspectRatio,
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    VideoPlayer(_videoPlayerController!),
-                                    //Show play button when paused
-                                    if (!_videoPlayerController!.value.isPlaying)
-                                      Container(
-                                        // color: Colors.black.withOpacity(0.3),
-                                        color: Colors.black.withValues(alpha: 0.5),
-                                        child: Center(
-                                          child: Icon(
-                                            Icons.play_circle_fill,
-                                            color: Colors.grey[400],
-                                            size: 70,),),)
-                                  ],
-                                ),),
-                            );
-                          } else if (snapshot.hasError) {
-                            return Center(child: Text('Error loading video: ${snapshot.error}'));
-                          } else {
-                            return const Center(child: CircularProgressIndicator());
-                          }
+                    return AppVideoPlayerWidget(
+                      videoUrl: mediaItem.url,
+                      autoplay: true,
+                      looping: true,
+                      playbackMode: VideoPlaybackMode.globalSingle,
+                      customManager: PostCardVideoPlaybackManager(),
+                      showMuteButton: true,
+                      muted: _muteNotifier?.value ?? true,
+                      onMuteToggle: () {
+                        if (_muteNotifier != null) {
+                          _muteNotifier!.value = !_muteNotifier!.value;
                         }
+                      },
                     );
                   }
                   return const SizedBox.shrink();
@@ -374,25 +301,6 @@ class _PostCardState extends State<PostCard> {
                     child: Text(
                       '${_currentPage + 1}/${widget.post.media.length}',
                       style: TextStyle(color: Colors.white, fontSize: 13,fontWeight: FontWeight.bold),),)),
-            if(widget.post.media.isNotEmpty && widget.post.media[_currentPage].type == 'video' && _videoPlayerController!= null)
-              Positioned(
-                  bottom: 10,
-                  right: 10,
-                  child: GestureDetector(
-                    onTap: (){
-                      setState(() {
-                        if(_videoPlayerController!.value.volume == 0){
-                          _videoPlayerController!.setVolume(1.0);
-                        } else {
-                          _videoPlayerController!.setVolume(0.0);
-                        }
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      // decoration: ,
-                      child: Icon(_videoPlayerController!.value.volume > 0 ? Icons.volume_up : Icons.volume_off),
-                    ),)),
             Positioned(bottom: 10, left: 10, child: _buildRatingSection(),)
 
           ],

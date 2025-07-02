@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/post.dart';
 import '../models/user.dart';
 import '../services/user_service.dart';
+import '../utils/constants.dart';
 import '../widgets/app_buttons.dart';
 import '../widgets/post_card.dart';
 import '../widgets/profile_avatar.dart';
@@ -88,14 +89,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     // Call the method to fetch a celebrity user
     fetchProfileUser();
     _tabController = TabController(length: 5, vsync: this); 
-  }
-
-  // Helper to format large numbers
-  String _formatNumber(int number) {
-    if (number >= 1000) {
-      return '${(number / 1000).toStringAsFixed(1)}K';
-    }
-    return number.toString();
   }
 
   final Map<String, IconData> _careerCategoryIcons = {
@@ -306,7 +299,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            user != null && user!.followers != null ? '${_formatNumber(user!.followers)} ' : '0 ',
+            user != null && user!.followers != null ? '${formatCount(user!.followers)} ' : '0 ',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: defaultTextColor,

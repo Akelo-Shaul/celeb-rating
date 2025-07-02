@@ -17,6 +17,7 @@ class Post {
   final int initialRating; // e.g., the average rating of the post
   final List<Like> likes; // List of users who liked the post
   final List<Comment> comments; // List of comments on the post
+  final String location;
 
   Post({
     required this.id,
@@ -31,6 +32,7 @@ class Post {
     this.initialRating = 0, // Default to 0 if not provided
     required this.likes,
     required this.comments,
+    required this.location
   });
 
   factory Post.fromJson(Map<String, dynamic> json) => Post(
@@ -55,7 +57,8 @@ class Post {
         .toList() ?? [], // Default to empty list if null
     comments: (json['comments'] as List<dynamic>?) // Comments can be optional or empty
         ?.map((e) => Comment.fromJson(e as Map<String, dynamic>))
-        .toList() ?? [], // Default to empty list if null
+        .toList() ?? [],
+    location: json['location'], // Default to empty list if null
   );
 }
 
