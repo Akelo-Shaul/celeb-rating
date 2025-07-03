@@ -23,16 +23,46 @@ class _StreamPageState extends State<StreamPage> with SingleTickerProviderStateM
   String? _activeStreamId;
   bool _expandedStreamVisible = false;
   final ScrollController _scrollController = ScrollController();
+  bool _isLiveStreamsLoading = true;
 
   @override
   void initState() {
     super.initState();
     _streamCategories = StreamService.getCategories();
-    _liveStreams = StreamService.getStreams();
     _searchController = TextEditingController();
     _tabController = TabController(length: 3, vsync: this);
     _scrollController.addListener(_onScroll);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _onScroll());
+    _loadLiveStreams();
+    // Listen for tab changes to set the first live stream as active when the Live tab is selected
+    _tabController.addListener(() {
+      if (_tabController.index == 1 && _liveStreams.isNotEmpty) {
+        setState(() {
+          _activeStreamId = _liveStreams[0].id;
+        });
+      }
+    });
+    // Set the first video as active when the page is first opened
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_tabController.index == 1 && _liveStreams.isNotEmpty) {
+        setState(() {
+          _activeStreamId = _liveStreams[0].id;
+        });
+      }
+    });
+  }
+
+  Future<void> _loadLiveStreams() async {
+    setState(() {
+      _isLiveStreamsLoading = true;
+    });
+    final streams = await Future.value(StreamService.getStreams());
+    setState(() {
+      _liveStreams = streams;
+      _isLiveStreamsLoading = false;
+      if (_tabController.index == 1 && _liveStreams.isNotEmpty) {
+        _activeStreamId = _liveStreams[0].id;
+      }
+    });
   }
 
   @override
@@ -162,22 +192,33 @@ class _StreamPageState extends State<StreamPage> with SingleTickerProviderStateM
   }
 
   Widget _buildLiveStreamTab() {
+    if (_isLiveStreamsLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_liveStreams.isEmpty) {
+      return const Center(child: Text('No live streams available'));
+    }
+    // Show the list immediately, each LiveStreamCard should handle its own thumbnail/video logic
     return ListView.builder(
       controller: _scrollController,
       itemCount: _liveStreams.length,
       itemBuilder: (context, index) {
+        final stream = _liveStreams[index];
+        // Pass a thumbnailUrl (could be stream.thumbnailUrl or stream.lastFrameUrl)
         return LiveStreamCard(
-          stream: _liveStreams[index],
-          isActive: _activeStreamId == _liveStreams[index].id && _expandedStream == null,
+          stream: stream,
+          isActive: _activeStreamId == stream.id && _expandedStream == null,
           onStreamerTap: () {},
           onCategoryTap: (cat) {},
           onTagTap: (tag) {},
           onTap: () {
             setState(() {
-              _expandedStream = _liveStreams[index];
+              _expandedStream = stream;
               _expandedStreamVisible = true;
             });
           },
+          // Add this prop if not present in your LiveStreamCard:
+          // thumbnailUrl: stream.thumbnailUrl ?? stream.lastFrameUrl,
         );
       },
     );

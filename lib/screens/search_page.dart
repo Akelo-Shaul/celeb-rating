@@ -5,12 +5,16 @@ import 'package:celebrating/widgets/stream_category_card.dart';
 import 'package:flutter/material.dart';
 
 import '../models/audio_post.dart';
+import '../models/live_stream.dart';
 import '../models/post.dart';
 import '../models/user.dart';
 import '../services/search_service.dart';
+import '../services/stream.dart';
 import '../widgets/app_search_bar.dart';
 import '../widgets/audio_card.dart';
 import '../widgets/flick_card.dart';
+import '../widgets/live_stream_card.dart';
+import '../widgets/live_stream_overlay.dart';
 import '../widgets/search_user_card.dart';
 
 class SearchPage extends StatefulWidget {
@@ -37,12 +41,18 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
   List<Flick> _searchFlickResults = [];
   List<dynamic> _searchLocationResults = [];
   List<AudioPost> _searchAudioPosts = [];
+  List<LiveStream> _liveStreams = [];
   bool _isLoading = false;
   bool _isSearchResults = false;
   late TabController _tabController;
   final ScrollController _flicksScrollController = ScrollController();
   final ValueNotifier<int> _activeFlickIndex = ValueNotifier<int>(0);
   final ValueNotifier<IndexPair> _activeFlickCell = ValueNotifier<IndexPair>(IndexPair(0, 0));
+  bool _isLiveStreamsLoading = true;
+  String? _activeStreamId;
+  final ScrollController _streamScrollController = ScrollController();
+  LiveStream? _expandedStream;
+  bool _expandedStreamVisible = false;
 
   void _performSearch(String query) async {
     setState(() {
@@ -99,17 +109,63 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
     );
   }
 
+  void _onScroll() {
+    if (_expandedStreamVisible) return;
+    final itemHeight = 240.0; // Approximate height of each LiveStreamCard
+    final offset = _streamScrollController.offset;
+    final topIndex = (offset / itemHeight).round().clamp(0, _liveStreams.length - 1);
+    final topStreamId = _liveStreams[topIndex].id;
+    if (_activeStreamId != topStreamId) {
+      setState(() {
+        _activeStreamId = topStreamId;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _searchController = TextEditingController();
     _tabController = TabController(length: 8, vsync: this);
+    _streamScrollController.addListener(_onScroll);
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) return;
       // Only perform search if the tab changed
       _performSearch(_searchController.text);
+      if (_tabController.index == 6) {
+        if (_liveStreams.isEmpty) {
+          _loadLiveStreams();
+        } else if (_liveStreams.isNotEmpty) {
+          setState(() {
+            _activeStreamId = _liveStreams[0].id;
+          });
+        }
+      }
     });
     _performSearch('');
+  }
+
+  Future<void> _loadLiveStreams() async {
+    setState(() {
+      _isLiveStreamsLoading = true;
+    });
+    final streams = await Future.value(StreamService.getStreams());
+    setState(() {
+      _liveStreams = streams;
+      _isLiveStreamsLoading = false;
+    });
+    if (_tabController.index == 6 && _liveStreams.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        setState(() {
+          _activeStreamId = _liveStreams[0].id;
+        });
+        // Now safe to scroll
+        if (_streamScrollController.hasClients) {
+          _streamScrollController.jumpTo(0);
+        }
+      });
+    }
   }
 
 
@@ -120,6 +176,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
     _flicksScrollController.dispose();
     _activeFlickIndex.dispose();
     _activeFlickCell.dispose();
+    _streamScrollController.dispose();
     super.dispose();
   }
 
@@ -128,44 +185,58 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            const Text(
-              "Search",
-            ),
-            const SizedBox(height: 5,),
-            AppSearchBar(
-              controller: _searchController,
-              hintText: 'Search...',
-              onChanged: (value) {
-                _performSearch(value);
-              },
-              onSearchPressed: () {
-                _performSearch(_searchController.text);
-                FocusScope.of(context).unfocus();
-              },
-              onFilterPressed: () {
-                print('Filter button pressed');
-              },
-              showSearchButton: true,
-              showFilterButton: true,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            ),
-            if(!_isSearchResults)...[
-              Expanded(
-                child: _isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : ListView.builder(
-                  itemCount: _searchUserResults.length,
-                  itemBuilder: (context, i) =>
-                      SearchUserCard(user: _searchUserResults[i]),
+        child: Stack(
+          children:[
+            Column(
+              children: [
+                const Text(
+                  "Search",
                 ),
+                const SizedBox(height: 5,),
+                AppSearchBar(
+                  controller: _searchController,
+                  hintText: 'Search...',
+                  onChanged: (value) {
+                    _performSearch(value);
+                  },
+                  onSearchPressed: () {
+                    _performSearch(_searchController.text);
+                    FocusScope.of(context).unfocus();
+                  },
+                  onFilterPressed: () {
+                    print('Filter button pressed');
+                  },
+                  showSearchButton: true,
+                  showFilterButton: true,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                ),
+                if(!_isSearchResults)...[
+                  Expanded(
+                    child: _isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : ListView.builder(
+                      itemCount: _searchUserResults.length,
+                      itemBuilder: (context, i) =>
+                          SearchUserCard(user: _searchUserResults[i]),
+                    ),
+                  ),
+                ] else ...[
+                  _buildTabBar(isDark),
+                  _buildTabs(),
+                ]
+              ],
+            ),
+            if (_expandedStream != null)
+              LiveStreamOverlay(
+                stream: _expandedStream!,
+                onClose: () {
+                  setState(() {
+                    _expandedStream = null;
+                    _expandedStreamVisible = false;
+                  });
+                },
               ),
-            ] else ...[
-              _buildTabBar(isDark),
-              _buildTabs(),
-            ]
           ],
         ),
       ),
@@ -216,7 +287,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
           _buildCategoriesTab(),
           _buildRoomTab(),
           _buildStreamTab(),
-          // _buildUhondoTab(),
+          _buildUhondoTab(),
         ],
       ),
     );
@@ -439,7 +510,37 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
     return Center(child: Text('Room Tab'),);
   }
 
-  Widget _buildStreamTab(){
+  Widget _buildStreamTab() {
+    if (_isLiveStreamsLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_liveStreams.isEmpty) {
+      return const Center(child: Text('No live streams available'));
+    }
+    return ListView.builder(
+      controller: _streamScrollController,
+      itemCount: _liveStreams.length,
+      itemBuilder: (context, index) {
+        final stream = _liveStreams[index];
+        return LiveStreamCard(
+          key: ValueKey(stream.id), // Ensure unique key for each stream
+          stream: stream,
+          isActive: _activeStreamId == stream.id && _expandedStream == null,
+          onStreamerTap: () {},
+          onCategoryTap: (cat) {},
+          onTagTap: (tag) {},
+          onTap: () {
+            setState(() {
+              _expandedStream = stream;
+              _expandedStreamVisible = true;
+            });
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildUhondoTab(){
     return Center(child: Text('Stream Tab'),);
   }
 }

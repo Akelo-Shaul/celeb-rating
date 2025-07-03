@@ -30,7 +30,6 @@ class LiveStreamCard extends StatefulWidget {
 
 class _LiveStreamCardState extends State<LiveStreamCard> {
   late VideoPlayerController _controller;
-  bool _initialized = false;
   final videoManager = LiveStreamVideoManager();
 
   @override
@@ -38,21 +37,33 @@ class _LiveStreamCardState extends State<LiveStreamCard> {
     super.initState();
     _controller = videoManager.getController(widget.stream.streamUrl, widget.stream.id);
     _controller.addListener(_onControllerUpdate);
+
     _controller.initialize().then((_) {
-      setState(() {
-        _initialized = true;
-      });
+      if (mounted) {
+        // Add a listener specifically for the first frame/size availability
+        // This ensures play is called only when the video is truly ready to render.
+        _controller.addListener(_playWhenReady);
+        setState(() {}); // Trigger a rebuild to reflect initialization state
+      }
+    });
+  }
+
+  // New method to handle playing the video only when it's ready (initialized and has size)
+  void _playWhenReady() {
+    // Check if the controller is initialized AND has valid dimensions
+    if (_controller.value.isInitialized &&
+        _controller.value.size.width > 0 &&
+        _controller.value.size.height > 0) {
       if (widget.isActive) {
         videoManager.pauseAllExcept(widget.stream.id);
         _controller.play();
       } else {
         _controller.pause();
       }
-    });
-  }
-
-  void _onControllerUpdate() {
-    if (mounted) setState(() {});
+      // Remove this listener once played to avoid redundant calls,
+      // as didUpdateWidget will handle future active changes.
+      _controller.removeListener(_playWhenReady);
+    }
   }
 
   @override
@@ -60,22 +71,49 @@ class _LiveStreamCardState extends State<LiveStreamCard> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.isActive != widget.isActive) {
       if (widget.isActive) {
-        videoManager.pauseAllExcept(widget.stream.id);
-        _controller.play();
+        // Only attempt to play if the controller is already ready.
+        // Otherwise, add the _playWhenReady listener to wait for readiness.
+        if (_controller.value.isInitialized &&
+            _controller.value.size.width > 0 &&
+            _controller.value.size.height > 0) {
+          videoManager.pauseAllExcept(widget.stream.id);
+          _controller.play();
+        } else {
+          _controller.addListener(_playWhenReady);
+        }
       } else {
         _controller.pause();
+        // If we pause, and a _playWhenReady listener was active, remove it.
+        _controller.removeListener(_playWhenReady);
       }
     }
+  }
+
+  void _onControllerUpdate() {
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
     _controller.removeListener(_onControllerUpdate);
+    _controller.removeListener(_playWhenReady); // Ensure this listener is also removed
     super.dispose();
+  }
+
+  bool get _isActuallyPlaying {
+    if (!_controller.value.isInitialized) return false;
+    final value = _controller.value;
+    return value.isPlaying && !value.isBuffering && !value.hasError;
   }
 
   @override
   Widget build(BuildContext context) {
+    // Simplified showVideo condition to rely directly on controller's state
+    final showVideo = _controller.value.isInitialized &&
+        !_controller.value.hasError &&
+        _controller.value.size.width > 0 &&
+        _controller.value.size.height > 0;
+
     return GestureDetector(
       onTap: () {
         if (widget.onTap != null) {
@@ -88,10 +126,19 @@ class _LiveStreamCardState extends State<LiveStreamCard> {
           Stack(
             children: [
               AspectRatio(
-                aspectRatio: _initialized ? _controller.value.aspectRatio : 16 / 9,
-                child: Hero(
-                  tag: 'live_stream_${widget.stream.id}',
-                  child: VideoPlayer(_controller),
+                aspectRatio: 16 / 9,
+                child: showVideo
+                    ? VideoPlayer(_controller)
+                    : Container(
+                  color: Colors.black,
+                  child: Center(
+                    child: Text(
+                      _controller.value.hasError
+                          ? 'Video error'
+                          : 'Loading stream...',
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                  ),
                 ),
               ),
               if (widget.stream.isLive)
@@ -115,17 +162,18 @@ class _LiveStreamCardState extends State<LiveStreamCard> {
                   ),
                 ),
               Positioned(
-                top: 8,
                 right: 8,
+                top: 8,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.7),
-                    borderRadius: BorderRadius.circular(4),
+                    color: Colors.black.withOpacity(0.6),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.person, color: Colors.white, size: 12),
+                      const Icon(Icons.remove_red_eye, color: Colors.white, size: 14),
                       const SizedBox(width: 4),
                       Text(
                         formatCount(widget.stream.viewerCount),
@@ -139,10 +187,6 @@ class _LiveStreamCardState extends State<LiveStreamCard> {
                   ),
                 ),
               ),
-              if (!_initialized)
-                const Positioned.fill(
-                  child: Center(child: CircularProgressIndicator()),
-                ),
             ],
           ),
           Row(
@@ -157,9 +201,9 @@ class _LiveStreamCardState extends State<LiveStreamCard> {
                 children: [
                   Text(widget.stream.streamer.fullName),
                   Text(
-                    widget.stream.description, // The text content goes here
+                    widget.stream.description,
                     maxLines: 3,
-                    overflow: TextOverflow.ellipsis, // Corrected enum value
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               )

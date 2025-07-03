@@ -17,6 +17,7 @@ class Flick{
   final List<String> categories;
   final List<String> hashtags;
   final String location;
+  final Map<String, int> userRatings; // userId -> rating
 
   Flick({
     required this.likes,
@@ -31,6 +32,8 @@ class Flick{
     required this.creator,
     required this.views,
     required this.duration,
-    required this.location});
+    required this.location,
+    this.userRatings = const {},
+  });
 
 }

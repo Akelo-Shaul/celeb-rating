@@ -159,6 +159,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Amsterdam, Netherlands',
         timestamp: DateTime.now().subtract(const Duration(days: 1)),
+        userRatings: const {'1': 4, '2': 5},
       ),
       Flick(
         id: '2',
@@ -174,6 +175,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Paris, France',
         timestamp: DateTime.now().subtract(const Duration(days: 2)),
+        userRatings: const {}, // unrated
       ),
       Flick(
         id: '3',
@@ -189,6 +191,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Tokyo, Japan',
         timestamp: DateTime.now().subtract(const Duration(days: 3)),
+        userRatings: const {'1': 3},
       ),
       Flick(
         id: '4',
@@ -204,6 +207,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'New York, USA',
         timestamp: DateTime.now().subtract(const Duration(days: 4)),
+        userRatings: const {}, // unrated
       ),
       Flick(
         id: '5',
@@ -219,6 +223,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Seoul, South Korea',
         timestamp: DateTime.now().subtract(const Duration(days: 5)),
+        userRatings: const {'2': 2, '3': 5},
       ),
       Flick(
         id: '6',
@@ -234,6 +239,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Rio de Janeiro, Brazil',
         timestamp: DateTime.now().subtract(const Duration(days: 6)),
+        userRatings: const {}, // unrated
       ),
       Flick(
         id: '7',
@@ -249,6 +255,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'London, UK',
         timestamp: DateTime.now().subtract(const Duration(days: 7)),
+        userRatings: const {'1': 1},
       ),
       Flick(
         id: '8',
@@ -264,6 +271,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Venice, Italy',
         timestamp: DateTime.now().subtract(const Duration(days: 8)),
+        userRatings: const {},
       ),
       Flick(
         id: '9',
@@ -279,6 +287,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Cape Town, South Africa',
         timestamp: DateTime.now().subtract(const Duration(days: 9)),
+        userRatings: const {},
       ),
       Flick(
         id: '10',
@@ -294,6 +303,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Dubai, UAE',
         timestamp: DateTime.now().subtract(const Duration(days: 10)),
+        userRatings: const {},
       ),
       Flick(
         id: '11',
@@ -309,6 +319,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Berlin, Germany',
         timestamp: DateTime.now().subtract(const Duration(days: 11)),
+        userRatings: const {},
       ),
       Flick(
         id: '12',
@@ -324,6 +335,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Bangkok, Thailand',
         timestamp: DateTime.now().subtract(const Duration(days: 12)),
+        userRatings: const {},
       ),
       Flick(
         id: '13',
@@ -339,6 +351,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Moscow, Russia',
         timestamp: DateTime.now().subtract(const Duration(days: 13)),
+        userRatings: const {},
       ),
       Flick(
         id: '14',
@@ -354,6 +367,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Toronto, Canada',
         timestamp: DateTime.now().subtract(const Duration(days: 14)),
+        userRatings: const {},
       ),
       Flick(
         id: '15',
@@ -369,6 +383,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Prague, Czech Republic',
         timestamp: DateTime.now().subtract(const Duration(days: 15)),
+        userRatings: const {},
       ),
       Flick(
         id: '16',
@@ -384,6 +399,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Cairo, Egypt',
         timestamp: DateTime.now().subtract(const Duration(days: 16)),
+        userRatings: const {},
       ),
       Flick(
         id: '17',
@@ -399,6 +415,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Los Angeles, USA',
         timestamp: DateTime.now().subtract(const Duration(days: 17)),
+        userRatings: const {},
       ),
       Flick(
         id: '18',
@@ -414,6 +431,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Rome, Italy',
         timestamp: DateTime.now().subtract(const Duration(days: 18)),
+        userRatings: const {},
       ),
       Flick(
         id: '19',
@@ -429,6 +447,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Istanbul, Turkey',
         timestamp: DateTime.now().subtract(const Duration(days: 19)),
+        userRatings: const {},
       ),
       Flick(
         id: '20',
@@ -444,6 +463,7 @@ class SearchService {
         hashtags: dummyHashtags,
         location: 'Santorini, Greece',
         timestamp: DateTime.now().subtract(const Duration(days: 20)),
+        userRatings: const {},
       ),
     ];
     await Future.delayed(const Duration(milliseconds: 500));

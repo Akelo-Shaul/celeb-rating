@@ -57,6 +57,11 @@ class _FlickReelPlayerState extends State<_FlickReelPlayer> {
   late VideoPlayerController _controller;
   late Future<void> _initFuture;
   bool _muted = true;
+  bool _showRatingSection = false;
+  int _currentRating = 0;
+  final GlobalKey _starKey = GlobalKey();
+  final GlobalKey _ratingKey = GlobalKey();
+  bool _isRatingSectionActive = false;
 
   @override
   void initState() {
@@ -68,6 +73,7 @@ class _FlickReelPlayerState extends State<_FlickReelPlayer> {
       _controller.play();
       setState(() {});
     });
+    _currentRating = 0;
   }
 
   void _toggleMute() {
@@ -80,16 +86,83 @@ class _FlickReelPlayerState extends State<_FlickReelPlayer> {
   void _showCommentsModal(BuildContext context, List<Comment> comments) {
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // Allows the modal to take up more height
+      isScrollControlled: true,
       builder: (BuildContext context) {
         return FractionallySizedBox(
-          heightFactor: 0.85, // Adjust this to control how much screen height the modal takes
+          heightFactor: 0.85,
           child: CommentsModal(
             comments: comments,
             postId: widget.flick.id,
           ),
         );
       },
+    );
+  }
+
+  Widget _buildRatingSection() {
+    // Show static stars if already rated by user, else allow rating
+    // Replace with actual user id from auth/user provider in real app
+    const String currentUserId = '1';
+    final int? userRating = widget.flick.userRatings[currentUserId];
+    final bool hasRated = userRating != null && userRating > 0;
+    final int rating = hasRated ? userRating : _currentRating;
+    return GestureDetector(
+      onTapDown: (_) {
+        setState(() {
+          _isRatingSectionActive = true;
+        });
+      },
+      onTapUp: (_) {
+        setState(() {
+          _isRatingSectionActive = false;
+        });
+      },
+      onTapCancel: () {
+        setState(() {
+          _isRatingSectionActive = false;
+        });
+      },
+      child: Opacity(
+        opacity: _isRatingSectionActive ? 1.0 : 0.5,
+        child: Container(
+          padding: const EdgeInsets.all(3.0),
+          decoration: BoxDecoration(
+            color: Colors.black54,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(5, (index) {
+              final isRated = rating >= (index + 1);
+              final starColor = isRated ? Colors.orange : Colors.grey[400];
+              if (hasRated) {
+                return Icon(
+                  Icons.star_rounded,
+                  color: starColor,
+                  size: 30,
+                );
+              } else {
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _currentRating = index + 1;
+                      widget.flick.userRatings[currentUserId] = _currentRating;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('You rated ${index + 1} stars!')),
+                      );
+                    });
+                  },
+                  child: Icon(
+                    Icons.star_rounded,
+                    color: starColor,
+                    size: 30,
+                  ),
+                );
+              }
+            }),
+          ),
+        ),
+      ),
     );
   }
 
@@ -120,6 +193,7 @@ class _FlickReelPlayerState extends State<_FlickReelPlayer> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              _buildRatingSection(),
               Text(widget.flick.title, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Text('by ${widget.flick.creator.username}', style: const TextStyle(color: Colors.white70)),
@@ -142,10 +216,10 @@ class _FlickReelPlayerState extends State<_FlickReelPlayer> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                // Removed rating section from here, only show thumb up icon
                 _buildActionItem(
-                  icon: Icons.star_border_outlined,
+                  icon:  Icons.thumb_up_alt_outlined,
                   count: widget.flick.likes.length,
-                  onTap: (){},
                 ),
                 const SizedBox(height: 24),
                 _buildActionItem(
@@ -175,7 +249,7 @@ class _FlickReelPlayerState extends State<_FlickReelPlayer> {
                   count: null,
                   onTap: _toggleMute,
                 ),
-                const SizedBox(height: 48), // Space for bottom navigation if any
+                const SizedBox(height: 48),
               ],
             ),
           ),
