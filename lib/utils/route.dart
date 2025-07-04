@@ -1,4 +1,5 @@
 import 'package:celebrating/screens/auth_screen.dart';
+import 'package:celebrating/screens/camera_screen.dart';
 import 'package:celebrating/screens/feed_screen.dart';
 import 'package:celebrating/screens/onboarding_screen.dart';
 import 'package:celebrating/screens/search_page.dart';
@@ -21,6 +22,7 @@ const String streamScreen = '/stream';
 const String profileScreen = '/profile';
 const String mainNavShell = '/';
 const String flickScreen = '/flick';
+const String cameraScreen = 'camera';
 
 class RouteGenerator{
   static Route<dynamic> generateRoute(RouteSettings settings){
@@ -43,6 +45,8 @@ class RouteGenerator{
         return MaterialPageRoute(builder: (_) => const MainNavigationShell(initialTab: 5));
       case mainNavShell:
         return MaterialPageRoute(builder: (_) => const MainNavigationShell());
+      case cameraScreen:
+        return MaterialPageRoute(builder: (_) => const CameraScreen());
       case flickScreen:
         if (settings.arguments is Map) {
           final args = settings.arguments as Map;

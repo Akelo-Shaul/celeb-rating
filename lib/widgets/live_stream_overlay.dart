@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 import '../models/live_stream.dart';
-import '../services/live_stream_video_manager.dart';
+import '../utils/live_stream_video_manager.dart';
 
 class LiveStreamOverlay extends StatefulWidget {
   final LiveStream stream;

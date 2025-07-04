@@ -309,3 +309,126 @@ class AppTextButton extends StatelessWidget {
     );
   }
 }
+
+
+class AppToggleButton extends StatefulWidget {
+  final bool isToggled; // Current state of the button
+  final ValueChanged<bool> onToggle; // Callback when the button is toggled
+
+  // Untoggled state properties for Icon and Text
+  final IconData? untoggledIcon; // Made optional
+  final Color? untoggledColor; // Optional icon/text color for untoggled state
+  final String? untoggledText; // Optional text for untoggled state
+  final TextStyle? untoggledTextStyle;
+
+  // Toggled state properties for Icon and Text
+  final IconData? toggledIcon; // Made optional
+  final Color? toggledColor; // Optional icon/text color for toggled state
+  final String? toggledText; // Optional text for toggled state
+  final TextStyle? toggledTextStyle;
+
+  final double iconSize;
+  final EdgeInsetsGeometry padding;
+  final BorderRadius borderRadius;
+  final Duration animationDuration;
+
+  const AppToggleButton({
+    Key? key,
+    required this.isToggled,
+    required this.onToggle,
+    this.untoggledIcon, // No longer required
+    this.untoggledColor,
+    this.untoggledText,
+    this.untoggledTextStyle,
+    this.toggledIcon, // No longer required
+    this.toggledColor,
+    this.toggledText,
+    this.toggledTextStyle,
+    this.iconSize = 24.0,
+    this.padding = const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+    this.borderRadius = const BorderRadius.all(Radius.circular(8.0)),
+    this.animationDuration = const Duration(milliseconds: 200),
+  }) : super(key: key);
+
+  @override
+  State<AppToggleButton> createState() => _AppToggleButtonState();
+}
+
+class _AppToggleButtonState extends State<AppToggleButton> {
+  @override
+  Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Determine the current icon (now nullable)
+    final IconData? currentIcon = widget.isToggled ? widget.toggledIcon : widget.untoggledIcon;
+
+    // Determine the icon and text color based on toggle state and theme
+    // Preserving your direct color assignment
+    final Color currentForegroundColor = const Color(0xFFD6AF0C);
+
+    // Determine the background color of the AnimatedContainer (the overall button area)
+    final Color currentBackgroundColor = Colors.transparent;
+
+    // Determine the text style
+    final TextStyle currentTextStyle = TextStyle(color: currentForegroundColor, fontSize: 20.0, fontWeight: FontWeight.w900);
+
+    // Determine the current text
+    final String? currentText = widget.isToggled ? widget.toggledText : widget.untoggledText;
+
+    return SizedBox( // Wrap with SizedBox to force full width
+      width: double.infinity,
+      child: AnimatedContainer(
+        duration: widget.animationDuration,
+        padding: widget.padding,
+        decoration: BoxDecoration(
+          color: currentBackgroundColor,
+          borderRadius: widget.borderRadius,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween, // Distribute content to ends
+          children: [
+            // Left side: Optional Icon and optional Text
+            Row(
+              mainAxisSize: MainAxisSize.min, // Keep icon and text grouped
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Conditionally render Icon only if currentIcon is not null
+                if (currentIcon != null)
+                  Icon(
+                    currentIcon,
+                    color: currentForegroundColor,
+                    size: widget.iconSize,
+                  ),
+                // Add spacing only if both icon and text are present
+                if (currentIcon != null && currentText != null && currentText.isNotEmpty)
+                  const SizedBox(width: 8.0),
+                if (currentText != null) // Conditionally render Text
+                  AnimatedSwitcher(
+                    duration: widget.animationDuration, // Corrected typo here
+                    transitionBuilder: (Widget child, Animation<double> animation) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                    child: Text(
+                      currentText,
+                      key: ValueKey<String>(currentText),
+                      style: currentTextStyle,
+                    ),
+                  ),
+              ],
+            ),
+
+            // Right side: The Toggle Switch Button itself
+            Switch(
+              value: widget.isToggled,
+              onChanged: widget.onToggle,
+              activeColor: const Color(0xFFD6AF0C),
+              activeTrackColor: const Color(0xFFD6AF0C).withOpacity(0.5),
+              inactiveThumbColor: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
+              inactiveTrackColor: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

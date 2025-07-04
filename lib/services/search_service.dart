@@ -148,7 +148,7 @@ class SearchService {
       Flick(
         id: '1',
         thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
-        flickUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/9788791/9788791-uhd_1440_2732_25fps.mp4',
         title: 'Big Buck Bunny',
         creator: dummyUsers[0],
         views: 1234,
@@ -164,7 +164,7 @@ class SearchService {
       Flick(
         id: '2',
         thumbnail: 'https://img.youtube.com/vi/3tmd-ClpJxA/0.jpg',
-        flickUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/9191078/9191078-hd_1080_1920_30fps.mp4',
         title: 'Sample 1MB',
         creator: dummyUsers[1],
         views: 5678,
@@ -180,7 +180,7 @@ class SearchService {
       Flick(
         id: '3',
         thumbnail: 'https://img.youtube.com/vi/aqz-KE-bpKQ/0.jpg',
-        flickUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_10mb.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/31850424/13568518_1080_1920_24fps.mp4',
         title: 'Sample 10MB',
         creator: dummyUsers[2],
         views: 2345,
@@ -196,7 +196,7 @@ class SearchService {
       Flick(
         id: '4',
         thumbnail: 'https://img.youtube.com/vi/2Vv-BfVoq4g/0.jpg',
-        flickUrl: 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/32332685/13792266_1440_2560_30fps.mp4',
         title: 'LearningContainer',
         creator: dummyUsers[3],
         views: 3456,
@@ -212,7 +212,7 @@ class SearchService {
       Flick(
         id: '5',
         thumbnail: 'https://img.youtube.com/vi/9bZkp7q19f0/0.jpg',
-        flickUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/32320376/13785526_1440_2560_30fps.mp4',
         title: 'Sample 5MB',
         creator: dummyUsers[4],
         views: 4567,
@@ -228,7 +228,7 @@ class SearchService {
       Flick(
         id: '6',
         thumbnail: 'https://img.youtube.com/vi/OPf0YbXqDm0/0.jpg',
-        flickUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_2mb.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/31817090/13556100_1080_1920_60fps.mp4',
         title: 'Sample 2MB',
         creator: dummyUsers[5],
         views: 5678,
@@ -244,7 +244,7 @@ class SearchService {
       Flick(
         id: '7',
         thumbnail: 'https://img.youtube.com/vi/60ItHLz5WEA/0.jpg',
-        flickUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/32197923/13731630_1440_2560_30fps.mp4',
         title: 'Sample 20MB',
         creator: dummyUsers[0],
         views: 6789,
@@ -260,7 +260,7 @@ class SearchService {
       Flick(
         id: '8',
         thumbnail: 'https://img.youtube.com/vi/CevxZvSJLk8/0.jpg',
-        flickUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_30mb.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/3842573/3842573-uhd_2560_1440_30fps.mp4',
         title: 'Sample 30MB',
         creator: dummyUsers[1],
         views: 7890,
@@ -276,7 +276,7 @@ class SearchService {
       Flick(
         id: '9',
         thumbnail: 'https://img.youtube.com/vi/ScMzIvxBSi4/0.jpg',
-        flickUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_50mb.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/28754657/12467820_1080_1920_48fps.mp4',
         title: 'Sample 50MB',
         creator: dummyUsers[2],
         views: 8901,
@@ -292,7 +292,7 @@ class SearchService {
       Flick(
         id: '10',
         thumbnail: 'https://img.youtube.com/vi/2vjPBrBU-TM/0.jpg',
-        flickUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_100mb.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/32114960/13691527_1440_2560_60fps.mp4',
         title: 'Sample 100MB',
         creator: dummyUsers[3],
         views: 9012,
@@ -308,7 +308,7 @@ class SearchService {
       Flick(
         id: '11',
         thumbnail: 'https://img.youtube.com/vi/uelHwf8o7_U/0.jpg',
-        flickUrl: 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/31190177/13323575_1080_1920_50fps.mp4',
         title: 'LearningContainer 2',
         creator: dummyUsers[4],
         views: 10123,
@@ -324,7 +324,7 @@ class SearchService {
       Flick(
         id: '12',
         thumbnail: 'https://img.youtube.com/vi/09R8_2nJtjg/0.jpg',
-        flickUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/32313700/13782007_1080_1920_100fps.mp4',
         title: 'W3Schools Bunny 2',
         creator: dummyUsers[5],
         views: 11234,
@@ -340,7 +340,7 @@ class SearchService {
       Flick(
         id: '13',
         thumbnail: 'https://img.youtube.com/vi/3AtDnEC4zak/0.jpg',
-        flickUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/32282234/13767019_1440_2560_60fps.mp4',
         title: 'Sample 1MB 2',
         creator: dummyUsers[0],
         views: 12345,
@@ -356,7 +356,7 @@ class SearchService {
       Flick(
         id: '14',
         thumbnail: 'https://img.youtube.com/vi/2Vv-BfVoq4g/0.jpg',
-        flickUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_10mb.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/27444986/12146476_1440_2560_30fps.mp4',
         title: 'Sample 10MB 2',
         creator: dummyUsers[1],
         views: 13456,
@@ -372,7 +372,7 @@ class SearchService {
       Flick(
         id: '15',
         thumbnail: 'https://img.youtube.com/vi/OPf0YbXqDm0/0.jpg',
-        flickUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/32115048/13691643_1440_2560_30fps.mp4',
         title: 'Sample 5MB 2',
         creator: dummyUsers[2],
         views: 14567,
@@ -388,7 +388,7 @@ class SearchService {
       Flick(
         id: '16',
         thumbnail: 'https://img.youtube.com/vi/60ItHLz5WEA/0.jpg',
-        flickUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_2mb.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/32094550/13681469_1440_2560_30fps.mp4',
         title: 'Sample 2MB 2',
         creator: dummyUsers[3],
         views: 15678,
@@ -404,7 +404,7 @@ class SearchService {
       Flick(
         id: '17',
         thumbnail: 'https://img.youtube.com/vi/CevxZvSJLk8/0.jpg',
-        flickUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/27608561/12184920_1920_1080_30fps.mp4',
         title: 'Sample 20MB 2',
         creator: dummyUsers[4],
         views: 16789,
@@ -420,7 +420,7 @@ class SearchService {
       Flick(
         id: '18',
         thumbnail: 'https://img.youtube.com/vi/ScMzIvxBSi4/0.jpg',
-        flickUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_30mb.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/32699365/13940516_1080_1920_60fps.mp4',
         title: 'Sample 30MB 2',
         creator: dummyUsers[5],
         views: 17890,
@@ -436,7 +436,7 @@ class SearchService {
       Flick(
         id: '19',
         thumbnail: 'https://img.youtube.com/vi/2vjPBrBU-TM/0.jpg',
-        flickUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_50mb.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/12594868/12594868-uhd_1440_2560_60fps.mp4',
         title: 'Sample 50MB 2',
         creator: dummyUsers[0],
         views: 18901,

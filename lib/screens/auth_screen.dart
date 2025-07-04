@@ -1,5 +1,9 @@
 // auth_screen.dart
 
+import 'dart:io';
+
+import 'package:camera/camera.dart';
+import 'package:celebrating/utils/route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:celebrating/services/user_service.dart';
@@ -38,9 +42,13 @@ class _AuthScreenState extends State<AuthScreen> {
   String? _registerConfirmPassword;
   String? _registerRole;
   String? _registerFullName;
+  bool _isCelebrity = false;
 
   bool _agreeToNewsletter = false;
   bool _agreeToTerms = false;
+
+
+  XFile? _selectedImage;
 
   String? errorMessage; // For general/backend errors
   bool isSubmitting = false;
@@ -162,6 +170,20 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
+  Future<void> _openCamera() async {
+    final result = await Navigator.pushNamed(context, cameraScreen);
+    if (result is XFile) {
+      print('Image Result: ${result.path}');
+
+      setState(() {
+        _selectedImage = result;
+        print('Selected Image Path: ${_selectedImage!.path}');
+      });
+    } else {
+      print('No image captured');
+    }
+  }
+
   // Helper to show error at the top of the screen (like a banner)
   Widget _buildTopErrorBanner() {
     if (errorMessage == null) return const SizedBox.shrink();
@@ -239,11 +261,47 @@ class _AuthScreenState extends State<AuthScreen> {
       child: Form(
         key: _formKeyRegister,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _buildTopErrorBanner(),
             if (errorMessage != null)
               ErrorMessageBox(message: errorMessage!),
+            GestureDetector(
+              onTap: _openCamera,
+              child: Stack(
+                  children: [
+                    Positioned(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: _selectedImage != null ?
+                        SizedBox(
+                          height: 130,
+                          width: 130,
+                          child: Image.file(File(_selectedImage!.path), fit: BoxFit.cover), // Use fit to avoid overflow
+                        ) :
+                        Image.asset(
+                          'assets/images/profile_placeholder.jpg',
+                          height: 130,
+                          width: 130,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.edit_square,
+                          color: const Color(0xFFD6AF0C),
+                          size: 40,
+                        ),
+                        onPressed: _openCamera, // Remove image action
+                      ),
+                    ),
+                  ]
+              ),
+            ),
+            const SizedBox(height: 16),
             AppTextFormField(
               labelText: 'Full Name',
               icon: Icons.person_outline,
@@ -287,6 +345,17 @@ class _AuthScreenState extends State<AuthScreen> {
               icon: Icons.badge_outlined,
               onSaved: (v) => _registerRole = v,
               validator: (v) => v == null || v.isEmpty ? 'Role required' : null,
+            ),
+            const SizedBox(height: 16),
+            AppToggleButton(
+              isToggled: _isCelebrity,
+              onToggle: (newValue) {
+                setState(() {
+                  _isCelebrity = newValue;
+                });
+              },
+              untoggledText: 'User',
+              toggledText: 'Celebrity',
             ),
             const SizedBox(height: 24),
             AppButton(

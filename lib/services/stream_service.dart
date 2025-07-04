@@ -71,6 +71,7 @@ class StreamService {
       title: 'Live DJ Set',
       description: 'Join the party with Streamer One spinning live!',
       streamer: _users[0],
+      // streamUrl: 'https://video-previews.elements.envatousercontent.com/2d5ccd85-b4f2-4349-8a2f-aba2913b94f4/watermarked_preview/watermarked_preview.mp4', // working mp4
       streamUrl: 'https://video-previews.elements.envatousercontent.com/2d5ccd85-b4f2-4349-8a2f-aba2913b94f4/watermarked_preview/watermarked_preview.mp4', // working mp4
       thumbnailUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80',
       viewerCount: 1200,
@@ -102,6 +103,21 @@ class StreamService {
       description: 'Replay of a live math class for high school students.',
       streamer: _users[0],
       streamUrl: 'https://www.w3schools.com/html/movie.mp4', // working mp4
+      thumbnailUrl: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80',
+      viewerCount: 150,
+      isLive: false,
+      startedAt: DateTime.now().subtract(Duration(days: 1, hours: 2)),
+      categories: [_categories[2]],
+      tags: ['#education', '#math'],
+      language: 'en',
+      location: 'London, UK',
+    ),
+    LiveStream(
+      id: 'rec2',
+      title: 'What it is Replay',
+      description: 'How are we to do this for you guys.',
+      streamer: _users[1],
+      streamUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4', // working mp4
       thumbnailUrl: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80',
       viewerCount: 150,
       isLive: false,

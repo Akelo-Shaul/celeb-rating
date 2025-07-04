@@ -2,7 +2,7 @@ import 'package:celebrating/widgets/profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:celebrating/models/live_stream.dart';
-import '../services/live_stream_video_manager.dart';
+import '../utils/live_stream_video_manager.dart';
 
 import '../utils/constants.dart';
 
