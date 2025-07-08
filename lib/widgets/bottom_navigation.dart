@@ -59,7 +59,7 @@ class BottomNavigation extends StatelessWidget {
           NavigationDestination(
             icon: Icon(Icons.add_box_outlined, color: unselectedIconColor),
             selectedIcon: Icon(Icons.add_box, color: selectedIconColor),
-            label: 'Post',
+            label: 'Celebrate',
           ),
           NavigationDestination(
             icon: Icon(Icons.movie_outlined, color: unselectedIconColor),

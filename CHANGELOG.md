@@ -12,6 +12,13 @@
 - Refactored `LiveStreamCard` to use the video manager, autoplay only when visible, and wrap the video in a `Hero` for smooth transition.
 - Added `LiveStreamDetailPage` that receives the same video controller and animates the video to fullscreen, unmuting and continuing playback seamlessly.
 - Tapping a live stream card now triggers a smooth Hero transition to the detail page, with uninterrupted video playback and unmuting.
+- Onboarding flow: Created and styled onboarding screens (welcome, OTP, account type, country/state/city selection), with adaptive colors and navigation logic using _currentIndex.
+- Authentication: Implemented login/register forms with robust validation, profile image selection, and error handling. Improved UI for profile photo selection.
+- Verification: Built a verification screen with live camera preview, front/back ID photo capture, retake logic, and enforced both images before submission. Moved ID photo previews below the retake button and improved UI logic.
+- Celebrity profile creation: Built a multi-tab flow (celebrate you, add family, add wealth, add education) with navigation and a Lottie animation background for the first tab. Added a timeout to auto-advance from the first to the second tab.
+- Progress indicator: Updated to show four dots for four onboarding/profile creation steps.
+- All navigation and validation logic is performed after form state is saved, preventing false negatives on required fields.
+- Added search bar to "Add Family" tab in celebrity profile creation, displaying accounts from dummy data in feed_service.dart. If no user is found, an invite button is shown.
 
 ### Changed
 - Enhanced `_buildWaveformProgress` in `AudioCard` to overlay a moving orange indicator that follows audio playback progress.
@@ -54,9 +61,40 @@
 - `UserService.fetchUser` now returns a dummy user for demonstration purposes instead of making a real API call.
 - Fix: Modal now reliably closes when the blurred area/background is tapped (outside the modal content), using a full-screen GestureDetector with HitTestBehavior.opaque in showSlideUpDialog.
 - Ensured the waveform progress bar and indicator update smoothly as audio plays, with no overflow or layout issues.
+- Fixed onboarding and registration validation to only trigger after form state is saved.
+- Fixed ID verification UI to move previews below retake button and enforce both images before submission.
+- Fixed search in "Add Family" tab to update results live and show invite option if user not found.
 
 ## [June 28, 2025]
 - Initial changelog creation.
+
+## [July 4, 2025]
+### Changed
+- Implemented `FlickControllerManager` to ensure only one video controller is active at a time in the flicks screen, preventing memory leaks and controller overlap.
+- Updated `FlickScreen` to use `PageView.builder(keepPage: false)` so only the current page is kept alive, reducing memory usage and ensuring TikTok-like behavior.
+- Refactored `_FlickPlayer` to always reset the progress bar to 0 while loading a new video, and only update it when the controller is initialized, ensuring no progress bar carry-over between videos.
+- Improved user experience: each video always starts from the beginning, and the progress bar reflects the new video's state immediately, just like TikTok.
+
+## [July 8, 2025]
+### Added
+- Onboarding flow: Created and styled onboarding screens (welcome, OTP, account type, country/state/city selection), with adaptive colors and navigation logic using _currentIndex.
+- Authentication: Implemented login/register forms with robust validation, profile image selection, and error handling. Improved UI for profile photo selection.
+- Verification: Built a verification screen with live camera preview, front/back ID photo capture, retake logic, and enforced both images before submission. Moved ID photo previews below the retake button and improved UI logic.
+- Celebrity profile creation: Built a multi-tab flow (celebrate you, add family, add wealth, add education) with navigation and a Lottie animation background for the first tab. Added a timeout to auto-advance from the first to the second tab.
+- Progress indicator: Updated to show four dots for four onboarding/profile creation steps.
+- All navigation and validation logic is performed after form state is saved, preventing false negatives on required fields.
+- Added search bar to "Add Family" tab in celebrity profile creation, displaying accounts from dummy data in feed_service.dart. If no user is found, an invite button is shown.
+
+### Changed
+- Improved UI for onboarding, authentication, and verification flows to match app requirements for both light/dark mode and user/celebrity flows.
+- Enhanced error handling and field validation throughout onboarding and authentication.
+- Improved navigation logic and user experience in all onboarding/profile creation steps.
+- Updated profile image and ID photo handling for better UX and error prevention.
+
+### Fixed
+- Fixed onboarding and registration validation to only trigger after form state is saved.
+- Fixed ID verification UI to move previews below retake button and enforce both images before submission.
+- Fixed search in "Add Family" tab to update results live and show invite option if user not found.
 
 ---
 All future changes and fixes will be documented here with clear explanations and dates.

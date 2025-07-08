@@ -7,7 +7,8 @@ class User {
   final String email;
   final String role;
   final String fullName;
-  final String? profileImageUrl;
+  final String? profileImageUrl; // remote URL
+  final String? profileImage; // local file path for registration
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final DateTime? lastLogin;
@@ -17,6 +18,7 @@ class User {
   User({
     this.id,
     this.profileImageUrl,
+    this.profileImage,
     required this.username,
     required this.password,
     required this.email,
@@ -41,6 +43,7 @@ class User {
         lastLogin: json['lastLogin'] != null ? DateTime.parse(json['lastLogin']) : null,
         isActive: json['isActive'],
         profileImageUrl: json['profileImageUrl'] as String?,
+        profileImage: json['profileImage'] as String?,
         postsList: json['postsList'] != null ? (json['postsList'] as List).map((e) => Post.fromJson(e)).toList() : null,
       );
 
@@ -50,6 +53,7 @@ class User {
         'email': email,
         'role': role,
         'fullName': fullName,
+        if (profileImage != null) 'profileImage': profileImage,
         // Do NOT send id, createdAt, updatedAt, lastLogin, isActive to server
       };
 }

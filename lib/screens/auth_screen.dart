@@ -31,60 +31,15 @@ class _AuthScreenState extends State<AuthScreen> {
   String _loginPassword = '';
   String? _registerFirstName;
   String? _registerLastName;
-  String? _registerSex;
-  String? _registerDay;
-  String? _registerMonth;
-  String? _registerYear;
-  String? _registerPhoneNumber;
   String? _registerEmail;
   String? _registerUsername;
   String? _registerPassword;
   String? _registerConfirmPassword;
   String? _registerRole;
-  String? _registerFullName;
-  bool _isCelebrity = false;
-
-  bool _agreeToNewsletter = false;
-  bool _agreeToTerms = false;
-
-
   XFile? _selectedImage;
-
-  String? errorMessage; // For general/backend errors
+  String? errorMessage;
   bool isSubmitting = false;
-
   final PageController _pageController = PageController();
-
-  // --- Dropdown Data (Placeholder) ---
-  final List<String> _sexOptions = ['Male', 'Female', 'Other'];
-  final List<String> _months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
-  final List<String> _days = List.generate(31, (index) => (index + 1).toString());
-  final List<String> _years = List.generate(100, (index) => (DateTime.now().year - index).toString());
-
-  final List<String> _countries = ['USA', 'Canada', 'UK', 'Kenya', 'Germany'];
-  final Map<String, List<String>> _states = {
-    'USA': ['California', 'Texas', 'New York'],
-    'Kenya': ['Nairobi', 'Mombasa', 'Kisumu'],
-    'UK': ['England', 'Scotland', 'Wales'],
-    'Canada': ['Ontario', 'Quebec'],
-    'Germany': ['Bavaria', 'Berlin'],
-  };
-  final Map<String, List<String>> _cities = {
-    'California': ['Los Angeles', 'San Francisco', 'San Diego'],
-    'Nairobi': ['Nairobi CBD', 'Westlands', 'Karen'],
-    'Texas': ['Houston', 'Dallas', 'Austin'],
-    'New York': ['New York City', 'Buffalo'],
-    'Mombasa': ['Mombasa Island', 'Diani'],
-    'Kisumu': ['Kisumu CBD'],
-    'England': ['London', 'Manchester', 'Birmingham'],
-    'Ontario': ['Toronto', 'Ottawa'],
-    'Bavaria': ['Munich', 'Nuremberg'],
-    'Berlin': ['Berlin City'],
-  };
-
 
   void _navigateToPage(int index) {
     _pageController.animateToPage(
@@ -94,6 +49,7 @@ class _AuthScreenState extends State<AuthScreen> {
     );
     setState(() {
       errorMessage = null;
+      isSubmitting = false;
     });
   }
 
@@ -113,9 +69,6 @@ class _AuthScreenState extends State<AuthScreen> {
     });
     try {
       final token = await UserService.login(_loginUsername, _loginPassword);
-      // Save token for future API calls (e.g., using Provider or SharedPreferences)
-      // Navigate to the next screen or show success
-      // Navigator.pushReplacementNamed(context, '/feed');
       setState(() {
         isSubmitting = false;
         errorMessage = null;
@@ -124,6 +77,13 @@ class _AuthScreenState extends State<AuthScreen> {
       setState(() {
         isSubmitting = false;
         errorMessage = e.toString().replaceFirst('Exception: ', '');
+      });
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) {
+          setState(() {
+            errorMessage = null;
+          });
+        }
       });
     }
   }
@@ -133,13 +93,56 @@ class _AuthScreenState extends State<AuthScreen> {
       errorMessage = null;
       isSubmitting = false;
     });
+    if (_selectedImage == null) {
+      setState(() {
+        errorMessage = 'Please select or take a profile photo.';
+      });
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) {
+          setState(() {
+            errorMessage = null;
+          });
+        }
+      });
+      return;
+    }
     if (!_formKeyRegister.currentState!.validate()) {
+      setState(() {
+        isSubmitting = false;
+        errorMessage = null;
+      });
       return;
     }
     _formKeyRegister.currentState!.save();
+    // Check all required fields AFTER saving form
+    if (_registerFirstName == null || _registerFirstName!.isEmpty ||
+        _registerLastName == null || _registerLastName!.isEmpty ||
+        _registerEmail == null || _registerEmail!.isEmpty ||
+        _registerUsername == null || _registerUsername!.isEmpty ||
+        _registerPassword == null || _registerPassword!.isEmpty ||
+        _registerConfirmPassword == null || _registerConfirmPassword!.isEmpty) {
+      setState(() {
+        errorMessage = 'Please fill in all required fields.';
+      });
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) {
+          setState(() {
+            errorMessage = null;
+          });
+        }
+      });
+      return;
+    }
     if (_registerPassword != _registerConfirmPassword) {
       setState(() {
         errorMessage = 'Passwords do not match';
+      });
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) {
+          setState(() {
+            errorMessage = null;
+          });
+        }
       });
       return;
     }
@@ -147,17 +150,21 @@ class _AuthScreenState extends State<AuthScreen> {
       isSubmitting = true;
     });
     try {
+
+      print("#########################%%%%%%%%%%%%%%%*************%%%%%%#####");
+      print('username: [33m$_registerUsername[0m, password: [33m$_registerPassword[0m, email: [33m$_registerEmail[0m, role: [33m$_registerRole[0m, fullName: [33m${_registerFirstName ?? ''} ${_registerLastName ?? ''}[0m, profileImage: [33m${_selectedImage?.path}[0m');
       final user = await UserService.register(
         User(
-          username: _registerUsername!,
-          password: _registerPassword!,
-          email: _registerEmail!,
-          role: _registerRole!,
-          fullName: _registerFullName!,
+          username: _registerUsername ?? '',
+          password: _registerPassword ?? '',
+          email: _registerEmail ?? '',
+          role: _registerRole ?? 'user',
+          fullName: '${_registerFirstName ?? ''} ${_registerLastName ?? ''}',
+          profileImage: _selectedImage?.path,
         ),
       );
-      // Registration successful, navigate to login or show success
-      // _navigateToPage(0);
+      print("#########################%%%%%%%%%%%%%%%*************%%%%%%#####");
+      print(user);
       setState(() {
         isSubmitting = false;
         errorMessage = null;
@@ -167,47 +174,23 @@ class _AuthScreenState extends State<AuthScreen> {
         isSubmitting = false;
         errorMessage = e.toString().replaceFirst('Exception: ', '');
       });
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) {
+          setState(() {
+            errorMessage = null;
+          });
+        }
+      });
     }
   }
 
   Future<void> _openCamera() async {
     final result = await Navigator.pushNamed(context, cameraScreen);
     if (result is XFile) {
-      print('Image Result: ${result.path}');
-
       setState(() {
         _selectedImage = result;
-        print('Selected Image Path: ${_selectedImage!.path}');
       });
-    } else {
-      print('No image captured');
     }
-  }
-
-  // Helper to show error at the top of the screen (like a banner)
-  Widget _buildTopErrorBanner() {
-    if (errorMessage == null) return const SizedBox.shrink();
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFF5C7C),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.error_outline, color: Colors.white),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              errorMessage!,
-              style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildLoginForm() {
@@ -218,9 +201,6 @@ class _AuthScreenState extends State<AuthScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildTopErrorBanner(),
-            if (errorMessage != null)
-              ErrorMessageBox(message: errorMessage!),
             AppTextFormField(
               labelText: 'Email or Username',
               icon: Icons.person_outline,
@@ -239,14 +219,11 @@ class _AuthScreenState extends State<AuthScreen> {
             AppButton(
               text: 'Sign In',
               isLoading: isSubmitting,
-              // If isLoading is true, AppButton's internal onPressed will be null.
-              // Otherwise, it uses _submitLogin. This line is fine as is.
               onPressed: _submitLogin,
             ),
             const SizedBox(height: 20),
             AppButton(
               text: 'Register',
-              // This button is always active, allowing navigation to register.
               onPressed: () => _navigateToPage(1),
             ),
           ],
@@ -263,9 +240,6 @@ class _AuthScreenState extends State<AuthScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _buildTopErrorBanner(),
-            if (errorMessage != null)
-              ErrorMessageBox(message: errorMessage!),
             GestureDetector(
               onTap: _openCamera,
               child: Stack(
@@ -277,36 +251,42 @@ class _AuthScreenState extends State<AuthScreen> {
                         SizedBox(
                           height: 130,
                           width: 130,
-                          child: Image.file(File(_selectedImage!.path), fit: BoxFit.cover), // Use fit to avoid overflow
+                          child: Image.file(File(_selectedImage!.path), fit: BoxFit.cover),
                         ) :
-                        Image.asset(
-                          'assets/images/profile_placeholder.jpg',
-                          height: 130,
-                          width: 130,
+                        const Center(
+                          child: Icon(Icons.camera_alt, size: 48, color: Colors.grey),
                         ),
                       ),
                     ),
-                    Positioned(
-                      right: 0,
-                      bottom: 0,
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.edit_square,
-                          color: const Color(0xFFD6AF0C),
-                          size: 40,
+                    if (_selectedImage != null)
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.edit_square,
+                            color: const Color(0xFFD6AF0C),
+                            size: 40,
+                          ),
+                          onPressed: _openCamera,
                         ),
-                        onPressed: _openCamera, // Remove image action
                       ),
-                    ),
                   ]
               ),
             ),
             const SizedBox(height: 16),
             AppTextFormField(
-              labelText: 'Full Name',
+              labelText: 'First Name',
               icon: Icons.person_outline,
-              onSaved: (v) => _registerFullName = v,
-              validator: (v) => v == null || v.isEmpty ? 'Full name required' : null,
+              onSaved: (v) => _registerFirstName = v,
+              validator: (v) => v == null || v.isEmpty ? 'First name required' : null,
+            ),
+            const SizedBox(height: 16),
+            AppTextFormField(
+              labelText: 'Surname',
+              icon: Icons.person_outline,
+              onSaved: (v) => _registerLastName = v,
+              validator: (v) => v == null || v.isEmpty ? 'Surname required' : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
@@ -314,7 +294,10 @@ class _AuthScreenState extends State<AuthScreen> {
               icon: Icons.email_outlined,
               keyboardType: TextInputType.emailAddress,
               onSaved: (v) => _registerEmail = v,
-              validator: (v) => v == null || !v.contains('@') ? 'Enter a valid email' : null,
+              validator: (v) {
+                if (v == null || v.isEmpty) return 'Enter a valid email';
+                return null;
+              },
             ),
             const SizedBox(height: 16),
             AppTextFormField(
@@ -338,24 +321,6 @@ class _AuthScreenState extends State<AuthScreen> {
               isPassword: true,
               onSaved: (v) => _registerConfirmPassword = v,
               validator: (v) => v == null || v.isEmpty ? 'Confirm password' : null,
-            ),
-            const SizedBox(height: 16),
-            AppTextFormField(
-              labelText: 'Role',
-              icon: Icons.badge_outlined,
-              onSaved: (v) => _registerRole = v,
-              validator: (v) => v == null || v.isEmpty ? 'Role required' : null,
-            ),
-            const SizedBox(height: 16),
-            AppToggleButton(
-              isToggled: _isCelebrity,
-              onToggle: (newValue) {
-                setState(() {
-                  _isCelebrity = newValue;
-                });
-              },
-              untoggledText: 'User',
-              toggledText: 'Celebrity',
             ),
             const SizedBox(height: 24),
             AppButton(
@@ -419,6 +384,8 @@ class _AuthScreenState extends State<AuthScreen> {
         child: Column(
           children: [
             const SizedBox(height: 32),
+            if (errorMessage != null)
+              ErrorMessageBox(message: errorMessage!),
             Center(
               child: Text(
                 'Sign Up for an Account',

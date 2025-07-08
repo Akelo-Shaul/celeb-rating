@@ -5,6 +5,28 @@ import 'package:video_player/video_player.dart';
 import '../models/comment.dart';
 import 'comments_modal.dart';
 
+// --- FlickControllerManager: Only one controller active at a time ---
+class FlickControllerManager {
+  static VideoPlayerController? _activeController;
+
+  static Future<VideoPlayerController> setActive(String url, {bool muted = true}) async {
+    await _activeController?.pause();
+    await _activeController?.dispose();
+    final controller = VideoPlayerController.networkUrl(Uri.parse(url));
+    await controller.initialize();
+    controller.setLooping(true);
+    controller.setVolume(muted ? 0.0 : 1.0);
+    controller.play();
+    _activeController = controller;
+    return controller;
+  }
+
+  static void disposeActive() {
+    _activeController?.dispose();
+    _activeController = null;
+  }
+}
+
 class FlickScreen extends StatefulWidget {
   final List<Flick> flicks;
   final int initialIndex;
@@ -26,6 +48,7 @@ class _FlickScreenState extends State<FlickScreen> {
   @override
   void dispose() {
     _pageController.dispose();
+    FlickControllerManager.disposeActive();
     super.dispose();
   }
 
@@ -39,22 +62,22 @@ class _FlickScreenState extends State<FlickScreen> {
         itemCount: widget.flicks.length,
         itemBuilder: (context, index) {
           final flick = widget.flicks[index];
-          return _FlickReelPlayer(flick: flick);
+          return _FlickPlayer(flick: flick);
         },
       ),
     );
   }
 }
 
-class _FlickReelPlayer extends StatefulWidget {
+class _FlickPlayer extends StatefulWidget {
   final Flick flick;
-  const _FlickReelPlayer({required this.flick});
+  const _FlickPlayer({required this.flick});
   @override
-  State<_FlickReelPlayer> createState() => _FlickReelPlayerState();
+  State<_FlickPlayer> createState() => _FlickPlayerState();
 }
 
-class _FlickReelPlayerState extends State<_FlickReelPlayer> {
-  late VideoPlayerController _controller;
+class _FlickPlayerState extends State<_FlickPlayer> {
+  VideoPlayerController? _controller;
   late Future<void> _initFuture;
   bool _muted = true;
   bool _showRatingSection = false;
@@ -66,20 +89,19 @@ class _FlickReelPlayerState extends State<_FlickReelPlayer> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.flick.flickUrl));
-    _initFuture = _controller.initialize().then((_) {
-      _controller.setLooping(true);
-      _controller.setVolume(_muted ? 0.0 : 1.0);
-      _controller.play();
-      setState(() {});
-    });
+    _initFuture = _initController();
     _currentRating = 0;
+  }
+
+  Future<void> _initController() async {
+    _controller = await FlickControllerManager.setActive(widget.flick.flickUrl, muted: _muted);
+    if (mounted) setState(() {});
   }
 
   void _toggleMute() {
     setState(() {
       _muted = !_muted;
-      _controller.setVolume(_muted ? 0.0 : 1.0);
+      _controller?.setVolume(_muted ? 0.0 : 1.0);
     });
   }
 
@@ -168,7 +190,7 @@ class _FlickReelPlayerState extends State<_FlickReelPlayer> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -180,8 +202,8 @@ class _FlickReelPlayerState extends State<_FlickReelPlayer> {
         FutureBuilder(
           future: _initFuture,
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              return VideoPlayer(_controller);
+            if (snapshot.connectionState == ConnectionState.done && _controller != null) {
+              return VideoPlayer(_controller!);
             } else {
               return const Center(child: CircularProgressIndicator());
             }
@@ -258,17 +280,32 @@ class _FlickReelPlayerState extends State<_FlickReelPlayer> {
           left: 0,
           right: 0,
           bottom: 15,
-          child: ValueListenableBuilder<VideoPlayerValue>(
-            valueListenable: _controller,
-            builder: (context, value, child) {
-              final progress = value.duration.inMilliseconds > 0
-                  ? value.position.inMilliseconds / value.duration.inMilliseconds
-                  : 0.0;
-              return LinearProgressIndicator(
-                value: progress.clamp(0.0, 1.0),
-                backgroundColor: Colors.white24,
-                valueColor: const AlwaysStoppedAnimation<Color>(Colors.orangeAccent),
-                minHeight: 4,
+          child: FutureBuilder(
+            future: _initFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                // While loading, show progress bar at 0
+                return LinearProgressIndicator(
+                  value: 0.0,
+                  backgroundColor: Colors.white24,
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.orangeAccent),
+                  minHeight: 4,
+                );
+              }
+              // Only show progress bar when controller is ready
+              return ValueListenableBuilder<VideoPlayerValue>(
+                valueListenable: _controller!,
+                builder: (context, value, child) {
+                  final progress = value.duration.inMilliseconds > 0
+                      ? value.position.inMilliseconds / value.duration.inMilliseconds
+                      : 0.0;
+                  return LinearProgressIndicator(
+                    value: progress.clamp(0.0, 1.0),
+                    backgroundColor: Colors.white24,
+                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.orangeAccent),
+                    minHeight: 4,
+                  );
+                },
               );
             },
           ),

@@ -3,7 +3,7 @@ import '../widgets/bottom_navigation.dart';
 import '../widgets/video_player_widget.dart';
 import 'feed_screen.dart';
 import 'search_page.dart';
-import 'post_page.dart';
+import 'celebrate_page.dart';
 import 'flicks_page.dart';
 import 'stream_page.dart';
 import 'profile_page.dart';
@@ -22,7 +22,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
   final List<Widget> _pages = const [
     FeedScreen(),
     SearchPage(),
-    PostPage(),
+    CelebratePage(),
     FlicksPage(),
     StreamPage(),
     ProfilePage(),

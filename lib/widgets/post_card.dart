@@ -117,7 +117,7 @@ class _PostCardState extends State<PostCard> {
                       fontWeight: FontWeight.bold,
                       fontSize: 16),),
                   const SizedBox(width: 4,),
-                  const Icon(Icons.verified, color: Colors.orange, size: 16,)
+                  const Icon(Icons.verified, color: Color(0xFFD6AF0C), size: 16,)
                 ],
               ),
               Text(
@@ -341,7 +341,7 @@ class _PostCardState extends State<PostCard> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(5, (index) {
               final isRated = rating >= (index + 1);
-              final starColor = isRated ? Colors.orange : Colors.grey[400];
+              final starColor = isRated ? Color(0xFFD6AF0C) : Colors.grey[400];
               if (hasRated) {
                 // Show static stars if already rated
                 return Icon(

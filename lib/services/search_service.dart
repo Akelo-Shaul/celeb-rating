@@ -148,7 +148,7 @@ class SearchService {
       Flick(
         id: '1',
         thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
-        flickUrl: 'https://videos.pexels.com/video-files/9788791/9788791-uhd_1440_2732_25fps.mp4',
+        flickUrl: 'https://videos.pexels.com/video-files/32138874/13702933_1440_2534_26fps.mp4',
         title: 'Big Buck Bunny',
         creator: dummyUsers[0],
         views: 1234,

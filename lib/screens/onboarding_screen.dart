@@ -1,5 +1,6 @@
 // onboarding_screen.dart
 
+import 'package:celebrating/utils/route.dart';
 import 'package:flutter/material.dart';
 // Assuming you have these custom widgets in your project
 import '../widgets/app_buttons.dart';
@@ -8,6 +9,7 @@ import '../widgets/app_text_fields.dart';
 import '../widgets/error_message.dart';
 import '../services/onboarding_service.dart';
 import '../models/onboarding_data.dart';
+import '../widgets/parted_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -17,6 +19,7 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  int _currentIndex = 0;
 
   final _formKeyOnboarding = GlobalKey<FormState>();
 
@@ -385,12 +388,430 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (_currentIndex == 0) {
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted && _currentIndex == 0) {
+          setState(() {
+            _currentIndex = 1;
+          });
+        }
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = const Color(0xFFD6AF0C);
+    final textColorLight = isDark ? Colors.grey[700]! : Colors.grey[300]!;
     return Scaffold(
       body: SafeArea(
-        // Directly use the _buildOnboardingFormContent as the child
-        child: _buildOnboardingFormContent(),
+        child: Stack(
+          children: [
+            // Show the correct tab based on _currentIndex
+            if (_currentIndex == 0)
+              _onboardingStart(),
+            if (_currentIndex == 1)
+              _verifyOTP(),
+            if (_currentIndex == 2)
+              _countrySelect(),
+            if (_currentIndex == 3)
+              _selectAccountType(),
+            PositionedDirectional(
+              bottom: 0,
+              start: 0,
+              end: 0,
+              child: Container(
+                padding: const EdgeInsetsDirectional.only(start: 30, end: 30, bottom: 30),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(4, (index) {
+                    return _currentIndex == index
+                        ? Container(
+                            margin: const EdgeInsetsDirectional.all(10),
+                            padding: const EdgeInsetsDirectional.all(10),
+                            height: 10,
+                            width: 30,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: primaryColor,
+                              border: Border.all(color: primaryColor),
+                            ),
+                          )
+                        : Container(
+                            margin: const EdgeInsetsDirectional.all(10),
+                            padding: const EdgeInsetsDirectional.all(10),
+                            height: 10,
+                            width: 20,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: textColorLight,
+                              border: Border.all(color: textColorLight),
+                            ),
+                          );
+                  }),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
+  Widget _onboardingStart() {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.all(24),
+        padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF7F7FA),
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Thank You For Signing Up With Celebrating!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFFD6AF0C),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              'Thank you for registering, a verification email has been sent to your email. Please verify your email to continue setting up your account.\n\n'
+                  'We look forward to having you with us @ Celebrating\n\n',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                color: Color(0xFF222222),
+                fontWeight: FontWeight.w400,
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _verifyOTP() {
+    final theme = Theme.of(context);
+    final textColor = theme.colorScheme.onBackground;
+    final secondaryTextColor = theme.textTheme.bodyMedium?.color ?? textColor;
+    final accentColor = theme.colorScheme.primary;
+    final List<FocusNode> _focusNodes = List.generate(4, (_) => FocusNode());
+    final List<TextEditingController> _controllers = List.generate(4, (_) => TextEditingController());
+
+    // Helper to move focus automatically
+    void _onChanged(String value, int index) {
+      if (value.length == 1 && index < 3) {
+        _focusNodes[index + 1].requestFocus();
+      }
+      if (value.isEmpty && index > 0) {
+        _focusNodes[index - 1].requestFocus();
+      }
+    }
+
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Enter verification code',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: textColor,
+              fontSize: 22,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'A 4-digit code was sent to  $_onboardingEmail',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: secondaryTextColor,
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          const SizedBox(height: 32),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(4, (index) {
+              return Container(
+                width: 56,
+                height: 56,
+                margin: EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: _focusNodes[index].hasFocus
+                        ? accentColor
+                        : theme.dividerColor,
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: TextField(
+                    controller: _controllers[index],
+                    focusNode: _focusNodes[index],
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    maxLength: 1,
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w500,
+                      color: textColor,
+                    ),
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      counterText: '',
+                    ),
+                    onChanged: (value) => _onChanged(value, index),
+                  ),
+                ),
+              );
+            }),
+          ),
+          const SizedBox(height: 20, ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: AppButton(text: 'Verify', onPressed: (){
+              // Navigate to next tab (account type selection)
+              setState(() {
+                _currentIndex = 2;
+              });
+            }),
+          ),
+          const SizedBox(height: 10, ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Did not receive email?', style: theme.textTheme.bodyMedium?.copyWith(color: secondaryTextColor)),
+              TextButton(
+                onPressed: () => {},
+                child: Text(
+                  'Resend OTP',
+                  style: theme.textTheme.bodyMedium?.copyWith(color: accentColor, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _selectAccountType() {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.all(24),
+        padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF7F7FA),
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Choose Your Account Type',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFFD6AF0C),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Color(0xFFD6AF0C), width: 1.2),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Member',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17,
+                      color: Color(0xFFD6AF0C),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'A member joins to interact with, follow and celebrate achievements of public figures in any field e.g. acting, sports, music, social media, business, academia or business.',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Color(0xFF222222),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Color(0xFFD6AF0C), width: 1.2),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Celebrity Status',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17,
+                      color: Color(0xFFD6AF0C),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Someone who has achieved a significant level of public recognition and attention, media presence, influence, fame beyond professional skills, public interest and sustained visibility, typically within a particular field such as entertainment, sports, politics, or business.\n\n'
+                        'This option will require a higher level of scrutiny and verification of facts before the account is activated.',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Color(0xFF222222),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 28),
+            AppOutlinedButton(
+              text: 'Continue as Member',
+              textColor: Color(0xFFD6AF0C),
+              onPressed: () {
+                //TODO: Navigate to profile
+                Navigator.pushReplacementNamed(context, feedScreen);
+                setState(() {
+                });
+              },
+            ),
+            const SizedBox(height: 14),
+            PartedButton(
+              onPressed: () {
+                // Switch to country/state selection tab
+                Navigator.pushReplacementNamed(context, verificationScreen);
+                setState(() {
+                });
+              },
+              leftText: 'CONTINUE AS',
+              rightText: 'CELEBRITY',
+              leftTextColor: Color(0xFFD6AF0C),
+              rightTextColor: Colors.white,
+              leftBackgroundColor: Colors.white,
+              rightBackgroundColor: Color(0xFFD6AF0C),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _countrySelect() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Image.asset(
+            'assets/images/celebratinglogo.png',
+            width: MediaQuery.of(context).size.width * 0.8
+        ),
+        AppDropdownFormField<String>(
+          labelText: 'Select Country',
+          icon: Icons.public_outlined,
+          value: _onboardingCountry,
+          items: _countries.map((String country) {
+            return DropdownMenuItem<String>(
+              value: country,
+              child: Text(country, overflow: TextOverflow.ellipsis, softWrap: false),
+            );
+          }).toList(),
+          onChanged: (String? newValue) {
+            setState(() {
+              _onboardingCountry = newValue;
+              _onboardingState = null;
+            });
+          },
+          onSaved: (newValue) => _onboardingCountry = newValue,
+          validator: (value) => value == null ? 'Please select a country' : null,
+        ),
+        const SizedBox(height: 16),
+        AppDropdownFormField<String>(
+          labelText: 'Select State',
+          icon: Icons.location_on_outlined,
+          value: _onboardingState,
+          items: (_states[_onboardingCountry] ?? []).map((String state) {
+            return DropdownMenuItem<String>(
+              value: state,
+              child: Text(state, overflow: TextOverflow.ellipsis, softWrap: false),
+            );
+          }).toList(),
+          onChanged: (String? newValue) {
+            setState(() {
+              _onboardingState = newValue;
+            });
+          },
+          onSaved: (newValue) => _onboardingState = newValue,
+          validator: (value) => value == null ? 'Please select a state' : null,
+        ),
+        const SizedBox(height: 50,),
+        AppButton(text: 'Continue', onPressed: (){
+          setState(() {
+            _currentIndex = 3;
+          });
+        })
+      ],
+    );
+  }
+
+
+}
+
+class CelebrityLeftClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.moveTo(0, 0);
+    path.lineTo(size.width - 8, 0);
+    path.quadraticBezierTo(size.width, size.height / 2, size.width - 8, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
+class CelebrityCurvePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.red
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke;
+    final path = Path();
+    path.moveTo(8, 0);
+    path.quadraticBezierTo(size.width, size.height / 2, 8, size.height);
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

@@ -166,7 +166,8 @@ class _StreamPageState extends State<StreamPage> with SingleTickerProviderStateM
         controller: _tabController,
         children: [
           _buildCategoriesTab(),
-          _buildLiveStreamTab()
+          _buildLiveStreamTab(),
+          _buildRecordedTab()
         ],
       ),
     );
@@ -221,6 +222,12 @@ class _StreamPageState extends State<StreamPage> with SingleTickerProviderStateM
           // thumbnailUrl: stream.thumbnailUrl ?? stream.lastFrameUrl,
         );
       },
+    );
+  }
+
+  Widget _buildRecordedTab(){
+    return Center(
+      child: Text('Recorded Tab'),
     );
   }
 }

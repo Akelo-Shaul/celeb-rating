@@ -2,33 +2,35 @@ import 'package:flutter/material.dart';
 
 class AppButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool isLoading;
+  final bool isEnabled;
   final Color? backgroundColor;
   final Color? textColor;
+  final IconData? icon; // Optional icon before the text
 
   const AppButton({
     super.key,
     required this.text,
     required this.onPressed,
     this.isLoading = false,
+    this.isEnabled = true,
     this.backgroundColor,
     this.textColor,
+    this.icon, // Add icon to constructor
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool disabled = !isEnabled || isLoading;
     return SizedBox(
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
+        onPressed: disabled ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor ?? const Color(
-              0xFFD6AF0C),
-          // backgroundColor: backgroundColor ?? (isDark ? const Color(0xFF181A20) : const Color(
-          //     0xFF7B6509)),
+          backgroundColor: backgroundColor ?? const Color(0xFFD6AF0C),
           disabledBackgroundColor: (backgroundColor ?? (isDark ? const Color(0xFF181A20) : const Color(0xFFFCD535))).withOpacity(0.6),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -43,10 +45,73 @@ class AppButton extends StatelessWidget {
             strokeWidth: 2.5,
           ),
         )
+            : Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, color: textColor ?? (isDark ? Colors.white : Colors.black)),
+              const SizedBox(width: 10),
+            ],
+            Text(
+              text.toUpperCase(),
+              style: TextStyle(
+                color: textColor ?? (isDark ? Colors.white : Colors.black),
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AppOutlinedButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+  final bool isLoading;
+  final Color? textColor;
+
+  const AppOutlinedButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.isLoading = false,
+    this.textColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final outlineColor = const Color(0xFFD6AF0C);
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: OutlinedButton(
+        onPressed: isLoading ? null : onPressed,
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(color: outlineColor, width: 2),
+          backgroundColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        child: isLoading
+            ? const SizedBox(
+          height: 24,
+          width: 24,
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF181A20)),
+            strokeWidth: 2.5,
+          ),
+        )
             : Text(
           text.toUpperCase(),
           style: TextStyle(
-            color: textColor ?? (isDark ? Colors.white : Colors.black),
+            color: textColor ??
+                (isDark ? Colors.white : outlineColor),
             fontWeight: FontWeight.bold,
             letterSpacing: 1.2,
           ),
@@ -55,7 +120,6 @@ class AppButton extends StatelessWidget {
     );
   }
 }
-
 
 class AppTransparentButton extends StatelessWidget {
   final String text;
