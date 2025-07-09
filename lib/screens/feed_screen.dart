@@ -1,17 +1,10 @@
 import 'package:celebrating/widgets/shimmer_box.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Assuming you use provider for theme/localization
-import '../app_state.dart'; // Your app state for theme/locale
-import '../l10n/supported_languages.dart'; // Your supported languages definition
-import '../models/comment.dart';
-import '../models/like.dart';
 import '../models/post.dart';
-import '../models/user.dart';
 import '../services/feed_service.dart';
 import '../widgets/app_buttons.dart';
 import '../widgets/app_dropdown.dart';
-import '../widgets/post_card.dart'; // Your reusable AppDropdown widget
-import '../widgets/bottom_navigation.dart';
+import '../widgets/post_card.dart';
 import '../utils/route.dart';
 import '../widgets/video_player_widget.dart';
 

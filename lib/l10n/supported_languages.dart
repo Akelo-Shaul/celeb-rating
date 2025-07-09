@@ -10,10 +10,5 @@ class SupportedLanguage {
 
 final supportedLanguages = [
   SupportedLanguage('en', 'English', '🇬🇧'),
-  SupportedLanguage('es', 'Español', '🇪🇸'),
-  SupportedLanguage('fr', 'Français', '🇫🇷'),
-  SupportedLanguage('de', 'Deutsch', '🇩🇪'),
-  SupportedLanguage('it', 'Italiano', '🇮🇹'),
   SupportedLanguage('sw', 'Kiswahili', '🇰🇪'),
-  SupportedLanguage('ar', 'العربية', '🇸🇦'),
 ];
