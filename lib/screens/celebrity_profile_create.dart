@@ -194,7 +194,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
               ),
               onChanged: _onSearchChanged,
             ),
-            
+
             const SizedBox(height: 8),
             _isLoadingUsers
                 ? const Center(child: CircularProgressIndicator())
@@ -295,58 +295,60 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
   }
 
   Widget _addWealth() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 40),
-              const Text(
-                "Add Wealth",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 24),
-              const Text("Add your wealth information."),
-              const SizedBox(height: 40),
-              Expanded(child: SizedBox()),
-              AppButton(
-                text: 'Add Wealth Item',
-                icon: Icons.add_box,
-                onPressed: () async {
-                  final result = await showModalBottomSheet<Map<String, dynamic>>(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => AddWealthItemModal(
-                      onAdd: (item) {
-                        Navigator.of(context).pop(item);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Added wealth item: \\${item['name']}')),
-                        );
-                      },
-                    ),
-                  );
-                  if (result != null) {
-                    // Optionally update your state with the new wealth item
-                  }
-                },
-              ),
-              const SizedBox(height: 80), // Space for the button
-            ],
-          ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: AppTextButton(
-              text: 'Skip',
-              onPressed: () {
-                _goToNextTab();
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 40),
+            const Text(
+              "Add Wealth",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            const Text("Add your wealth information.", textAlign: TextAlign.center),
+
+            const SizedBox(height: 8),
+            const Spacer(),
+            const SizedBox(height: 8),
+            AppButton(
+              text: 'Add Manually',
+              icon: Icons.group_add,
+              onPressed: () async {
+                final result = await showModalBottomSheet<Map<String, dynamic>>(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => AddWealthItemModal(
+                    onAdd: (item) {
+                      Navigator.of(context).pop(item);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Added wealth item: \\${item['name']}')),
+                      );
+                    },
+                  ),
+                );
+                if (result != null) {
+                  // Optionally update your state with the new wealth item
+                }
               },
             ),
-          ),
-        ],
+            const SizedBox(height: 50),
+
+            Align(
+              alignment: Alignment.bottomRight,
+              child: AppTextButton(
+                text: 'Skip',
+                onPressed: () {
+                  _goToNextTab();
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -355,120 +357,142 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
     final theme = Theme.of(context);
     final textColor = theme.colorScheme.onBackground;
     final secondaryTextColor = theme.textTheme.bodyMedium?.color ?? textColor;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 40),
-              Text(
-                "Add Education",
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                "Add your education details.",
-                style: theme.textTheme.bodyMedium?.copyWith(color: secondaryTextColor),
-              ),
-              const SizedBox(height: 24),
-              AppTextFormField(
-                controller: _degreeController,
-                labelText: 'Degree (e.g. BSc, MSc, PhD, Masters)',
-                icon: Icons.school,
-                validator: (v) => v == null || v.trim().isEmpty ? 'Enter degree' : null,
-              ),
-              const SizedBox(height: 14),
-              AppTextFormField(
-                controller: _universityController,
-                labelText: 'Certifying University',
-                icon: Icons.account_balance,
-                validator: (v) => v == null || v.trim().isEmpty ? 'Enter university' : null,
-              ),
-              const SizedBox(height: 14),
-              AppTextFormField(
-                controller: _yearController,
-                labelText: 'Year of Completion',
-                icon: Icons.calendar_today,
-                keyboardType: TextInputType.number,
-                validator: (v) => v == null || v.trim().isEmpty ? 'Enter year' : null,
-              ),
-              const SizedBox(height: 20),
-              AppButton(
-                text: 'Add Degree',
-                icon: Icons.add,
-                onPressed: () {
-                  final degree = _degreeController.text.trim();
-                  final university = _universityController.text.trim();
-                  final year = _yearController.text.trim();
-                  if (degree.isEmpty || university.isEmpty || year.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Please fill all fields to add a degree.')),
-                    );
-                    return;
-                  }
-                  setState(() {
-                    _degrees.add({
-                      'degree': degree,
-                      'university': university,
-                      'year': year,
-                    });
-                    _degreeController.clear();
-                    _universityController.clear();
-                    _yearController.clear();
-                  });
-                },
-              ),
-              const SizedBox(height: 24),
-              if (_degrees.isNotEmpty)
-                Expanded(
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: [
-                      Text(
-                        'Added Degrees:',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      ..._degrees.map((deg) => Card(
-                            margin: const EdgeInsets.symmetric(vertical: 4),
-                            child: ListTile(
-                              leading: const Icon(Icons.school),
-                              title: Text(
-                                deg['degree'] ?? '',
-                                style: theme.textTheme.bodyLarge?.copyWith(color: textColor),
-                              ),
-                              subtitle: Text(
-                                '${deg['university']} (${deg['year']})',
-                                style: theme.textTheme.bodyMedium?.copyWith(color: secondaryTextColor),
-                              ),
-                            ),
-                          )),
-                    ],
-                  ),
-                ),
-              const SizedBox(height: 80), // Space for the button
-            ],
-          ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: AppTextButton(
-              text: 'Finish',
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 40),
+            const Text(
+              "Add Wealth",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            const Text("Add your wealth information.", textAlign: TextAlign.center),
+
+            const SizedBox(height: 8),
+            const SizedBox(height: 24),
+            AppTextFormField(
+              controller: _degreeController,
+              labelText: 'Degree (e.g. BSc, MSc, PhD, Masters)',
+              icon: Icons.school,
+              validator: (v) => v == null || v.trim().isEmpty ? 'Enter degree' : null,
+            ),
+            const SizedBox(height: 14),
+            AppTextFormField(
+              controller: _universityController,
+              labelText: 'Certifying University',
+              icon: Icons.account_balance,
+              validator: (v) => v == null || v.trim().isEmpty ? 'Enter university' : null,
+            ),
+            const SizedBox(height: 14),
+            AppTextFormField(
+              controller: _yearController,
+              labelText: 'Year of Completion',
+              icon: Icons.calendar_today,
+              keyboardType: TextInputType.number,
+              validator: (v) => v == null || v.trim().isEmpty ? 'Enter year' : null,
+            ),
+            const SizedBox(height: 20),
+            AppButton(
+              text: 'Add Degree',
+              icon: Icons.add,
               onPressed: () {
-                Navigator.pushReplacementNamed(context, feedScreen);
+                final degree = _degreeController.text.trim();
+                final university = _universityController.text.trim();
+                final year = _yearController.text.trim();
+                if (degree.isEmpty || university.isEmpty || year.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please fill all fields to add a degree.')),
+                  );
+                  return;
+                }
+                setState(() {
+                  _degrees.add({
+                    'degree': degree,
+                    'university': university,
+                    'year': year,
+                  });
+                  _degreeController.clear();
+                  _universityController.clear();
+                  _yearController.clear();
+                });
               },
             ),
-          ),
-        ],
+            const SizedBox(height: 24),
+            if (_degrees.isNotEmpty)
+              SizedBox(
+                height: 220, // Adjust height as needed
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    Text(
+                      'Added Degrees:',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ..._degrees.map((deg) => Card(
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      child: ListTile(
+                        leading: const Icon(Icons.school),
+                        title: Text(
+                          deg['degree'] ?? '',
+                          style: theme.textTheme.bodyLarge?.copyWith(color: textColor),
+                        ),
+                        subtitle: Text(
+                          '${deg['university']} (${deg['year']})',
+                          style: theme.textTheme.bodyMedium?.copyWith(color: secondaryTextColor),
+                        ),
+                      ),
+                    )),
+                  ],
+                ),
+              ),
+            const Spacer(),
+            const SizedBox(height: 8),
+            AppButton(
+              text: 'Add Manually',
+              icon: Icons.group_add,
+              onPressed: () async {
+                final result = await showModalBottomSheet<Map<String, dynamic>>(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => AddWealthItemModal(
+                    onAdd: (item) {
+                      Navigator.of(context).pop(item);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Added wealth item: \\${item['name']}')),
+                      );
+                    },
+                  ),
+                );
+                if (result != null) {
+                  // Optionally update your state with the new wealth item
+                }
+              },
+            ),
+            const SizedBox(height: 50),
+
+            Align(
+              alignment: Alignment.bottomRight,
+              child: AppTextButton(
+                text: 'Finish',
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, feedScreen);
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
 }

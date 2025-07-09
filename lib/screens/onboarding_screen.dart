@@ -618,106 +618,108 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           color: const Color(0xFFF7F7FA),
           borderRadius: BorderRadius.circular(18),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Choose Your Account Type',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFFD6AF0C),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Choose Your Account Type',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFFD6AF0C),
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Color(0xFFD6AF0C), width: 1.2),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Member',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17,
-                      color: Color(0xFFD6AF0C),
+              const SizedBox(height: 24),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Color(0xFFD6AF0C), width: 1.2),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Member',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                        color: Color(0xFFD6AF0C),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'A member joins to interact with, follow and celebrate achievements of public figures in any field e.g. acting, sports, music, social media, business, academia or business.',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Color(0xFF222222),
+                    const SizedBox(height: 8),
+                    Text(
+                      'A member joins to interact with, follow and celebrate achievements of public figures in any field e.g. acting, sports, music, social media, business, academia or business.',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Color(0xFF222222),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 18),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Color(0xFFD6AF0C), width: 1.2),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Celebrity Status',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17,
-                      color: Color(0xFFD6AF0C),
+              const SizedBox(height: 18),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Color(0xFFD6AF0C), width: 1.2),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Celebrity Status',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                        color: Color(0xFFD6AF0C),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Someone who has achieved a significant level of public recognition and attention, media presence, influence, fame beyond professional skills, public interest and sustained visibility, typically within a particular field such as entertainment, sports, politics, or business.\n\n'
-                        'This option will require a higher level of scrutiny and verification of facts before the account is activated.',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Color(0xFF222222),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Someone who has achieved a significant level of public recognition and attention, media presence, influence, fame beyond professional skills, public interest and sustained visibility, typically within a particular field such as entertainment, sports, politics, or business.\n\n'
+                          'This option will require a higher level of scrutiny and verification of facts before the account is activated.',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Color(0xFF222222),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 28),
-            AppOutlinedButton(
-              text: 'Continue as Member',
-              textColor: Color(0xFFD6AF0C),
-              onPressed: () {
-                //TODO: Navigate to profile
-                Navigator.pushReplacementNamed(context, feedScreen);
-                setState(() {
-                });
-              },
-            ),
-            const SizedBox(height: 14),
-            PartedButton(
-              onPressed: () {
-                // Switch to country/state selection tab
-                Navigator.pushReplacementNamed(context, verificationScreen);
-                setState(() {
-                });
-              },
-              leftText: 'CONTINUE AS',
-              rightText: 'CELEBRITY',
-              leftTextColor: Color(0xFFD6AF0C),
-              rightTextColor: Colors.white,
-              leftBackgroundColor: Colors.white,
-              rightBackgroundColor: Color(0xFFD6AF0C),
-            ),
-          ],
+              const SizedBox(height: 28),
+              AppOutlinedButton(
+                text: 'Continue as Member',
+                textColor: Color(0xFFD6AF0C),
+                onPressed: () {
+                  //TODO: Navigate to profile
+                  Navigator.pushReplacementNamed(context, feedScreen);
+                  setState(() {
+                  });
+                },
+              ),
+              const SizedBox(height: 14),
+              PartedButton(
+                onPressed: () {
+                  // Switch to country/state selection tab
+                  Navigator.pushReplacementNamed(context, verificationScreen);
+                  setState(() {
+                  });
+                },
+                leftText: 'CONTINUE AS',
+                rightText: 'CELEBRITY',
+                leftTextColor: Color(0xFFD6AF0C),
+                rightTextColor: Colors.white,
+                leftBackgroundColor: Colors.white,
+                rightBackgroundColor: Color(0xFFD6AF0C),
+              ),
+            ],
+          ),
         ),
       ),
     );

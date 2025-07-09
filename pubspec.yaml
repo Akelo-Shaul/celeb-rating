@@ -45,6 +45,7 @@ dependencies:
   camera:
   image_picker:
   lottie:
+  video_thumbnail:
 #  carousel_slider:
 
 

@@ -82,9 +82,6 @@ class _FeedScreenState extends State<FeedScreen> {
           padding: EdgeInsets.zero,
           children: const <Widget>[
             DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
               child: Text('Drawer Header', style: TextStyle(color: Colors.white)),
             ),
             ListTile(
