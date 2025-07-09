@@ -1,3 +1,4 @@
+import 'package:celebrating/l10n/app_localizations.dart';
 import 'package:celebrating/widgets/shimmer_box.dart';
 import 'package:flutter/material.dart';
 import '../models/post.dart';
@@ -73,15 +74,15 @@ class _FeedScreenState extends State<FeedScreen> {
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
-          children: const <Widget>[
+          children: <Widget>[
             DrawerHeader(
-              child: Text('Drawer Header', style: TextStyle(color: Colors.white)),
+              child: Text(AppLocalizations.of(context)!.drawerHeader, style: const TextStyle(color: Colors.white)),
             ),
             ListTile(
-              title: Text('Item 1'),
+              title: Text(AppLocalizations.of(context)!.item1),
             ),
             ListTile(
-              title: Text('Item 2'),
+              title: Text(AppLocalizations.of(context)!.item2),
             ),
           ],
         ),
@@ -171,10 +172,10 @@ class _MyAppBarState extends State<MyAppBar> {
         child: AppDropdown<String>(
           labelText: _currentFeedType,
           value: _currentFeedType,
-          items: const [
-            DropdownMenuItem(value: 'FEED', child: Text('FEED')),
-            DropdownMenuItem(value: 'POPULAR', child: Text('POPULAR')),
-            DropdownMenuItem(value: 'TRENDING', child: Text('TRENDING')),
+          items: [
+            DropdownMenuItem(value: 'FEED', child: Text(AppLocalizations.of(context)!.feed)),
+            DropdownMenuItem(value: 'POPULAR', child: Text(AppLocalizations.of(context)!.popular)),
+            DropdownMenuItem(value: 'TRENDING', child: Text(AppLocalizations.of(context)!.trending)),
           ],
           onChanged: (String? newValue) {
             setState(() {

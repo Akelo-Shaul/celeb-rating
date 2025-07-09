@@ -2,6 +2,8 @@ import 'package:celebrating/models/flick.dart';
 import 'package:celebrating/screens/post_detail_screen.dart';
 import 'package:celebrating/utils/route.dart';
 import 'package:celebrating/widgets/stream_category_card.dart';
+
+import 'package:celebrating/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 import '../models/audio_post.dart';
@@ -189,13 +191,13 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
           children:[
             Column(
               children: [
-                const Text(
-                  "Search",
+                Text(
+                  AppLocalizations.of(context)!.search,
                 ),
                 const SizedBox(height: 5,),
                 AppSearchBar(
                   controller: _searchController,
-                  hintText: 'Search...',
+                  hintText: AppLocalizations.of(context)!.searchHint,
                   onChanged: (value) {
                     _performSearch(value);
                   },
@@ -262,15 +264,15 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
       ),
       indicatorSize: TabBarIndicatorSize.tab,
       dividerHeight: 0,
-      tabs: const [
-        Tab(text: 'People'),
-        Tab(text: 'Flicks'),
-        Tab(text: 'Places'),
-        Tab(text: 'Audio'),
-        Tab(text: 'Categories'),
-        Tab(text: 'Rooms'),
-        Tab(text: 'Stream'),
-        Tab(text: 'Uhondo'),
+      tabs: [
+        Tab(text: AppLocalizations.of(context)!.tabPeople),
+        Tab(text: AppLocalizations.of(context)!.tabFlicks),
+        Tab(text: AppLocalizations.of(context)!.tabPlaces),
+        Tab(text: AppLocalizations.of(context)!.tabAudio),
+        Tab(text: AppLocalizations.of(context)!.tabCategories),
+        Tab(text: AppLocalizations.of(context)!.tabRooms),
+        Tab(text: AppLocalizations.of(context)!.tabStream),
+        Tab(text: AppLocalizations.of(context)!.tabUhondo),
       ],
     );
   }
@@ -295,7 +297,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
 
   Widget _buildPeopleTab(){
     if(_searchUserResults.isEmpty){
-      return Center(child: Text("Nothing to display"),);
+      return Center(child: Text(AppLocalizations.of(context)!.nothingToDisplay),);
     }
     return ListView.builder(
       itemCount: _searchUserResults.length,
@@ -309,7 +311,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
       return const Center(child: CircularProgressIndicator());
     }
     if(_searchFlickResults.isEmpty){
-      return const Center(child: Text("Nothing to display"));
+      return Center(child: Text(AppLocalizations.of(context)!.nothingToDisplay));
     }
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
@@ -360,7 +362,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
       return const Center(child: CircularProgressIndicator());
     }
     if (_searchLocationResults.isEmpty) {
-      return const Center(child: Text("Nothing to display"));
+      return Center(child: Text(AppLocalizations.of(context)!.nothingToDisplay));
     }
     // 3-column grid logic
     final ScrollController _placeScrollController = ScrollController();
@@ -503,11 +505,11 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
   }
 
   Widget _buildCategoriesTab(){
-    return Center(child: Text('Categories Tab'),);
+    return Center(child: Text(AppLocalizations.of(context)!.categoriesTab),);
   }
 
   Widget _buildRoomTab(){
-    return Center(child: Text('Room Tab'),);
+    return Center(child: Text(AppLocalizations.of(context)!.roomTab),);
   }
 
   Widget _buildStreamTab() {
@@ -515,7 +517,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
       return const Center(child: CircularProgressIndicator());
     }
     if (_liveStreams.isEmpty) {
-      return const Center(child: Text('No live streams available'));
+      return Center(child: Text(AppLocalizations.of(context)!.noLiveStreams));
     }
     return ListView.builder(
       controller: _streamScrollController,
@@ -541,7 +543,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
   }
 
   Widget _buildUhondoTab(){
-    return Center(child: Text('Stream Tab'),);
+    return Center(child: Text(AppLocalizations.of(context)!.streamTab),);
   }
 }
 

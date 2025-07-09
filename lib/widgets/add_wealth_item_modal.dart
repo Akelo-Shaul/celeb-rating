@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../l10n/app_localizations.dart';
 import 'app_buttons.dart';
 import 'app_text_fields.dart';
 import 'app_dropdown.dart';
@@ -81,8 +82,8 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'Add Wealth Item',
+                Text(
+                  AppLocalizations.of(context)!.addWealthItem,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
@@ -124,7 +125,7 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
                     Flexible(
                       child: AppButton(
                         icon: Icons.photo_camera,
-                        text: 'Open Camera',
+                        text: AppLocalizations.of(context)!.openCamera,
                         onPressed: () => _pickImage(ImageSource.camera),
                       ),
                     ),
@@ -132,7 +133,7 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
                     Flexible(
                       child: AppButton(
                         icon: Icons.photo_library,
-                        text: 'Open Gallery',
+                        text: AppLocalizations.of(context)!.openGallery,
                         onPressed: () => _pickImage(ImageSource.gallery),
                       ),
                     ),
@@ -140,35 +141,35 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
                 ),
                 const SizedBox(height: 18),
                 AppDropdownFormField<String>(
-                  labelText: 'Category',
+                  labelText: AppLocalizations.of(context)!.category,
                   icon: Icons.category,
                   value: _selectedCategory,
                   items: _categories.map((cat) => DropdownMenuItem(
                     value: cat,
-                    child: Text(cat),
+                    child: Text(AppLocalizations.of(context)!.categoryValue(cat)),
                   )).toList(),
                   onChanged: (val) => setState(() => _selectedCategory = val),
-                  validator: (v) => v == null || v.isEmpty ? 'Select a category' : null,
+                  validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.selectCategory : null,
                 ),
                 const SizedBox(height: 14),
                 AppTextFormField(
                   controller: _nameController,
-                  labelText: 'Name',
+                  labelText: AppLocalizations.of(context)!.name,
                   icon: Icons.label,
-                  validator: (v) => v == null || v.trim().isEmpty ? 'Enter name' : null,
+                  validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterName : null,
                 ),
                 const SizedBox(height: 14),
                 AppTextFormField(
                   controller: _descController,
-                  labelText: 'Description',
+                  labelText: AppLocalizations.of(context)!.description,
                   icon: Icons.description,
                   // maxLines: 2,
-                  validator: (v) => v == null || v.trim().isEmpty ? 'Enter description' : null,
+                  validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterDescription : null,
                 ),
                 const SizedBox(height: 14),
                 AppTextFormField(
                   controller: _valueController,
-                  labelText: 'Estimated Value (optional)',
+                  labelText: AppLocalizations.of(context)!.estimatedValueOptional,
                   icon: Icons.attach_money,
                   keyboardType: TextInputType.number,
                 ),
@@ -177,7 +178,7 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.check),
-                    label: const Text('Add Wealth Item'),
+                    label: Text(AppLocalizations.of(context)!.add),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: appPrimaryColor,
                       foregroundColor: Colors.white,

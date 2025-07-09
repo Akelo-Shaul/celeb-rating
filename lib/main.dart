@@ -3,6 +3,7 @@ import 'package:celebrating/theme/app_theme.dart';
 import 'package:celebrating/utils/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:celebrating/l10n/app_localizations.dart';
 import 'package:celebrating/l10n/supported_languages.dart';
 import 'package:provider/provider.dart';
 import 'app_state.dart';
@@ -31,12 +32,8 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: appState.themeMode,
       locale: appState.locale,
-      supportedLocales: supportedLanguages.map((l) => Locale(l.code)).toList(),
-      localizationsDelegates: [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       home: const SplashScreen(),
     );
   }

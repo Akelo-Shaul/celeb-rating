@@ -38,31 +38,35 @@ class AppButton extends StatelessWidget {
         ),
         child: isLoading
             ? const SizedBox(
-          height: 24,
-          width: 24,
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            strokeWidth: 2.5,
-          ),
-        )
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  strokeWidth: 2.5,
+                ),
+              )
             : Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) ...[
-              Icon(icon, color: textColor ?? (isDark ? Colors.white : Colors.black)),
-              const SizedBox(width: 10),
-            ],
-            Text(
-              text.toUpperCase(),
-              style: TextStyle(
-                color: textColor ?? (isDark ? Colors.white : Colors.black),
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  if (icon != null) ...[
+                    Icon(icon, color: textColor ?? (isDark ? Colors.white : Colors.black)),
+                    const SizedBox(width: 10),
+                  ],
+                  Flexible(
+                    child: Text(
+                      text.toUpperCase(),
+                      style: TextStyle(
+                        color: textColor ?? (isDark ? Colors.white : Colors.black),
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }

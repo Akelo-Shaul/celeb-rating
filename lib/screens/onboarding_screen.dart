@@ -2,6 +2,7 @@
 
 import 'package:celebrating/utils/route.dart';
 import 'package:flutter/material.dart';
+import 'package:celebrating/l10n/app_localizations.dart';
 // Assuming you have these custom widgets in your project
 import '../widgets/app_buttons.dart';
 import '../widgets/app_dropdown.dart';
@@ -165,7 +166,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             _buildTopErrorBanner(),
             Center(
               child: Text(
-                'Complete Your Profile',
+                AppLocalizations.of(context)!.completeYourProfile,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
@@ -174,21 +175,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             if (errorMessage != null)
               ErrorMessageBox(message: errorMessage!),
             AppTextFormField(
-              labelText: 'First Name',
+              labelText: AppLocalizations.of(context)!.firstName,
               icon: Icons.person_outline,
               onSaved: (v) => _onboardingFirstName = v,
-              validator: (v) => v == null || v.isEmpty ? 'First name is required' : null,
+              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.firstNameRequired : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
-              labelText: 'Last Name',
+              labelText: AppLocalizations.of(context)!.lastName,
               icon: Icons.person_outline,
               onSaved: (v) => _onboardingLastName = v,
-              validator: (v) => v == null || v.isEmpty ? 'Last name is required' : null,
+              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.lastNameRequired : null,
             ),
             const SizedBox(height: 16),
             AppDropdownFormField<String>(
-              labelText: 'Select Sex',
+              labelText: AppLocalizations.of(context)!.selectSex,
               icon: Icons.transgender,
               value: _onboardingSex,
               items: _sexOptions.map((String sex) {
@@ -203,18 +204,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 });
               },
               onSaved: (newValue) => _onboardingSex = newValue,
-              validator: (value) => value == null ? 'Please select your sex' : null,
+              validator: (value) => value == null ? AppLocalizations.of(context)!.pleaseSelectSex : null,
             ),
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Text('Birth Date', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              child: Text(AppLocalizations.of(context)!.birthDate, style: const TextStyle(fontSize: 12, color: Colors.grey)),
             ),
             Row(
               children: [
                 Expanded(
                   child: AppDropdownFormField<String>(
-                    labelText: 'Month',
+                    labelText: AppLocalizations.of(context)!.month,
                     icon: Icons.calendar_today_outlined,
                     value: _onboardingMonth,
                     items: _months.map((String month) {
@@ -229,13 +230,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       });
                     },
                     onSaved: (newValue) => _onboardingMonth = newValue,
-                    validator: (value) => value == null ? 'Required' : null,
+                    validator: (value) => value == null ? AppLocalizations.of(context)!.req : null,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: AppDropdownFormField<String>(
-                    labelText: 'Day',
+                    labelText: AppLocalizations.of(context)!.day,
                     icon: Icons.calendar_today_outlined,
                     value: _onboardingDay,
                     items: _days.map((String day) {
@@ -250,13 +251,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       });
                     },
                     onSaved: (newValue) => _onboardingDay = newValue,
-                    validator: (value) => value == null ? 'Required' : null,
+                    validator: (value) => value == null ? AppLocalizations.of(context)!.req : null,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: AppDropdownFormField<String>(
-                    labelText: 'Year',
+                    labelText: AppLocalizations.of(context)!.year,
                     icon: Icons.calendar_today_outlined,
                     value: _onboardingYear,
                     items: _years.map((String year) {
@@ -271,52 +272,52 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       });
                     },
                     onSaved: (newValue) => _onboardingYear = newValue,
-                    validator: (value) => value == null ? 'Required' : null,
+                    validator: (value) => value == null ? AppLocalizations.of(context)!.req : null,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
             AppTextFormField(
-              labelText: 'Phone Number (Optional)',
+              labelText: AppLocalizations.of(context)!.phoneNumberOptional,
               icon: Icons.phone,
               keyboardType: TextInputType.phone,
               onSaved: (v) => _onboardingPhoneNumber = v,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
-              labelText: 'Email',
+              labelText: AppLocalizations.of(context)!.email,
               icon: Icons.email_outlined,
               keyboardType: TextInputType.emailAddress,
               onSaved: (v) => _onboardingEmail = v,
-              validator: (v) => v == null || !v.contains('@') ? 'Enter a valid email' : null,
+              validator: (v) => v == null || !v.contains('@') ? AppLocalizations.of(context)!.enterValidEmail : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
-              labelText: 'Username',
+              labelText: AppLocalizations.of(context)!.username,
               icon: Icons.person_outline,
               onSaved: (v) => _onboardingUsername = v,
-              validator: (v) => v == null || v.isEmpty ? 'Username is required' : null,
+              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.usernameRequired : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
-              labelText: 'Password',
+              labelText: AppLocalizations.of(context)!.password,
               icon: Icons.lock_outline,
               isPassword: true,
               onSaved: (v) => _onboardingPassword = v,
-              validator: (v) => v == null || v.length < 6 ? 'Password must be at least 6 characters' : null,
+              validator: (v) => v == null || v.length < 6 ? AppLocalizations.of(context)!.passwordMinLength : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
-              labelText: 'Confirm Password',
+              labelText: AppLocalizations.of(context)!.confirmPassword,
               icon: Icons.lock_outline,
               isPassword: true,
               onSaved: (v) => _onboardingConfirmPassword = v,
-              validator: (v) => v == null || v.isEmpty ? 'Confirm password is required' : null,
+              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.confirmPasswordRequired : null,
             ),
             const SizedBox(height: 16),
             AppDropdownFormField<String>(
-              labelText: 'Select Country',
+              labelText: AppLocalizations.of(context)!.selectCountry,
               icon: Icons.public_outlined,
               value: _onboardingCountry,
               items: _countries.map((String country) {
@@ -333,11 +334,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 });
               },
               onSaved: (newValue) => _onboardingCountry = newValue,
-              validator: (value) => value == null ? 'Please select a country' : null,
+              validator: (value) => value == null ? AppLocalizations.of(context)!.pleaseSelectCountry : null,
             ),
             const SizedBox(height: 16),
             AppDropdownFormField<String>(
-              labelText: 'Select State',
+              labelText: AppLocalizations.of(context)!.selectState,
               icon: Icons.location_on_outlined,
               value: _onboardingState,
               items: (_states[_onboardingCountry] ?? []).map((String state) {
@@ -353,11 +354,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 });
               },
               onSaved: (newValue) => _onboardingState = newValue,
-              validator: (value) => value == null ? 'Please select a state' : null,
+              validator: (value) => value == null ? AppLocalizations.of(context)!.pleaseSelectState : null,
             ),
             const SizedBox(height: 16),
             AppDropdownFormField<String>(
-              labelText: 'Select City',
+              labelText: AppLocalizations.of(context)!.selectCity,
               icon: Icons.location_city_outlined,
               value: _onboardingCity,
               items: (_cities[_onboardingState] ?? []).map((String city) {
@@ -372,11 +373,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 });
               },
               onSaved: (newValue) => _onboardingCity = newValue,
-              validator: (value) => value == null ? 'Please select a city' : null,
+              validator: (value) => value == null ? AppLocalizations.of(context)!.pleaseSelectCity : null,
             ),
             const SizedBox(height: 24),
             AppButton(
-              text: 'Complete Onboarding',
+              text: AppLocalizations.of(context)!.completeOnboarding,
               isLoading: isSubmitting,
               onPressed: _submitOnboardingForm,
             ),
@@ -475,7 +476,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Thank You For Signing Up With Celebrating!',
+              AppLocalizations.of(context)!.thankYouForSigningUp,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 22,
@@ -485,8 +486,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
             const SizedBox(height: 18),
             Text(
-              'Thank you for registering, a verification email has been sent to your email. Please verify your email to continue setting up your account.\n\n'
-                  'We look forward to having you with us @ Celebrating\n\n',
+              AppLocalizations.of(context)!.thankYouForRegistering,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 15,
@@ -524,7 +524,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Enter verification code',
+            AppLocalizations.of(context)!.enterVerificationCode,
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
               color: textColor,
@@ -533,7 +533,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 12),
           Text(
-            'A 4-digit code was sent to  $_onboardingEmail',
+            AppLocalizations.of(context)!.codeSentTo(_onboardingEmail ?? ''),
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: secondaryTextColor,
@@ -583,7 +583,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           const SizedBox(height: 20, ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: AppButton(text: 'Verify', onPressed: (){
+            child: AppButton(text: AppLocalizations.of(context)!.verify, onPressed: (){
               // Navigate to next tab (account type selection)
               setState(() {
                 _currentIndex = 2;
@@ -594,11 +594,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Did not receive email?', style: theme.textTheme.bodyMedium?.copyWith(color: secondaryTextColor)),
+              Text(AppLocalizations.of(context)!.didNotReceiveEmail, style: theme.textTheme.bodyMedium?.copyWith(color: secondaryTextColor)),
               TextButton(
                 onPressed: () => {},
                 child: Text(
-                  'Resend OTP',
+                  AppLocalizations.of(context)!.resendOtp,
                   style: theme.textTheme.bodyMedium?.copyWith(color: accentColor, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -623,7 +623,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Choose Your Account Type',
+                AppLocalizations.of(context)!.chooseAccountType,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 22,
@@ -634,6 +634,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               const SizedBox(height: 24),
               Container(
                 padding: const EdgeInsets.all(16),
+                width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(14),
@@ -643,7 +644,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Member',
+                      AppLocalizations.of(context)!.member,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 17,
@@ -652,7 +653,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'A member joins to interact with, follow and celebrate achievements of public figures in any field e.g. acting, sports, music, social media, business, academia or business.',
+                      AppLocalizations.of(context)!.memberDescription,
                       style: TextStyle(
                         fontSize: 15,
                         color: Color(0xFF222222),
@@ -664,6 +665,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               const SizedBox(height: 18),
               Container(
                 padding: const EdgeInsets.all(16),
+                width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(14),
@@ -673,7 +675,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Celebrity Status',
+                      AppLocalizations.of(context)!.celebrityStatus,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 17,
@@ -682,8 +684,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Someone who has achieved a significant level of public recognition and attention, media presence, influence, fame beyond professional skills, public interest and sustained visibility, typically within a particular field such as entertainment, sports, politics, or business.\n\n'
-                          'This option will require a higher level of scrutiny and verification of facts before the account is activated.',
+                      AppLocalizations.of(context)!.celebrityDescription,
                       style: TextStyle(
                         fontSize: 15,
                         color: Color(0xFF222222),
@@ -694,7 +695,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               const SizedBox(height: 28),
               AppOutlinedButton(
-                text: 'Continue as Member',
+                text: AppLocalizations.of(context)!.continueAsMember,
                 textColor: Color(0xFFD6AF0C),
                 onPressed: () {
                   //TODO: Navigate to profile
@@ -711,8 +712,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   setState(() {
                   });
                 },
-                leftText: 'CONTINUE AS',
-                rightText: 'CELEBRITY',
+                leftText: AppLocalizations.of(context)!.continueAs,
+                rightText: AppLocalizations.of(context)!.celebrity,
                 leftTextColor: Color(0xFFD6AF0C),
                 rightTextColor: Colors.white,
                 leftBackgroundColor: Colors.white,
@@ -735,7 +736,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             width: MediaQuery.of(context).size.width * 0.8
         ),
         AppDropdownFormField<String>(
-          labelText: 'Select Country',
+          labelText: AppLocalizations.of(context)!.selectCountry,
           icon: Icons.public_outlined,
           value: _onboardingCountry,
           items: _countries.map((String country) {
@@ -751,11 +752,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             });
           },
           onSaved: (newValue) => _onboardingCountry = newValue,
-          validator: (value) => value == null ? 'Please select a country' : null,
+          validator: (value) => value == null ? AppLocalizations.of(context)!.pleaseSelectCountry : null,
         ),
         const SizedBox(height: 16),
         AppDropdownFormField<String>(
-          labelText: 'Select State',
+          labelText: AppLocalizations.of(context)!.selectState,
           icon: Icons.location_on_outlined,
           value: _onboardingState,
           items: (_states[_onboardingCountry] ?? []).map((String state) {
@@ -770,10 +771,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             });
           },
           onSaved: (newValue) => _onboardingState = newValue,
-          validator: (value) => value == null ? 'Please select a state' : null,
+          validator: (value) => value == null ? AppLocalizations.of(context)!.pleaseSelectState : null,
         ),
         const SizedBox(height: 50,),
-        AppButton(text: 'Continue', onPressed: (){
+        AppButton(text: AppLocalizations.of(context)!.continueText, onPressed: (){
           setState(() {
             _currentIndex = 3;
           });

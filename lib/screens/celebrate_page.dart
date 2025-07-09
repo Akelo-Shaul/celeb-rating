@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:celebrating/l10n/app_localizations.dart';
 import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
@@ -17,7 +18,12 @@ class CelebratePage extends StatefulWidget {
 
 class _CelebratePageState extends State<CelebratePage> {
   int _selectedIndex = 1; // Default to "Celebrate" as selected
-  final List<String> _tabs = ['Flick', 'Celebrate', 'Stream', 'Audio'];
+  List<String> _localizedTabs(BuildContext context) => [
+    AppLocalizations.of(context)!.flick,
+    AppLocalizations.of(context)!.celebrate,
+    AppLocalizations.of(context)!.stream,
+    AppLocalizations.of(context)!.audio,
+  ];
   String _categorySearch = '';
   TextEditingController _searchController = TextEditingController();
 
@@ -37,7 +43,7 @@ class _CelebratePageState extends State<CelebratePage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildCustomTabBar(isDark),
+              _buildCustomTabBar(context, isDark),
               const SizedBox(height: 40),
               Expanded(
                 child: _buildTabView(),
@@ -49,16 +55,17 @@ class _CelebratePageState extends State<CelebratePage> {
     );
   }
 
-  Widget _buildCustomTabBar(bool isDark) {
+  Widget _buildCustomTabBar(BuildContext context, bool isDark) {
+    final tabs = _localizedTabs(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.18), // gray translucent background for the whole tabbar
+        color: Colors.grey.withOpacity(0.18),
         borderRadius: BorderRadius.circular(30),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: List.generate(_tabs.length, (index) {
+        children: List.generate(tabs.length, (index) {
           final bool selected = _selectedIndex == index;
           return GestureDetector(
             onTap: () {
@@ -73,13 +80,13 @@ class _CelebratePageState extends State<CelebratePage> {
               decoration: BoxDecoration(
                 color: selected
                     ? (isDark
-                    ? Colors.black.withOpacity(0.18)
-                    : Colors.grey.shade400.withOpacity(0.38))
+                        ? Colors.black.withOpacity(0.18)
+                        : Colors.grey.shade400.withOpacity(0.38))
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(22),
               ),
               child: Text(
-                _tabs[index],
+                tabs[index],
                 style: TextStyle(
                   fontWeight: selected ? FontWeight.bold : FontWeight.normal,
                   fontSize: 16,
@@ -279,7 +286,7 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Add Images'),
+              title: Text(AppLocalizations.of(context)!.addImages),
               onTap: () async {
                 Navigator.pop(context);
                 final picker = ImagePicker();
@@ -294,7 +301,7 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
             ),
             ListTile(
               leading: const Icon(Icons.videocam),
-              title: const Text('Add Video'),
+              title: Text(AppLocalizations.of(context)!.addVideo),
               onTap: () async {
                 Navigator.pop(context);
                 final picker = ImagePicker();
@@ -379,7 +386,7 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                   ),
-                  child: const Text('Post', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  child: Text(AppLocalizations.of(context)!.post, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ],
             ),

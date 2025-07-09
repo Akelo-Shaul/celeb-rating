@@ -4,6 +4,7 @@ import 'package:celebrating/widgets/profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../l10n/app_localizations.dart';
 import 'app_buttons.dart';
 import 'app_text_fields.dart';
 
@@ -107,7 +108,7 @@ class _AddFamilyMemberModalState extends State<AddFamilyMemberModal> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Add Family Member',
+                  AppLocalizations.of(context)!.addFamilyMember,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -153,7 +154,7 @@ class _AddFamilyMemberModalState extends State<AddFamilyMemberModal> {
                     Flexible(
                       child: AppButton(
                         icon: Icons.photo_camera,
-                        text: 'Open Camera',
+                        text: AppLocalizations.of(context)!.openCamera,
                         onPressed: () => _pickImage(ImageSource.camera),
                       ),
                     ),
@@ -161,7 +162,7 @@ class _AddFamilyMemberModalState extends State<AddFamilyMemberModal> {
                     Flexible(
                       child: AppButton(
                         icon: Icons.photo_library,
-                        text: 'Open Gallery',
+                        text: AppLocalizations.of(context)!.openGallery,
                         onPressed: () => _pickImage(ImageSource.gallery),
                       ),
                     ),
@@ -170,20 +171,20 @@ class _AddFamilyMemberModalState extends State<AddFamilyMemberModal> {
                 const SizedBox(height: 18),
                 AppTextFormField(
                   controller: _fullNameController,
-                  labelText: 'Full Name',
+                  labelText: AppLocalizations.of(context)!.fullName,
                   icon: Icons.person,
-                  validator: (v) => v == null || v.trim().isEmpty ? 'Enter full name' : null,
+                  validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterFullName : null,
                 ),
                 const SizedBox(height: 14),
                 AppTextFormField(
                   controller: _ageController,
-                  labelText: 'Age',
+                  labelText: AppLocalizations.of(context)!.age,
                   icon: Icons.cake,
                   keyboardType: TextInputType.number,
                   validator: (v) {
-                    if (v == null || v.trim().isEmpty) return 'Enter age';
+                    if (v == null || v.trim().isEmpty) return AppLocalizations.of(context)!.enterAge;
                     final n = int.tryParse(v);
-                    if (n == null || n < 0) return 'Enter a valid age';
+                    if (n == null || n < 0) return AppLocalizations.of(context)!.enterValidAge;
                     return null;
                   },
                 ),
@@ -192,7 +193,7 @@ class _AddFamilyMemberModalState extends State<AddFamilyMemberModal> {
                   padding: const EdgeInsets.only(bottom: 10),
                   child: AppTextFormField(
                     controller: entry.value,
-                    labelText: '${entry.key} Username',
+                    labelText: AppLocalizations.of(context)!.socialUsername(entry.key),
                     icon: _getSocialIcon(entry.key),
                   ),
                 )),
@@ -201,7 +202,7 @@ class _AddFamilyMemberModalState extends State<AddFamilyMemberModal> {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.check),
-                    label: const Text('Add Member'),
+                    label: Text(AppLocalizations.of(context)!.add),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: appPrimaryColor,
                       foregroundColor: Colors.white,

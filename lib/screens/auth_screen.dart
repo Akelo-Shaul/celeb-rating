@@ -1,3 +1,4 @@
+import 'package:celebrating/l10n/app_localizations.dart';
 // auth_screen.dart
 
 import 'dart:io';
@@ -202,28 +203,28 @@ class _AuthScreenState extends State<AuthScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             AppTextFormField(
-              labelText: 'Email or Username',
+              labelText: AppLocalizations.of(context)!.emailOrUsername,
               icon: Icons.person_outline,
               onSaved: (v) => _loginUsername = v ?? '',
-              validator: (v) => v == null || v.isEmpty ? 'Username required' : null,
+              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.usernameRequired : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
-              labelText: 'Password',
+              labelText: AppLocalizations.of(context)!.password,
               icon: Icons.lock_outline,
               isPassword: true,
               onSaved: (v) => _loginPassword = v ?? '',
-              validator: (v) => v == null || v.isEmpty ? 'Password required' : null,
+              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.passwordRequired : null,
             ),
             const SizedBox(height: 24),
             AppButton(
-              text: 'Sign In',
+              text: AppLocalizations.of(context)!.signIn,
               isLoading: isSubmitting,
               onPressed: _submitLogin,
             ),
             const SizedBox(height: 20),
             AppButton(
-              text: 'Register',
+              text: AppLocalizations.of(context)!.register,
               onPressed: () => _navigateToPage(1),
             ),
           ],
@@ -276,55 +277,55 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
             const SizedBox(height: 16),
             AppTextFormField(
-              labelText: 'First Name',
+              labelText: AppLocalizations.of(context)!.firstName,
               icon: Icons.person_outline,
               onSaved: (v) => _registerFirstName = v,
-              validator: (v) => v == null || v.isEmpty ? 'First name required' : null,
+              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.firstNameRequired : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
-              labelText: 'Surname',
+              labelText: AppLocalizations.of(context)!.lastName,
               icon: Icons.person_outline,
               onSaved: (v) => _registerLastName = v,
-              validator: (v) => v == null || v.isEmpty ? 'Surname required' : null,
+              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.lastNameRequired : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
-              labelText: 'Email',
+              labelText: AppLocalizations.of(context)!.email,
               icon: Icons.email_outlined,
               keyboardType: TextInputType.emailAddress,
               onSaved: (v) => _registerEmail = v,
               validator: (v) {
-                if (v == null || v.isEmpty) return 'Enter a valid email';
+                if (v == null || v.isEmpty) return AppLocalizations.of(context)!.enterValidEmail;
                 return null;
               },
             ),
             const SizedBox(height: 16),
             AppTextFormField(
-              labelText: 'Username',
+              labelText: AppLocalizations.of(context)!.username,
               icon: Icons.person_outline,
               onSaved: (v) => _registerUsername = v,
-              validator: (v) => v == null || v.isEmpty ? 'Username required' : null,
+              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.usernameRequired : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
-              labelText: 'Password',
+              labelText: AppLocalizations.of(context)!.password,
               icon: Icons.lock_outline,
               isPassword: true,
               onSaved: (v) => _registerPassword = v,
-              validator: (v) => v == null || v.length < 6 ? 'Password must be at least 6 characters' : null,
+              validator: (v) => v == null || v.length < 6 ? AppLocalizations.of(context)!.passwordMinLength : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
-              labelText: 'Confirm Password',
+              labelText: AppLocalizations.of(context)!.confirmPassword,
               icon: Icons.lock_outline,
               isPassword: true,
               onSaved: (v) => _registerConfirmPassword = v,
-              validator: (v) => v == null || v.isEmpty ? 'Confirm password' : null,
+              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.confirmPasswordRequired : null,
             ),
             const SizedBox(height: 24),
             AppButton(
-              text: 'Sign Up',
+              text: AppLocalizations.of(context)!.signUp,
               isLoading: isSubmitting,
               onPressed: _submitRegister,
             ),
@@ -332,12 +333,12 @@ class _AuthScreenState extends State<AuthScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Already have an account?'),
+                Text(AppLocalizations.of(context)!.alreadyHaveAccount),
                 TextButton(
                   onPressed: () => _navigateToPage(0),
-                  child: const Text(
-                    'Sign In',
-                    style: TextStyle(color: Colors.blueAccent),
+                  child: Text(
+                    AppLocalizations.of(context)!.signIn,
+                    style: const TextStyle(color: Colors.blueAccent),
                   ),
                 ),
               ],
@@ -355,7 +356,7 @@ class _AuthScreenState extends State<AuthScreen> {
     final currentLocale = appState.locale;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Celebrating'),
+        title: Text(AppLocalizations.of(context)!.appTitle),
         actions: [
           DropdownButtonHideUnderline(
             child: DropdownButton<SupportedLanguage>(
@@ -388,7 +389,9 @@ class _AuthScreenState extends State<AuthScreen> {
               ErrorMessageBox(message: errorMessage!),
             Center(
               child: Text(
-                'Sign Up for an Account',
+                _pageController.hasClients && _pageController.page == 1
+                  ? AppLocalizations.of(context)!.joinTheCommunitySignUp
+                  : AppLocalizations.of(context)!.joinTheCommunitySignIn,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),

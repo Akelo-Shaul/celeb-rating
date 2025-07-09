@@ -1,3 +1,4 @@
+import 'package:celebrating/l10n/app_localizations.dart';
 import 'package:celebrating/services/feed_service.dart';
 import 'package:celebrating/models/user.dart';
 import 'package:celebrating/utils/route.dart';
@@ -155,12 +156,12 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                "Let Us Celebrate You",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Text(
+                AppLocalizations.of(context)!.celebrateYou,
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 24),
-              const Text("Welcome Your Audience Awaits."),
+              Text(AppLocalizations.of(context)!.welcomeAudienceAwaits),
               const SizedBox(height: 40),
             ],
           ),
@@ -178,17 +179,17 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 40),
-            const Text(
-              "Add Family",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            Text(
+              AppLocalizations.of(context)!.addFamily,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            const Text("Search and add your family members.", textAlign: TextAlign.center),
+            Text(AppLocalizations.of(context)!.searchAndAddFamily, textAlign: TextAlign.center),
             const SizedBox(height: 24),
             TextField(
               decoration: InputDecoration(
-                hintText: 'Search by name or username',
+                hintText: AppLocalizations.of(context)!.searchByNameOrUsername,
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -207,14 +208,14 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                                   ListTile(
                                     leading: const CircleAvatar(child: Icon(Icons.person_add)),
                                     title: Text(_searchQuery),
-                                    subtitle: const Text('Not found'),
+                                    subtitle: Text(AppLocalizations.of(context)!.notFound),
                                     trailing: ElevatedButton(
                                       onPressed: () {
                                         ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('Invite sent to "$_searchQuery"')),
+                                          SnackBar(content: Text(AppLocalizations.of(context)!.inviteSent(_searchQuery))),
                                         );
                                       },
-                                      child: const Text('Invite'),
+                                      child: Text(AppLocalizations.of(context)!.invite),
                                     ),
                                   ),
                                 ],
@@ -237,12 +238,11 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                                     trailing: SizedBox(
                                       width: 110,
                                       child: AppButton(
-                                        text: 'Add',
+                                        text: AppLocalizations.of(context)!.add,
                                         icon: Icons.person_add,
                                         onPressed: () {
-                                          // Your add logic here
                                           ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text('Added ${user.fullName}')),
+                                            SnackBar(content: Text(AppLocalizations.of(context)!.addedFamilyMember(user.fullName))),
                                           );
                                         },
                                         backgroundColor: const Color(0xFFD6AF0C),
@@ -255,7 +255,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                   ),
             const SizedBox(height: 8),
             AppButton(
-              text: 'Add Manually',
+              text: AppLocalizations.of(context)!.addManually,
               icon: Icons.group_add,
               onPressed: () async {
                 final result = await showModalBottomSheet<Map<String, dynamic>>(
@@ -264,10 +264,9 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                   backgroundColor: Colors.transparent,
                   builder: (context) => AddFamilyMemberModal(
                     onAdd: (member) {
-                      // You can handle the added member here, e.g., add to a list
                       Navigator.of(context).pop(member);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Added family member: \\${member['fullName']}')),
+                        SnackBar(content: Text(AppLocalizations.of(context)!.addedFamilyMember(member['fullName']))),
                       );
                     },
                   ),
@@ -282,7 +281,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
             Align(
               alignment: Alignment.bottomRight,
               child: AppTextButton(
-                text: 'Skip',
+                text: AppLocalizations.of(context)!.skip,
                 onPressed: () {
                   _goToNextTab();
                 },
@@ -303,19 +302,19 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 40),
-            const Text(
-              "Add Wealth",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            Text(
+              AppLocalizations.of(context)!.addWealth,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            const Text("Add your wealth information.", textAlign: TextAlign.center),
+            Text(AppLocalizations.of(context)!.addWealthInfo, textAlign: TextAlign.center),
 
             const SizedBox(height: 8),
             const Spacer(),
             const SizedBox(height: 8),
             AppButton(
-              text: 'Add Manually',
+              text: AppLocalizations.of(context)!.addManually,
               icon: Icons.group_add,
               onPressed: () async {
                 final result = await showModalBottomSheet<Map<String, dynamic>>(
@@ -326,7 +325,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                     onAdd: (item) {
                       Navigator.of(context).pop(item);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Added wealth item: \\${item['name']}')),
+                        SnackBar(content: Text(AppLocalizations.of(context)!.addedWealthItem(item['name']))),
                       );
                     },
                   ),
@@ -341,7 +340,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
             Align(
               alignment: Alignment.bottomRight,
               child: AppTextButton(
-                text: 'Skip',
+                text: AppLocalizations.of(context)!.skip,
                 onPressed: () {
                   _goToNextTab();
                 },
@@ -365,40 +364,40 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 40),
-            const Text(
-              "Add Wealth",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            Text(
+              AppLocalizations.of(context)!.addEducation,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            const Text("Add your wealth information.", textAlign: TextAlign.center),
+            Text(AppLocalizations.of(context)!.addEducationInfo, textAlign: TextAlign.center),
 
             const SizedBox(height: 8),
             const SizedBox(height: 24),
             AppTextFormField(
               controller: _degreeController,
-              labelText: 'Degree (e.g. BSc, MSc, PhD, Masters)',
+              labelText: AppLocalizations.of(context)!.degreeLabel,
               icon: Icons.school,
-              validator: (v) => v == null || v.trim().isEmpty ? 'Enter degree' : null,
+              validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterDegree : null,
             ),
             const SizedBox(height: 14),
             AppTextFormField(
               controller: _universityController,
-              labelText: 'Certifying University',
+              labelText: AppLocalizations.of(context)!.certifyingUniversity,
               icon: Icons.account_balance,
-              validator: (v) => v == null || v.trim().isEmpty ? 'Enter university' : null,
+              validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterUniversity : null,
             ),
             const SizedBox(height: 14),
             AppTextFormField(
               controller: _yearController,
-              labelText: 'Year of Completion',
+              labelText: AppLocalizations.of(context)!.yearOfCompletion,
               icon: Icons.calendar_today,
               keyboardType: TextInputType.number,
-              validator: (v) => v == null || v.trim().isEmpty ? 'Enter year' : null,
+              validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterYear : null,
             ),
             const SizedBox(height: 20),
             AppButton(
-              text: 'Add Degree',
+              text: AppLocalizations.of(context)!.addDegree,
               icon: Icons.add,
               onPressed: () {
                 final degree = _degreeController.text.trim();
@@ -406,7 +405,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                 final year = _yearController.text.trim();
                 if (degree.isEmpty || university.isEmpty || year.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please fill all fields to add a degree.')),
+                    SnackBar(content: Text(AppLocalizations.of(context)!.pleaseFillAllFieldsToAddDegree)),
                   );
                   return;
                 }
@@ -430,7 +429,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                   padding: EdgeInsets.zero,
                   children: [
                     Text(
-                      'Added Degrees:',
+                      AppLocalizations.of(context)!.addedDegrees,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: textColor,
@@ -455,35 +454,12 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                 ),
               ),
             const Spacer(),
-            const SizedBox(height: 8),
-            AppButton(
-              text: 'Add Manually',
-              icon: Icons.group_add,
-              onPressed: () async {
-                final result = await showModalBottomSheet<Map<String, dynamic>>(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => AddWealthItemModal(
-                    onAdd: (item) {
-                      Navigator.of(context).pop(item);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Added wealth item: \\${item['name']}')),
-                      );
-                    },
-                  ),
-                );
-                if (result != null) {
-                  // Optionally update your state with the new wealth item
-                }
-              },
-            ),
             const SizedBox(height: 50),
 
             Align(
               alignment: Alignment.bottomRight,
               child: AppTextButton(
-                text: 'Finish',
+                text: AppLocalizations.of(context)!.finish,
                 onPressed: () {
                   Navigator.pushReplacementNamed(context, feedScreen);
                 },

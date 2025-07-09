@@ -1,4 +1,6 @@
 import 'package:camera/camera.dart';
+
+import 'package:celebrating/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 
@@ -84,13 +86,13 @@ class _VerificationScreenState extends State<VerificationScreen> {
           children: [
             const SizedBox(height: 44),
             Text(
-              'Identity Verification',
+              AppLocalizations.of(context)!.identityVerification,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             Text(
-              'Please take a clear photo of your government-issued ID or passport. This is required to verify your celebrity status.',
+              AppLocalizations.of(context)!.identityVerificationDesc,
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
@@ -99,8 +101,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
             if (!(_frontImage != null && _backImage != null))
               Text(
                 _takingFront
-                    ? 'Take a clear photo of the FRONT of your ID'
-                    : 'Take a clear photo of the BACK of your ID',
+                    ? AppLocalizations.of(context)!.takeFrontPhotoInstruction
+                    : AppLocalizations.of(context)!.takeBackPhotoInstruction,
                 style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
                 textAlign: TextAlign.center,
               ),
@@ -132,10 +134,10 @@ class _VerificationScreenState extends State<VerificationScreen> {
             ElevatedButton.icon(
               icon: const Icon(Icons.camera_alt),
               label: Text(_frontImage == null
-                  ? 'Take Front Photo'
+                  ? AppLocalizations.of(context)!.takeFrontPhoto
                   : _backImage == null
-                      ? 'Take Back Photo'
-                      : 'Retake Photo'),
+                      ? AppLocalizations.of(context)!.takeBackPhoto
+                      : AppLocalizations.of(context)!.retakePhoto),
               onPressed: _backImage == null ? _takePicture : _retakePhoto,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
@@ -151,7 +153,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                     padding: const EdgeInsets.only(right: 16.0),
                     child: Column(
                       children: [
-                        const Text('Front of ID:', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(AppLocalizations.of(context)!.frontOfId, style: const TextStyle(fontWeight: FontWeight.bold)),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(12),
                           child: Image.file(
@@ -167,7 +169,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 if (_backImage != null)
                   Column(
                     children: [
-                      const Text('Back of ID:', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(AppLocalizations.of(context)!.backOfId, style: const TextStyle(fontWeight: FontWeight.bold)),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Image.file(
@@ -183,12 +185,12 @@ class _VerificationScreenState extends State<VerificationScreen> {
             ),
             const Spacer(),
             AppButton(
-              text: 'Submit for Verification',
+              text: AppLocalizations.of(context)!.submitForVerification,
               isEnabled: (_frontImage != null && _backImage != null),
               onPressed: () {
                 // TODO: Implement upload/submit logic
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Verification submitted!')),
+                  SnackBar(content: Text(AppLocalizations.of(context)!.verificationSubmitted)),
                 );
                 Navigator.pop(context, [_frontImage, _backImage]);
                 Navigator.pushNamed(context, celebrityProfileCreate);
