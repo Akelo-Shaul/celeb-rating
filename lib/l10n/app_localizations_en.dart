@@ -239,7 +239,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get audioTab => 'Audio Tab';
 
   @override
-  String get flick => 'Flick';
+  String get flick => 'Flicks';
 
   @override
   String get celebrate => 'Celebrate';
@@ -331,19 +331,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get follow => 'Follow';
 
   @override
+  String get followers => 'Followers';
+
+  @override
+  String get posts => 'Posts';
+
+  @override
   String get events => 'Events';
 
   @override
-  String get viewProfile => 'VIEW PROFILE';
+  String get pets => 'Pets';
 
   @override
-  String get fanTheoriesInteractions => 'FAN THEORIES & INTERACTIONS';
+  String get tattoos => 'Tattoos';
 
   @override
-  String get noPostsToDisplay => 'No posts to display.';
+  String get favourites => 'Favourites';
 
   @override
-  String get noCareerDataAvailable => 'No career data available.';
+  String get talents => 'Talents';
+
+  @override
+  String get viewProfile => 'View Profile';
+
+  @override
+  String get fanTheoriesInteractions => 'Fan Theories & Interactions';
+
+  @override
+  String get socials => 'Socials';
 
   @override
   String get search => 'Search';
@@ -568,4 +583,54 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addEducationInfo => 'Add Education Information';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get cars => 'Cars';
+
+  @override
+  String get houses => 'Houses';
+
+  @override
+  String get artCollection => 'Art Collection';
+
+  @override
+  String get watchCollection => 'Watch Collection';
+
+  @override
+  String get sign => 'Sign';
+
+  @override
+  String get more => '... more';
+
+  @override
+  String get showLess => 'show less';
+
+  @override
+  String get youRated => 'You rated';
+
+  @override
+  String get stars => 'stars';
+
+  @override
+  String youRatedStars(Object count) {
+    return 'You rated $count stars!';
+  }
+
+  @override
+  String get liveTab => 'Live';
+
+  @override
+  String get recordedTab => 'Recorded';
+
+  @override
+  String get captionHint => 'What is on your mind?';
+
+  @override
+  String get searchCategoryHint => 'Search Category...';
 }

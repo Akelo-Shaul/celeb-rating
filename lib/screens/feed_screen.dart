@@ -129,6 +129,7 @@ class _FeedScreenState extends State<FeedScreen> {
         itemBuilder: (context, i) => PostCard(
           post: posts[i],
           feedMuteNotifier: feedMuteNotifier,
+          showFollowButton: true,
         ),
       ),
     );
@@ -173,9 +174,12 @@ class _MyAppBarState extends State<MyAppBar> {
           labelText: _currentFeedType,
           value: _currentFeedType,
           items: [
-            DropdownMenuItem(value: 'FEED', child: Text(AppLocalizations.of(context)!.feed)),
-            DropdownMenuItem(value: 'POPULAR', child: Text(AppLocalizations.of(context)!.popular)),
-            DropdownMenuItem(value: 'TRENDING', child: Text(AppLocalizations.of(context)!.trending)),
+            // DropdownMenuItem(value: 'FEED', child: Text(AppLocalizations.of(context)!.feed)),
+            // DropdownMenuItem(value: 'POPULAR', child: Text(AppLocalizations.of(context)!.popular)),
+            // DropdownMenuItem(value: 'TRENDING', child: Text(AppLocalizations.of(context)!.trending)),
+            DropdownMenuItem(value: 'FEED', child: Text('FEED')),
+            DropdownMenuItem(value: 'POPULAR', child: Text('POPULAR')),
+            DropdownMenuItem(value: 'TRENDING', child: Text('TRENDING')),
           ],
           onChanged: (String? newValue) {
             setState(() {

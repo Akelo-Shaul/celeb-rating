@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/live_stream.dart';
 import '../models/stream_category.dart';
 import '../services/stream_service.dart';
@@ -89,6 +90,7 @@ class _StreamPageState extends State<StreamPage> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -98,7 +100,7 @@ class _StreamPageState extends State<StreamPage> with SingleTickerProviderStateM
               children: [
                 AppSearchBar(
                   controller: _searchController,
-                  hintText: 'Search...',
+                  hintText: localizations.searchHint,
                   onChanged: (value) {
                     // _performSearch(value);
                   },
@@ -135,6 +137,7 @@ class _StreamPageState extends State<StreamPage> with SingleTickerProviderStateM
   }
 
   Widget _buildTabBar(bool isDark) {
+    final localizations = AppLocalizations.of(context)!;
     return TabBar(
       controller: _tabController,
       isScrollable: true,
@@ -152,10 +155,10 @@ class _StreamPageState extends State<StreamPage> with SingleTickerProviderStateM
       ),
       indicatorSize: TabBarIndicatorSize.tab,
       dividerHeight: 0,
-      tabs: const [
-        Tab(text: 'Categories'),
-        Tab(text: 'Live'),
-        Tab(text: 'Recorded'),
+      tabs: [
+        Tab(text: localizations.tabCategories),
+        Tab(text: localizations.liveTab),
+        Tab(text: localizations.recordedTab),
       ],
     );
   }
@@ -193,11 +196,12 @@ class _StreamPageState extends State<StreamPage> with SingleTickerProviderStateM
   }
 
   Widget _buildLiveStreamTab() {
+    final localizations = AppLocalizations.of(context)!;
     if (_isLiveStreamsLoading) {
       return const Center(child: CircularProgressIndicator());
     }
     if (_liveStreams.isEmpty) {
-      return const Center(child: Text('No live streams available'));
+      return Center(child: Text(localizations.noLiveStreams));
     }
     // Show the list immediately, each LiveStreamCard should handle its own thumbnail/video logic
     return ListView.builder(
@@ -226,8 +230,9 @@ class _StreamPageState extends State<StreamPage> with SingleTickerProviderStateM
   }
 
   Widget _buildRecordedTab(){
+    final localizations = AppLocalizations.of(context)!;
     return Center(
-      child: Text('Recorded Tab'),
+      child: Text(localizations.recordedTab),
     );
   }
 }

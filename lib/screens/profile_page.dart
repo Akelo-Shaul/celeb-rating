@@ -1,6 +1,7 @@
 import 'package:celebrating/widgets/slideup_dialog.dart';
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/post.dart';
 import '../models/user.dart';
 import '../services/user_service.dart';
@@ -99,6 +100,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     // Add more as needed
   };
 
+  // Align with actual keys in wealthEntries map: 'Cars', 'Houses', 'Art Collection', 'Watch Collection'
   final List<String> _wealthCategories = [
     'Cars',
     'Houses',
@@ -195,7 +197,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                   children: List.generate(5, (index) {
                     return Icon(
                       index < 4 ? Icons.star : Icons.star_border,
-                      color: Colors.orange,
+                      color: const Color(0xFFD6AF0C),
                       size: 20,
                     );
                   }),
@@ -219,7 +221,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                   Positioned(
                     top: -2,
                     right: -2,
-                    child: const Icon(Icons.verified, color: Colors.orange, size: 30),
+                    child: const Icon(Icons.verified, color:  const Color(0xFFD6AF0C), size: 30),
                   ),
                   Positioned(
                     bottom: 2,
@@ -249,7 +251,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
         ),
         GestureDetector(
           onTap: () {
-            print('Website link tapped: ${user!.website}');
+            print('Website link tapped: \\${user!.website}');
           },
           child: Text(
             user!.website,
@@ -262,13 +264,14 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
 
   Widget _buildActionButtons() {
+    final localizations = AppLocalizations.of(context)!;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Row(
           children: [
             ResizableButton(
-              text: "Follow",
+              text: localizations.follow,
               onPressed: () {},
               width: 100,
               height: 35,
@@ -282,9 +285,9 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
           ],
         ),
         ResizableButton(
-          text: "Events",
+          text: localizations.events,
           onPressed: () {},
-          width: 100,
+          width: 120,
           height: 35,
         ),
       ],
@@ -292,6 +295,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   }
 
   Widget _buildStatsRow(Color defaultTextColor, Color secondaryTextColor) {
+    final localizations = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, bottom: 0),
       child: Row(
@@ -306,7 +310,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
             ),
           ),
           Text(
-            'Followers',
+            localizations.followers,
             style: TextStyle(color: secondaryTextColor),
           ),
           const SizedBox(width: 20),
@@ -318,7 +322,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
             ),
           ),
           Text(
-            'Posts',
+            localizations.posts,
             style: TextStyle(color: secondaryTextColor),
           ),
         ],
@@ -327,6 +331,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   }
 
   Widget _buildTabBar(bool isDark) {
+    final localizations = AppLocalizations.of(context)!;
     return TabBar(
       controller: _tabController,
       isScrollable: true,
@@ -344,12 +349,12 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       ),
       indicatorSize: TabBarIndicatorSize.tab,
       dividerHeight: 0,
-      tabs: const [
-        Tab(text: 'Posts'),
-        Tab(text: 'Career'),
-        Tab(text: 'Wealth'),
-        Tab(text: 'Personal'),
-        Tab(text: 'Public Persona'),
+      tabs: [
+        Tab(text: localizations.postsTab),
+        Tab(text: localizations.careerTab),
+        Tab(text: localizations.wealthTab),
+        Tab(text: localizations.personalTab),
+        Tab(text: localizations.publicPersonaTab),
       ],
     );
   }
@@ -375,7 +380,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     }
     return ListView.builder(
       itemCount: posts.length,
-      itemBuilder: (context, i) => PostCard(post: posts[i]),
+      itemBuilder: (context, i) => PostCard(post: posts[i], showFollowButton: false),
     );
   }
 
@@ -490,6 +495,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
     final celeb = user as CelebrityUser;
     final Map<String, List<Map<String, String>>> wealthData = celeb.wealthEntries;
+    final localizations = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -499,7 +505,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
             Row(
               children: [
                 Text(
-                  'Net Worth : ',
+                  '${localizations.netWorth} : ',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -516,14 +522,31 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
               ],
             ),
             const SizedBox(height: 25),
-            ..._wealthCategories.map((category) {
-              final items = wealthData[category] ?? [];
+            ..._wealthCategories.map((categoryKey) {
+              final items = wealthData[categoryKey] ?? [];
               if (items.isEmpty) return const SizedBox.shrink();
+              String localizedCategory;
+              switch (categoryKey) {
+                case 'Cars':
+                  localizedCategory = localizations.categoryValueCar;
+                  break;
+                case 'Houses':
+                  localizedCategory = localizations.categoryValueHouse;
+                  break;
+                case 'Art Collection':
+                  localizedCategory = localizations.categoryValueArt;
+                  break;
+                case 'Watch Collection':
+                  localizedCategory = localizations.categoryValueJewelry;
+                  break;
+                default:
+                  localizedCategory = categoryKey;
+              }
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    category,
+                    localizedCategory,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -574,7 +597,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
           children: [
             // Sign
             Text(
-              'Sign:  ${celeb.zodiacSign}',
+              '${AppLocalizations.of(context)!.sign}: ${celeb.zodiacSign}',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -585,7 +608,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
             // Family Section
             Text(
-              'Family',
+              AppLocalizations.of(context)!.family,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -637,7 +660,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
             // Relationships Section
             Text(
-              'Relationships',
+              AppLocalizations.of(context)!.relationships,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -665,7 +688,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
             // Education Section
             Text(
-              'Education',
+              AppLocalizations.of(context)!.education,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -716,7 +739,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
             // Hobbies Section
             Text(
-              'Hobbies',
+              AppLocalizations.of(context)!.hobbies,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -746,7 +769,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
             // Lifestyle Section
             Text(
-              'Lifestyle',
+              AppLocalizations.of(context)!.lifestyle,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -766,7 +789,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
             // Involved Causes Section
             Text(
-              'Involved Causes',
+              AppLocalizations.of(context)!.involvedCauses,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -817,7 +840,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
             // Pets Section
             Text(
-              'Pets',
+              AppLocalizations.of(context)!.pets,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -845,7 +868,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
             // Tattoos Section
             Text(
-              'Tattoos',
+              AppLocalizations.of(context)!.tattoos,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -877,7 +900,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
             Row(
               children: [
                 Text(
-                  'Favourites',
+                  AppLocalizations.of(context)!.favourites,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -926,7 +949,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
             // Talents Section
             Text(
-              'Talents',
+              AppLocalizations.of(context)!.talents,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -990,7 +1013,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
           children: [
             // Socials Section
             Text(
-              'Socials',
+              AppLocalizations.of(context)!.socials,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -1035,7 +1058,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
             // Public Image Section
             Text(
-              'Public Image',
+              AppLocalizations.of(context)!.publicImage,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -1054,7 +1077,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
             // Controversies Section
             Text(
-              'Controversies',
+              AppLocalizations.of(context)!.controversies,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -1072,7 +1095,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
             // Fashion Style Section
             Text(
-              'Fashion Style',
+              AppLocalizations.of(context)!.fashionStyle,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -1133,9 +1156,9 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     borderRadius: BorderRadius.circular(25),
                   ),
                 ),
-                child: const Text(
-                  'FAN THEORIES & INTERACTIONS',
-                  style: TextStyle(
+                child: Text(
+                  AppLocalizations.of(context)!.fanTheoriesInteractions,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -1176,6 +1199,7 @@ class ProfilePreviewModalContent extends StatelessWidget {
     final Color _defaultTextColor = defaultTextColor ?? (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black);
     final Color _secondaryTextColor = secondaryTextColor ?? (Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600);
     final Color _appPrimaryColor = appPrimaryColor ?? Theme.of(context).primaryColor;
+    final localizations = AppLocalizations.of(context)!;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -1222,9 +1246,9 @@ class ProfilePreviewModalContent extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
-              child: const Text(
-                'VIEW PROFILE',
-                style: TextStyle(color: Colors.white, fontSize: 12),
+              child: Text(
+                localizations.viewProfile,
+                style: const TextStyle(color: Colors.white, fontSize: 12),
               ),
             ),
           ],

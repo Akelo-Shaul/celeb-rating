@@ -36,6 +36,7 @@ class _CelebratePageState extends State<CelebratePage> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white, // Or your background
       body: SafeArea(
@@ -263,10 +264,7 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
   final TextEditingController _captionController = TextEditingController();
   final TextEditingController _categorySearchController = TextEditingController();
   String _categorySearch = '';
-  final List<String> _categories = [
-    'Lifestyle', 'Art', 'Music', 'Fashion', 'Movies', 'Travel',
-    'Culture', 'Politics', 'Business', 'Sports'
-  ];
+  List<String> _categories = [];
   final List<String> _selectedCategories = [];
   List<XFile> _mediaFiles = [];
   List<bool> _isVideoList = [];
@@ -353,13 +351,28 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    // Initialize _categories with localized values if empty
+    if (_categories.isEmpty) {
+      _categories = [
+        localizations.lifestyle,
+        localizations.fashionStyle,
+        localizations.artCollection,
+        localizations.cars,
+        localizations.houses,
+        localizations.wealthTab,
+        localizations.careerTab,
+        localizations.personalTab,
+        localizations.publicPersonaTab,
+        localizations.family,
+      ];
+    }
     final filtered = _categorySearch.isEmpty
         ? _categories
         : _categories.where((c) => c.toLowerCase().contains(_categorySearch.toLowerCase())).toList();
     final mid = (filtered.length / 2).ceil();
     final firstLine = filtered.take(mid).toList();
     final secondLine = filtered.skip(mid).toList();
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       resizeToAvoidBottomInset: true,
@@ -386,7 +399,7 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                   ),
-                  child: Text(AppLocalizations.of(context)!.post, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  child: Text(localizations.post, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ],
             ),
@@ -473,11 +486,11 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: TextField(
                         controller: _captionController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: 'What is on your mind?',
-                          hintStyle: TextStyle(fontSize: 18, color: Colors.black87, fontWeight: FontWeight.w500),
-                          contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                          hintText: localizations.captionHint ?? 'What is on your mind?',
+                          hintStyle: const TextStyle(fontSize: 18, color: Colors.black87, fontWeight: FontWeight.w500),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                         ),
                         style: const TextStyle(fontSize: 18, color: Colors.black),
                         maxLines: 2,
@@ -489,7 +502,7 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
             ),
             AppSearchBar(
               controller: _categorySearchController,
-              hintText: 'Search Category...',
+              hintText: localizations.searchCategoryHint ?? 'Search Category...',
               onChanged: (value) {
                 setState(() {
                   _categorySearch = value;
@@ -869,9 +882,13 @@ class _MediaPreviewScreenState extends State<MediaPreviewScreen> {
 }
 
 Widget _streamCelebrateTab() {
-  return const Center(child: Text('Stream Tab'));
+  return Builder(
+    builder: (context) => Center(child: Text(AppLocalizations.of(context)!.streamTab)),
+  );
 }
 
 Widget audioCelebrateTab() {
-  return const Center(child: Text('Audio Tab'));
+  return Builder(
+    builder: (context) => Center(child: Text(AppLocalizations.of(context)!.audioTab)),
+  );
 }

@@ -356,7 +356,7 @@ class _AuthScreenState extends State<AuthScreen> {
     final currentLocale = appState.locale;
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.appTitle),
+        title: Text('Celebrating'),
         actions: [
           DropdownButtonHideUnderline(
             child: DropdownButton<SupportedLanguage>(

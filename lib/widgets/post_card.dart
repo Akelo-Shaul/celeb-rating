@@ -5,6 +5,7 @@ import 'package:celebrating/widgets/app_buttons.dart';
 import 'package:celebrating/widgets/profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import '../l10n/app_localizations.dart';
 
 import '../models/comment.dart';
 import 'comments_modal.dart';
@@ -13,7 +14,8 @@ import 'video_player_widget.dart';
 class PostCard extends StatefulWidget {
   final Post post;
   final ValueNotifier<bool>? feedMuteNotifier; // Add this for feed mute state
-  const PostCard({super.key, required this.post, this.feedMuteNotifier});
+  final bool showFollowButton;
+  const PostCard({super.key, required this.post, this.feedMuteNotifier, this.showFollowButton = true});
 
   @override
   State<PostCard> createState() => _PostCardState();
@@ -128,13 +130,14 @@ class _PostCardState extends State<PostCard> {
             ],
           )
         ),
-        AppTextButton(
-          text: 'Follow',
-          onPressed: () {
-            print('Follow button pressed!');
-            // Add your follow logic here
-          },
-        ),
+        if (widget.showFollowButton)
+          AppTextButton(
+            text: AppLocalizations.of(context)!.follow,
+            onPressed: () {
+              print('${AppLocalizations.of(context)!.follow} button pressed!');
+              // Add your follow logic here
+            },
+          ),
       ],
     );
   }
@@ -146,6 +149,7 @@ class _PostCardState extends State<PostCard> {
     final colorScheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final moreColor = Colors.grey[600];
+    final localizations = AppLocalizations.of(context)!;
     final span = TextSpan(text: content, style: textStyle);
     final tp = TextPainter(
       text: span,
@@ -184,7 +188,7 @@ class _PostCardState extends State<PostCard> {
                 children: [
                   TextSpan(text: visibleText),
                   TextSpan(
-                    text: '       ... more',
+                    text: '       ${localizations.more}',
                     style: textStyle.copyWith(
                       color: moreColor,
                       fontWeight: FontWeight.bold,
@@ -212,7 +216,7 @@ class _PostCardState extends State<PostCard> {
                   TextSpan(text: content),
                   if (isOverflow)
                     TextSpan(
-                      text: '  show less',
+                      text: '  ${localizations.showLess}',
                       style: textStyle.copyWith(
                         color: moreColor,
                         fontWeight: FontWeight.bold,
@@ -313,18 +317,19 @@ class _PostCardState extends State<PostCard> {
     // If the user has already rated, show static stars and do not allow further rating
     final bool hasRated = widget.post.initialRating > 0;
     final int rating = hasRated ? widget.post.initialRating : _currentRating;
+    final localizations = AppLocalizations.of(context)!;
     return GestureDetector(
-      onTapDown: (_) { // When the finger goes down
+      onTapDown: (_) {
         setState(() {
           _isRatingSectionActive = true;
         });
       },
-      onTapUp: (_) { // When the finger comes up
+      onTapUp: (_) {
         setState(() {
           _isRatingSectionActive = false;
         });
       },
-      onTapCancel: () { // If the tap is cancelled (e.g., finger slides off)
+      onTapCancel: () {
         setState(() {
           _isRatingSectionActive = false;
         });
@@ -343,22 +348,19 @@ class _PostCardState extends State<PostCard> {
               final isRated = rating >= (index + 1);
               final starColor = isRated ? Color(0xFFD6AF0C) : Colors.grey[400];
               if (hasRated) {
-                // Show static stars if already rated
                 return Icon(
                   Icons.star_rounded,
                   color: starColor,
                   size: 30,
                 );
               } else {
-                // Allow rating if not rated yet
                 return GestureDetector(
                   onTap: () {
                     setState(() {
                       _currentRating = index + 1;
-                      // You can add logic here to send the rating to your backend
-                      print('User rated: $_currentRating stars for post ID: ${widget.post.id}');
+                      print('${localizations.youRated} ${index + 1} ${localizations.stars}!');
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('You rated ${index + 1} stars!')),
+                        SnackBar(content: Text(localizations.youRatedStars(index + 1))),
                       );
                     });
                   },

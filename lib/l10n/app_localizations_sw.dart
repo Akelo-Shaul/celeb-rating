@@ -239,7 +239,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get audioTab => 'Kipengele cha Sauti';
 
   @override
-  String get flick => 'Flick';
+  String get flick => 'Flicks';
 
   @override
   String get celebrate => 'Sherehekea';
@@ -331,7 +331,25 @@ class AppLocalizationsSw extends AppLocalizations {
   String get follow => 'Fuata';
 
   @override
+  String get followers => 'Wafuasi';
+
+  @override
+  String get posts => 'Machapisho';
+
+  @override
   String get events => 'Matukio';
+
+  @override
+  String get pets => 'Wanyama wa kufugwa';
+
+  @override
+  String get tattoos => 'Tatoo';
+
+  @override
+  String get favourites => 'Vipendwa';
+
+  @override
+  String get talents => 'Vipaji';
 
   @override
   String get viewProfile => 'ANGALIA WASIFU';
@@ -340,10 +358,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get fanTheoriesInteractions => 'NADHARIA ZA MASHABIKI & MINGILIANO';
 
   @override
-  String get noPostsToDisplay => 'Hakuna machapisho ya kuonyesha.';
-
-  @override
-  String get noCareerDataAvailable => 'Hakuna data ya kazi.';
+  String get socials => 'Mitandao ya Kijamii';
 
   @override
   String get search => 'Tafuta';
@@ -421,10 +436,10 @@ class AppLocalizationsSw extends AppLocalizations {
   String get verificationSubmitted => 'Uthibitisho umetumwa!';
 
   @override
-  String get joinTheCommunitySignUp => 'Jiunge na Jamii (Jisajili)';
+  String get joinTheCommunitySignUp => 'Jiunge na Jamii (Ingia)';
 
   @override
-  String get joinTheCommunitySignIn => 'Jiunge na Jamii (Ingia)';
+  String get joinTheCommunitySignIn => 'Jiunge na Jamii (Jisajili)';
 
   @override
   String get addManually => 'Ongeza Mwenyewe';
@@ -568,4 +583,54 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get addEducationInfo => 'Ongeza Taarifa za Elimu';
+
+  @override
+  String get home => 'Nyumbani';
+
+  @override
+  String get profile => 'Wasifu';
+
+  @override
+  String get cars => 'Magari';
+
+  @override
+  String get houses => 'Nyumba';
+
+  @override
+  String get artCollection => 'Mkusanyiko wa Sanaa';
+
+  @override
+  String get watchCollection => 'Mkusanyiko wa Saa';
+
+  @override
+  String get sign => 'Alama';
+
+  @override
+  String get more => '... zaidi';
+
+  @override
+  String get showLess => 'onyesha kidogo';
+
+  @override
+  String get youRated => 'Umeweka kiwango';
+
+  @override
+  String get stars => 'nyota';
+
+  @override
+  String youRatedStars(Object count) {
+    return 'Umeweka kiwango cha nyota $count!';
+  }
+
+  @override
+  String get liveTab => 'Moja kwa moja';
+
+  @override
+  String get recordedTab => 'Iliyorekodiwa';
+
+  @override
+  String get captionHint => 'Unafikiria nini?';
+
+  @override
+  String get searchCategoryHint => 'Tafuta Kategoria...';
 }

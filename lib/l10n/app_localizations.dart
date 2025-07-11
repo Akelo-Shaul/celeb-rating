@@ -554,7 +554,7 @@ abstract class AppLocalizations {
   /// No description provided for @flick.
   ///
   /// In en, this message translates to:
-  /// **'Flick'**
+  /// **'Flicks'**
   String get flick;
 
   /// No description provided for @celebrate.
@@ -731,35 +731,65 @@ abstract class AppLocalizations {
   /// **'Follow'**
   String get follow;
 
+  /// No description provided for @followers.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers'**
+  String get followers;
+
+  /// No description provided for @posts.
+  ///
+  /// In en, this message translates to:
+  /// **'Posts'**
+  String get posts;
+
   /// No description provided for @events.
   ///
   /// In en, this message translates to:
   /// **'Events'**
   String get events;
 
+  /// No description provided for @pets.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets'**
+  String get pets;
+
+  /// No description provided for @tattoos.
+  ///
+  /// In en, this message translates to:
+  /// **'Tattoos'**
+  String get tattoos;
+
+  /// No description provided for @favourites.
+  ///
+  /// In en, this message translates to:
+  /// **'Favourites'**
+  String get favourites;
+
+  /// No description provided for @talents.
+  ///
+  /// In en, this message translates to:
+  /// **'Talents'**
+  String get talents;
+
   /// No description provided for @viewProfile.
   ///
   /// In en, this message translates to:
-  /// **'VIEW PROFILE'**
+  /// **'View Profile'**
   String get viewProfile;
 
   /// No description provided for @fanTheoriesInteractions.
   ///
   /// In en, this message translates to:
-  /// **'FAN THEORIES & INTERACTIONS'**
+  /// **'Fan Theories & Interactions'**
   String get fanTheoriesInteractions;
 
-  /// No description provided for @noPostsToDisplay.
+  /// No description provided for @socials.
   ///
   /// In en, this message translates to:
-  /// **'No posts to display.'**
-  String get noPostsToDisplay;
-
-  /// No description provided for @noCareerDataAvailable.
-  ///
-  /// In en, this message translates to:
-  /// **'No career data available.'**
-  String get noCareerDataAvailable;
+  /// **'Socials'**
+  String get socials;
 
   /// No description provided for @search.
   ///
@@ -1192,6 +1222,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Education Information'**
   String get addEducationInfo;
+
+  /// No description provided for @home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
+
+  /// No description provided for @profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
+  /// No description provided for @cars.
+  ///
+  /// In en, this message translates to:
+  /// **'Cars'**
+  String get cars;
+
+  /// No description provided for @houses.
+  ///
+  /// In en, this message translates to:
+  /// **'Houses'**
+  String get houses;
+
+  /// No description provided for @artCollection.
+  ///
+  /// In en, this message translates to:
+  /// **'Art Collection'**
+  String get artCollection;
+
+  /// No description provided for @watchCollection.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch Collection'**
+  String get watchCollection;
+
+  /// No description provided for @sign.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign'**
+  String get sign;
+
+  /// No description provided for @more.
+  ///
+  /// In en, this message translates to:
+  /// **'... more'**
+  String get more;
+
+  /// No description provided for @showLess.
+  ///
+  /// In en, this message translates to:
+  /// **'show less'**
+  String get showLess;
+
+  /// No description provided for @youRated.
+  ///
+  /// In en, this message translates to:
+  /// **'You rated'**
+  String get youRated;
+
+  /// No description provided for @stars.
+  ///
+  /// In en, this message translates to:
+  /// **'stars'**
+  String get stars;
+
+  /// Snackbar message when user rates a post, with star count.
+  ///
+  /// In en, this message translates to:
+  /// **'You rated {count} stars!'**
+  String youRatedStars(Object count);
+
+  /// No description provided for @liveTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Live'**
+  String get liveTab;
+
+  /// No description provided for @recordedTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded'**
+  String get recordedTab;
+
+  /// No description provided for @captionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What is on your mind?'**
+  String get captionHint;
+
+  /// No description provided for @searchCategoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Category...'**
+  String get searchCategoryHint;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
