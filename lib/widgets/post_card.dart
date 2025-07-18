@@ -91,6 +91,7 @@ class _PostCardState extends State<PostCard> {
         children: [
           _buildHeader(),
           _buildPostContent(),
+          const SizedBox(height: 8,),
           _buildMediaSection(), // Add media section with safe video player usage
           _buildBottomActions()
         ],

@@ -131,6 +131,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                         ),
                       )
                 : const SizedBox.shrink(),
+            const SizedBox(height: 5,),
             ElevatedButton.icon(
               icon: const Icon(Icons.camera_alt),
               label: Text(_frontImage == null
@@ -189,9 +190,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
               isEnabled: (_frontImage != null && _backImage != null),
               onPressed: () {
                 // TODO: Implement upload/submit logic
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(AppLocalizations.of(context)!.verificationSubmitted)),
-                );
                 Navigator.pop(context, [_frontImage, _backImage]);
                 Navigator.pushNamed(context, celebrityProfileCreate);
               },

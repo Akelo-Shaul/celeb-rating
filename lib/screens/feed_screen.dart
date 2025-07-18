@@ -7,6 +7,7 @@ import '../widgets/app_buttons.dart';
 import '../widgets/app_dropdown.dart';
 import '../widgets/post_card.dart';
 import '../utils/route.dart';
+import '../widgets/profile_avatar.dart';
 import '../widgets/video_player_widget.dart';
 
 class FeedScreen extends StatefulWidget {
@@ -71,57 +72,143 @@ class _FeedScreenState extends State<FeedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const MyAppBar(),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              child: Text(AppLocalizations.of(context)!.drawerHeader, style: const TextStyle(color: Colors.white)),
-            ),
-            ListTile(
-              title: Text(AppLocalizations.of(context)!.item1),
-            ),
-            ListTile(
-              title: Text(AppLocalizations.of(context)!.item2),
-            ),
-          ],
-        ),
-      ),
-      endDrawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      endDrawer: SafeArea(
+        child: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                // You can set a background decoration for the entire header if needed
+                decoration: BoxDecoration(
+                  color: Color(0x93A3A3A3), // Example: a light background for the header area
+                ),
+                child: Align( // Use Align to position the profile picture within the header's default space
+                  alignment: Alignment.center, // Typically aligns content to the left
                   child: GestureDetector(
                     onTap: () {
                       // Implement profile navigation
                       print('Profile picture tapped');
+                      // Example: Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfilePage()));
                     },
-                    child: CircleAvatar(
-                      radius: 30, // Adjust size
-                      backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.5), // Placeholder color
-                      // You would typically load an actual image here:
-                      // backgroundImage: NetworkImage('your_profile_picture_url'),
-                      child: const Icon(Icons.person, color: Colors.white), // Placeholder icon
+                    child: const ProfileAvatar(
+                      //TODO: Replace with real user profile photo
+                      imageUrl: null,
+                      radius: 60,
+                      backgroundColor: const Color(0xFF9E9E9E), // Custom background color
                     ),
                   ),
                 ),
-            ),
-            // In your widget tree
-            AppTransparentButton(
-              text: 'Profile',
-              icon: Icons.person_outline,
-              // iconColor: Colors.blueAccent, // Custom icon color
-              onPressed: () {
-                print('Profile button tapped');
-                Navigator.pushReplacementNamed(context, profileScreen);
-              },
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
-              borderRadius: BorderRadius.circular(25), // More rounded corners
-            )
-          ],
+              ),
+              AppTransparentButton(
+                text: 'Hall of Fame',
+                icon: Icons.emoji_events,
+                // iconColor: Colors.blueAccent, // Custom icon color
+                fontSize: 20,
+                onPressed: () {
+                  print('Hall of Fame tapped');
+                  Navigator.pushNamed(context, hallOfFame);
+                },
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                borderRadius: BorderRadius.circular(25), // More rounded corners
+              ),
+              AppTransparentButton(
+                text: 'Celebrity Ranks',
+                icon: Icons.bar_chart_rounded,
+                // iconColor: Colors.blueAccent, // Custom icon color
+                fontSize: 20,
+                onPressed: () {
+                  print('Ranks tapped');
+                  Navigator.pushNamed(context, awardScreen);
+                },
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                borderRadius: BorderRadius.circular(25), // More rounded corners
+              ),
+              AppTransparentButton(
+                text: 'Versus Room',
+                icon: Icons.compare_arrows,
+                // iconColor: Colors.blueAccent, // Custom icon color
+                fontSize: 20,
+                onPressed: () {
+                  print('Versus tapped');
+                  Navigator.pushNamed(context, versusScreen);
+                },
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                borderRadius: BorderRadius.circular(25), // More rounded corners
+              ),
+              AppTransparentButton(
+                text: 'Awards',
+                icon: Icons.military_tech,
+                // iconColor: Colors.blueAccent, // Custom icon color
+                fontSize: 20,
+                onPressed: () {
+                  print('Awards tapped');
+                  //TODO: Add navigation logic
+                },
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                borderRadius: BorderRadius.circular(25), // More rounded corners
+              ),
+              AppTransparentButton(
+                text: 'Profile',
+                icon: Icons.person_outline,
+                // iconColor: Colors.blueAccent, // Custom icon color
+                fontSize: 20,
+                onPressed: () {
+                  print('Profile button tapped');
+                  Navigator.pushReplacementNamed(context, profileScreen);
+                },
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                borderRadius: BorderRadius.circular(25), // More rounded corners
+              ),
+              AppTransparentButton(
+                text: 'Saved',
+                icon: Icons.bookmark,
+                // iconColor: Colors.blueAccent, // Custom icon color
+                fontSize: 20,
+                onPressed: () {
+                  print('Saved tapped');
+                  //TODO: Add navigation logic
+                },
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                borderRadius: BorderRadius.circular(25), // More rounded corners
+              ),
+              AppTransparentButton(
+                text: 'Notifications',
+                icon: Icons.notifications,
+                // iconColor: Colors.blueAccent, // Custom icon color
+                fontSize: 20,
+                onPressed: () {
+                  print('Notifications tapped');
+                  //TODO: Add navigation logic
+                },
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                borderRadius: BorderRadius.circular(25), // More rounded corners
+              ),
+              AppTransparentButton(
+                text: 'Settings',
+                icon: Icons.settings,
+                // iconColor: Colors.blueAccent, // Custom icon color
+                fontSize: 20,
+                onPressed: () {
+                  print('Settings tapped');
+                  //TODO: Add navigation logic
+                },
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                borderRadius: BorderRadius.circular(25), // More rounded corners
+              ),
+              AppTransparentButton(
+                text: 'Logout',
+                icon: Icons.logout,
+                iconColor: Colors.red, // Custom icon color
+                fontSize: 20,
+                onPressed: () {
+                  print('Logout tapped');
+                  //TODO: Add navigation logic
+                },
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                borderRadius: BorderRadius.circular(25), // More rounded corners
+              ),
+            ],
+          ),
         ),
       ),
       body: ListView.builder(
@@ -160,16 +247,9 @@ class _MyAppBarState extends State<MyAppBar> {
     return AppBar(
       backgroundColor: Colors.transparent, // Make AppBar transparent to show background if any
       elevation: 0, // No shadow
-      leadingWidth: 60, // Adjust if needed
-      leading: IconButton(
-        icon: Icon(Icons.menu, color: Theme.of(context).iconTheme.color), // Hamburger icon
-        onPressed: () {
-          // Implement sidebar/drawer opening logic here
-          Scaffold.of(context).openDrawer(); // Example: opens a Drawer
-        },
-      ),
-      title: SizedBox(
-        width: 120, // Adjust width as needed for the dropdown
+      title: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        width: 150, // Adjust width as needed for the dropdown
         child: AppDropdown<String>(
           labelText: _currentFeedType,
           value: _currentFeedType,
@@ -203,7 +283,7 @@ class _MyAppBarState extends State<MyAppBar> {
           icon: Icon(Icons.search, color: Theme.of(context).iconTheme.color), // Search icon
           onPressed: () {
             // Implement search functionality
-            print('Search tapped');
+            Navigator.pushReplacementNamed(context, searchScreen);
           },
         ),
         Padding(
@@ -214,13 +294,12 @@ class _MyAppBarState extends State<MyAppBar> {
               print('Profile picture tapped');
               Scaffold.of(context).openEndDrawer();
             },
-            child: CircleAvatar(
-              radius: 22, // Adjust size
-              backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.5), // Placeholder color
-              // You would typically load an actual image here:
-              // backgroundImage: NetworkImage('your_profile_picture_url'),
-              child: const Icon(Icons.person, color: Colors.white), // Placeholder icon
-            ),
+            child:const ProfileAvatar(
+              //TODO: Replace with real user profile photo
+              imageUrl: null,
+              radius: 20,
+              backgroundColor: const Color(0xFF9E9E9E), // Custom background color
+            )
           ),
         ),
         const SizedBox(width: 8), // Some padding on the right edge

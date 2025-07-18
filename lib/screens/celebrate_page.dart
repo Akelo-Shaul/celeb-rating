@@ -270,7 +270,18 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
   List<bool> _isVideoList = [];
 
   @override
+  void initState() {
+    super.initState();
+    _captionController.addListener(_onCaptionChanged);
+  }
+
+  void _onCaptionChanged() {
+    setState(() {});
+  }
+
+  @override
   void dispose() {
+    _captionController.removeListener(_onCaptionChanged);
     _captionController.dispose();
     _categorySearchController.dispose();
     super.dispose();
@@ -380,29 +391,28 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  onPressed: _mediaFiles.isNotEmpty || _captionController.text.trim().isNotEmpty
-                      ? () {
-                    print('Caption: ${_captionController.text}');
-                    print('Media Files: ${_mediaFiles.map((f) => f.path).toList()}');
-                    print('Selected Categories: $_selectedCategories');
-                  }
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
+            if (_mediaFiles.isNotEmpty || _captionController.text.trim().isNotEmpty)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      print('Caption: ${_captionController.text}');
+                      print('Media Files: ${_mediaFiles.map((f) => f.path).toList()}');
+                      print('Selected Categories: $_selectedCategories');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                    child: Text(localizations.post, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
-                  child: Text(localizations.post, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                ),
-              ],
-            ),
+                ],
+              ),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.only(bottom: 24),

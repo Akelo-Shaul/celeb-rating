@@ -252,26 +252,27 @@ class _AuthScreenState extends State<AuthScreen> {
                         SizedBox(
                           height: 130,
                           width: 130,
-                          child: Image.file(File(_selectedImage!.path), fit: BoxFit.cover),
+                          child: Image.file(File(_selectedImage!.path), fit: BoxFit.cover), // Use fit to avoid overflow
                         ) :
-                        const Center(
-                          child: Icon(Icons.camera_alt, size: 48, color: Colors.grey),
+                        Image.asset(
+                          'assets/images/profile_placeholder.png',
+                          height: 130,
+                          width: 130,
                         ),
                       ),
                     ),
-                    if (_selectedImage != null)
-                      Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.edit_square,
-                            color: const Color(0xFFD6AF0C),
-                            size: 40,
-                          ),
-                          onPressed: _openCamera,
-                        ),
+                    Positioned(
+                      right: -10,
+                      top: -10,
+                      child: IconButton(
+                        icon: _selectedImage != null ? Icon(
+                          Icons.edit_square,
+                          color: const Color(0xFFD6AF0C),
+                          size: 35,
+                        ): Icon(Icons.camera_alt, size: 35, color:  const Color(0xFFD6AF0C)),
+                        onPressed: _openCamera,
                       ),
+                    ),
                   ]
               ),
             ),

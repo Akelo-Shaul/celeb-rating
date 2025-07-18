@@ -45,6 +45,17 @@ class FeedService{
       createdAt: DateTime.now(),
     );
 
+    final User user4 = User(
+      id: 4,
+      username: 'whiteLotis',
+      fullName: 'White Lotis Z',
+      profileImageUrl: null,
+      password: 'dummy_password',
+      email: 'brumm@example.com',
+      role: 'Programmer',
+      createdAt: DateTime.now(),
+    );
+
     // Dummy Comments with replies
     final Comment reply1 = Comment(
       id: 'r_001',
@@ -74,7 +85,7 @@ class FeedService{
       Post(
         id: 'post_000',
         content: 'Check out this amazing event! Here are some highlights in photos and a video.',
-        from: user1,
+        from: user4,
         categories: ['Events', 'Highlights'],
         hashtags: ['#event', '#highlights', '#fun'],
         timestamp: DateTime.now().subtract(const Duration(days: 1)),
@@ -264,6 +275,26 @@ class FeedService{
         likes: [Like(userId: user2.id.toString(), likedAt: DateTime.now())],
         comments: [],
         location: 'XYZ University, USA',
+      ),
+      Post(
+        id: 'post_011',
+        content: 'Check out this amazing event! Here are some highlights in photos and a video.',
+        from: user1,
+        categories: ['Events', 'Highlights'],
+        hashtags: ['#event', '#highlights', '#fun'],
+        timestamp: DateTime.now().subtract(const Duration(days: 1)),
+        mediaLink: 'https://example.com/media/0',
+        timeAgo: '1 day ago',
+        media: [
+          MediaItem(url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80', type: 'image'),
+          MediaItem(url: 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4', type: 'video'),
+          MediaItem(url: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80', type: 'image'),
+          MediaItem(url: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=800&q=80', type: 'image'),
+        ],
+        initialRating: 4,
+        likes: [Like(userId: user2.id.toString(), likedAt: DateTime.now())],
+        comments: [comment1],
+        location: 'New York, USA',
       ),
     ];
   }

@@ -365,12 +365,12 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
           children: [
             const SizedBox(height: 40),
             Text(
-              AppLocalizations.of(context)!.addEducation,
+              'Add Education',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            Text(AppLocalizations.of(context)!.addEducationInfo, textAlign: TextAlign.center),
+            Text('Add Education Information', textAlign: TextAlign.center),
 
             const SizedBox(height: 8),
             const SizedBox(height: 24),
@@ -454,6 +454,29 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                 ),
               ),
             const Spacer(),
+            const SizedBox(height: 8),
+            AppButton(
+              text: AppLocalizations.of(context)!.addManually,
+              icon: Icons.group_add,
+              onPressed: () async {
+                final result = await showModalBottomSheet<Map<String, dynamic>>(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => AddWealthItemModal(
+                    onAdd: (item) {
+                      Navigator.of(context).pop(item);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(AppLocalizations.of(context)!.addedWealthItem(item['name']))),
+                      );
+                    },
+                  ),
+                );
+                if (result != null) {
+                  // Optionally update your state with the new wealth item
+                }
+              },
+            ),
             const SizedBox(height: 50),
 
             Align(

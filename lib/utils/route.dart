@@ -1,6 +1,8 @@
 import 'package:celebrating/screens/auth_screen.dart';
+import 'package:celebrating/screens/award_screen.dart';
 import 'package:celebrating/screens/camera_screen.dart';
 import 'package:celebrating/screens/feed_screen.dart';
+import 'package:celebrating/screens/hall_of_fame.dart';
 import 'package:celebrating/screens/onboarding_screen.dart';
 import 'package:celebrating/screens/search_page.dart';
 import 'package:celebrating/screens/celebrate_page.dart';
@@ -14,6 +16,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/celebrity_profile_create.dart';
+import '../screens/versus_screen.dart';
 
 const String authScreen = '/auth';
 const String onboardingScreen = '/onboarding';
@@ -28,6 +31,9 @@ const String flickScreen = '/flick';
 const String cameraScreen = 'camera';
 const String verificationScreen = '/verificationScreen';
 const String celebrityProfileCreate = '/celebrityProfileCreate';
+const String hallOfFame = '/hallOfFame';
+const String versusScreen = '/versusScreen';
+const String awardScreen = '/awardScreen';
 
 class RouteGenerator{
   static Route<dynamic> generateRoute(RouteSettings settings){
@@ -71,6 +77,12 @@ class RouteGenerator{
           }
         }
         return MaterialPageRoute(builder: (_) => const FlickScreen(flicks: [], initialIndex: 0));
+      case hallOfFame:
+        return MaterialPageRoute(builder: (_) => const HallOfFame());
+      case versusScreen:
+        return MaterialPageRoute(builder: (_) => const VersusScreen());
+      case awardScreen:
+        return MaterialPageRoute(builder: (_) => const AwardScreen());
       default:
         return _errorRoute();
     }
