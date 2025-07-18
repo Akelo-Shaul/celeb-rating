@@ -5,7 +5,7 @@
   "item2": "Wasifu",
   "feed": "Mlisho",
   "popular": "Maarufu",
-  "trending": "Inapendwa",
+  "trending": "Watumiaji Wanaovuma",
   "thankYouForSigningUp": "Asante kwa kujisajili!",
   "thankYouForRegistering": "Asante kwa kujisajili. Tafadhali kamilisha wasifu wako ili kuendelea.",
   "enterVerificationCode": "Weka Nambari ya Uthibitisho",
@@ -125,7 +125,8 @@
   "noPostsToDisplay": "Hakuna machapisho ya kuonyesha.",
   "noCareerDataAvailable": "Hakuna data ya kazi.",
   "search": "Tafuta",
-  "searchHint": "Tafuta...",
+  "searchHint": "Tafuta mtumiaji...",
+  "searchSecondUserHint": "Tafuta mtumiaji wa pili...",
   "tabPeople": "Watu",
   "tabFlicks": "Flicks",
   "tabPlaces": "Maeneo",
@@ -228,5 +229,8 @@
   "recordedTab": "Iliyorekodiwa",
   "noLiveStreams": "Hakuna matangazo ya moja kwa moja",
   "captionHint": "Unafikiria nini?",
-  "searchCategoryHint": "Tafuta Kategoria..."
+  "searchCategoryHint": "Tafuta Kategoria...",
+  "suggestedVersus": "Versus Zilizopendekezwa",
+  "selectedVersus": "Versus Zilizochaguliwa",
+  "versusAbbreviation": "VS"
 }

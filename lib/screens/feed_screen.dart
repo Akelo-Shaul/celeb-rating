@@ -112,6 +112,18 @@ class _FeedScreenState extends State<FeedScreen> {
                 borderRadius: BorderRadius.circular(25), // More rounded corners
               ),
               AppTransparentButton(
+                text: 'Uhondo Kona',
+                icon: Icons.coffee,
+                // iconColor: Colors.blueAccent, // Custom icon color
+                fontSize: 20,
+                onPressed: () {
+                  print('Uhondo Kona tapped');
+                  Navigator.pushNamed(context, uhondoKona);
+                },
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                borderRadius: BorderRadius.circular(25), // More rounded corners
+              ),
+              AppTransparentButton(
                 text: 'Celebrity Ranks',
                 icon: Icons.bar_chart_rounded,
                 // iconColor: Colors.blueAccent, // Custom icon color
@@ -124,7 +136,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 borderRadius: BorderRadius.circular(25), // More rounded corners
               ),
               AppTransparentButton(
-                text: 'Versus Room',
+                text: 'Versus: Head to Head',
                 icon: Icons.compare_arrows,
                 // iconColor: Colors.blueAccent, // Custom icon color
                 fontSize: 20,

@@ -128,7 +128,7 @@ abstract class AppLocalizations {
   /// No description provided for @trending.
   ///
   /// In en, this message translates to:
-  /// **'Trending'**
+  /// **'Trending Users'**
   String get trending;
 
   /// No description provided for @thankYouForSigningUp.
@@ -800,8 +800,14 @@ abstract class AppLocalizations {
   /// No description provided for @searchHint.
   ///
   /// In en, this message translates to:
-  /// **'Search...'**
+  /// **'Search for a user...'**
   String get searchHint;
+
+  /// No description provided for @searchSecondUserHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for the second user...'**
+  String get searchSecondUserHint;
 
   /// No description provided for @tabPeople.
   ///
@@ -1318,6 +1324,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search Category...'**
   String get searchCategoryHint;
+
+  /// No description provided for @suggestedVersus.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested Versus'**
+  String get suggestedVersus;
+
+  /// No description provided for @selectedVersus.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected Versus'**
+  String get selectedVersus;
+
+  /// No description provided for @versusAbbreviation.
+  ///
+  /// In en, this message translates to:
+  /// **'VS'**
+  String get versusAbbreviation;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -24,7 +24,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get popular => 'Maarufu';
 
   @override
-  String get trending => 'Inapendwa';
+  String get trending => 'Watumiaji Wanaovuma';
 
   @override
   String get thankYouForSigningUp => 'Asante kwa kujisajili!';
@@ -364,7 +364,10 @@ class AppLocalizationsSw extends AppLocalizations {
   String get search => 'Tafuta';
 
   @override
-  String get searchHint => 'Tafuta...';
+  String get searchHint => 'Tafuta mtumiaji...';
+
+  @override
+  String get searchSecondUserHint => 'Tafuta mtumiaji wa pili...';
 
   @override
   String get tabPeople => 'Watu';
@@ -633,4 +636,13 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get searchCategoryHint => 'Tafuta Kategoria...';
+
+  @override
+  String get suggestedVersus => 'Versus Zilizopendekezwa';
+
+  @override
+  String get selectedVersus => 'Versus Zilizochaguliwa';
+
+  @override
+  String get versusAbbreviation => 'VS';
 }

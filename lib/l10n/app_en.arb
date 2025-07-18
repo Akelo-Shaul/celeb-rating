@@ -5,7 +5,7 @@
   "item2": "Profile",
   "feed": "Feed",
   "popular": "Popular",
-  "trending": "Trending",
+  "trending": "Trending Users",
   "thankYouForSigningUp": "Thank you for signing up!",
   "thankYouForRegistering": "Thank you for registering. Please complete your profile to continue.",
   "enterVerificationCode": "Enter Verification Code",
@@ -123,7 +123,8 @@
   "fanTheoriesInteractions": "Fan Theories & Interactions",
   "socials": "Socials",
   "search": "Search",
-  "searchHint": "Search...",
+  "searchHint": "Search for a user...",
+  "searchSecondUserHint": "Search for the second user...",
   "tabPeople": "People",
   "tabFlicks": "Flicks",
   "tabPlaces": "Places",
@@ -226,5 +227,8 @@
   "recordedTab": "Recorded",
   "noLiveStreams": "No live streams available",
   "captionHint": "What is on your mind?",
-  "searchCategoryHint": "Search Category..."
+  "searchCategoryHint": "Search Category...",
+  "suggestedVersus": "Suggested Versus",
+  "selectedVersus": "Selected Versus",
+  "versusAbbreviation": "VS"
 }

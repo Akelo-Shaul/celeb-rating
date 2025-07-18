@@ -9,15 +9,18 @@ import 'package:flutter/material.dart';
 import '../models/audio_post.dart';
 import '../models/live_stream.dart';
 import '../models/post.dart';
+import '../models/uhondo.dart';
 import '../models/user.dart';
 import '../services/search_service.dart';
 import '../services/stream.dart';
+import '../services/uhondo_service.dart';
 import '../widgets/app_search_bar.dart';
 import '../widgets/audio_card.dart';
 import '../widgets/flick_card.dart';
 import '../widgets/live_stream_card.dart';
 import '../widgets/live_stream_overlay.dart';
 import '../widgets/search_user_card.dart';
+import '../widgets/uhondo_list.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -44,6 +47,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
   List<dynamic> _searchLocationResults = [];
   List<AudioPost> _searchAudioPosts = [];
   List<LiveStream> _liveStreams = [];
+  List<Uhondo> _searchUhondoResults = [];
   bool _isLoading = false;
   bool _isSearchResults = false;
   late TabController _tabController;
@@ -84,12 +88,25 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
           _searchLocationResults = results;
           _isLoading = false;
         });
+        break;
       case 3:
         results = await SearchService.searchAudio(query);
         setState(() {
           _searchAudioPosts = results;
           _isLoading = false;
         });
+        break;
+      case 7:
+        // Uhondo tab
+        final allUhondos = await UhondoService.fetchUhondoPosts();
+        final filteredUhondos = query.trim().isEmpty
+            ? allUhondos
+            : allUhondos.where((u) => u.title.toLowerCase().contains(query.trim().toLowerCase())).toList();
+        setState(() {
+          _searchUhondoResults = filteredUhondos;
+          _isLoading = false;
+        });
+        break;
       default:
         setState(() {
           _searchUserResults = [];
@@ -543,7 +560,18 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
   }
 
   Widget _buildUhondoTab(){
-    return Center(child: Text(AppLocalizations.of(context)!.streamTab),);
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_searchUhondoResults.isEmpty) {
+      return Center(child: Text(AppLocalizations.of(context)!.nothingToDisplay));
+    }
+    return UhondoList(
+      uhondos: _searchUhondoResults,
+      onTap: (post) {
+        Navigator.pushNamed(context, webView, arguments: {'url': post.blogLink});
+      },
+    );
   }
 }
 

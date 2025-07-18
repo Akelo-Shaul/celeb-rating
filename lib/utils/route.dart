@@ -11,11 +11,15 @@ import 'package:celebrating/screens/stream_page.dart';
 import 'package:celebrating/screens/profile_page.dart';
 import 'package:celebrating/screens/main_navigation_shell.dart';
 import 'package:celebrating/screens/verification_screen.dart';
+import 'package:celebrating/screens/web_view_screen.dart';
 import 'package:celebrating/widgets/flick_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../models/versus_user.dart';
 import '../screens/celebrity_profile_create.dart';
+import '../screens/head_to_head_screen.dart';
+import '../screens/uhondo_kona.dart';
 import '../screens/versus_screen.dart';
 
 const String authScreen = '/auth';
@@ -34,6 +38,9 @@ const String celebrityProfileCreate = '/celebrityProfileCreate';
 const String hallOfFame = '/hallOfFame';
 const String versusScreen = '/versusScreen';
 const String awardScreen = '/awardScreen';
+const String headToHeadScreen = '/headToHead';
+const String uhondoKona = '/uhondoKona';
+const String webView = '/webView';
 
 class RouteGenerator{
   static Route<dynamic> generateRoute(RouteSettings settings){
@@ -83,6 +90,32 @@ class RouteGenerator{
         return MaterialPageRoute(builder: (_) => const VersusScreen());
       case awardScreen:
         return MaterialPageRoute(builder: (_) => const AwardScreen());
+      case headToHeadScreen:
+        if (settings.arguments is Map) {
+          final args = settings.arguments as Map;
+          final user1 = args['user1'];
+          final user2 = args['user2'];
+          if (user1 != null && user2 != null) {
+            return MaterialPageRoute(
+              builder: (_) => HeadToHead(user1: user1, user2: user2),
+            );
+          }
+        }
+        return MaterialPageRoute(builder: (_) => const HeadToHead(user1: VersusUser(id: '', name: '', imageUrl: ''), user2: VersusUser(id: '', name: '', imageUrl: '')));
+      case uhondoKona:
+        return MaterialPageRoute(builder: (_) => const UhondoKona());
+      case webView:
+        String? urlArg;
+        if (settings.arguments is Map) {
+          final args = settings.arguments as Map;
+          urlArg = args['url'] as String?;
+        } else if (settings.arguments is String) {
+          urlArg = settings.arguments as String?;
+        }
+        if (urlArg != null && urlArg.isNotEmpty) {
+          return MaterialPageRoute(builder: (_) => WebView(url: urlArg!));
+        }
+        return MaterialPageRoute(builder: (_) => const WebView(url: ''));
       default:
         return _errorRoute();
     }

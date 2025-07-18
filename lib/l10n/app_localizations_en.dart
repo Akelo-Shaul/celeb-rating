@@ -24,7 +24,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get popular => 'Popular';
 
   @override
-  String get trending => 'Trending';
+  String get trending => 'Trending Users';
 
   @override
   String get thankYouForSigningUp => 'Thank you for signing up!';
@@ -364,7 +364,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get search => 'Search';
 
   @override
-  String get searchHint => 'Search...';
+  String get searchHint => 'Search for a user...';
+
+  @override
+  String get searchSecondUserHint => 'Search for the second user...';
 
   @override
   String get tabPeople => 'People';
@@ -633,4 +636,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchCategoryHint => 'Search Category...';
+
+  @override
+  String get suggestedVersus => 'Suggested Versus';
+
+  @override
+  String get selectedVersus => 'Selected Versus';
+
+  @override
+  String get versusAbbreviation => 'VS';
 }
