@@ -2,10 +2,13 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CameraScreen extends StatefulWidget {
-  const CameraScreen({super.key});
+  final String returnRoute;
+
+  const CameraScreen({super.key, required this.returnRoute});
 
   @override
   State<CameraScreen> createState() => _CameraScreenState();
@@ -62,7 +65,7 @@ class _CameraScreenState extends State<CameraScreen> {
       setState(() {});
       print('The IMaGe PatH');
       print(imageFile!.path);
-      Navigator.pop(context,imageFile);
+      context.go(widget.returnRoute, extra: {'selectedImage': imageFile});
     }
   }
 
@@ -74,7 +77,7 @@ class _CameraScreenState extends State<CameraScreen> {
       setState(() {
         imageFile = pickedFile;
       });
-      Navigator.pop(context, pickedFile);
+      context.go(widget.returnRoute, extra: {'selectedImage': pickedFile});
       print('ROuting HOOME');
       print(pickedFile);
     }

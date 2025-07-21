@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 
 import 'package:celebrating/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'dart:io';
 
 import '../utils/route.dart';
@@ -190,8 +191,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
               isEnabled: (_frontImage != null && _backImage != null),
               onPressed: () {
                 // TODO: Implement upload/submit logic
-                Navigator.pop(context, [_frontImage, _backImage]);
-                Navigator.pushNamed(context, celebrityProfileCreate);
+                context.go('/celebrity-profile-create');
               },
             ),
             const SizedBox(height: 16),

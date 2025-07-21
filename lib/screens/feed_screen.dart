@@ -1,6 +1,7 @@
 import 'package:celebrating/l10n/app_localizations.dart';
 import 'package:celebrating/widgets/shimmer_box.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../models/post.dart';
 import '../services/feed_service.dart';
 import '../widgets/app_buttons.dart';
@@ -106,7 +107,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 fontSize: 20,
                 onPressed: () {
                   print('Hall of Fame tapped');
-                  Navigator.pushNamed(context, hallOfFame);
+                  context.goToHallOfFame();
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
@@ -118,7 +119,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 fontSize: 20,
                 onPressed: () {
                   print('Uhondo Kona tapped');
-                  Navigator.pushNamed(context, uhondoKona);
+                  context.goToUhondoKona();
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
@@ -130,7 +131,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 fontSize: 20,
                 onPressed: () {
                   print('Ranks tapped');
-                  Navigator.pushNamed(context, awardScreen);
+                  context.goToAward();
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
@@ -142,7 +143,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 fontSize: 20,
                 onPressed: () {
                   print('Versus tapped');
-                  Navigator.pushNamed(context, versusScreen);
+                  context.goToVersus();
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
@@ -166,7 +167,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 fontSize: 20,
                 onPressed: () {
                   print('Profile button tapped');
-                  Navigator.pushReplacementNamed(context, profileScreen);
+                  context.go('/profile');
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
@@ -291,13 +292,6 @@ class _MyAppBarState extends State<MyAppBar> {
       ),
       // centerTitle: true, // Center the title (the FEED dropdown)
       actions: [
-        IconButton(
-          icon: Icon(Icons.search, color: Theme.of(context).iconTheme.color), // Search icon
-          onPressed: () {
-            // Implement search functionality
-            Navigator.pushReplacementNamed(context, searchScreen);
-          },
-        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: GestureDetector(

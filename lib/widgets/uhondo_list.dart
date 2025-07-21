@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:go_router/go_router.dart';
 import '../models/uhondo.dart';
 import '../utils/route.dart';
 
@@ -25,7 +26,7 @@ class UhondoList extends StatelessWidget {
               child: GestureDetector(
                 onTap: () async {
                   // Optionally open blog link if url_launcher is imported
-                  Navigator.pushNamed(context, webView, arguments: {'url': post.blogLink});
+                  context.go('${AppRoutes.webView}/${Uri.encodeComponent(post.blogLink)}');
                 },
                 child: Card(
                   elevation: 4.0,

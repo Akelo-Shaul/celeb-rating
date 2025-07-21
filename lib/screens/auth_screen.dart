@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:celebrating/utils/route.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:celebrating/services/user_service.dart';
 import 'package:celebrating/app_state.dart';
@@ -55,7 +56,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void _submitLogin() async {
-    Navigator.pushReplacementNamed(context, '/onboarding');
+    context.go('/onboarding');
     if (!_formKeyLogin.currentState!.validate()) {
       setState(() {
         isSubmitting = false;
@@ -90,6 +91,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void _submitRegister() async {
+    context.go('/onboarding');
     setState(() {
       errorMessage = null;
       isSubmitting = false;
@@ -186,12 +188,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> _openCamera() async {
-    final result = await Navigator.pushNamed(context, cameraScreen);
-    if (result is XFile) {
-      setState(() {
-        _selectedImage = result;
-      });
-    }
+    context.go('/camera?returnRoute=/auth');
   }
 
   Widget _buildLoginForm() {
@@ -349,6 +346,20 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
       ),
     );
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final extra = GoRouterState.of(context).extra as Map<String, dynamic>?;
+      if (extra != null && extra['selectedImage'] != null) {
+        setState(() {
+          _selectedImage = extra['selectedImage'] as XFile;
+        });
+      }
+    });
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:celebrating/models/user.dart';
 import 'package:celebrating/utils/route.dart';
 import 'package:celebrating/widgets/app_buttons.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:celebrating/widgets/add_family_member_modal.dart';
 import 'package:celebrating/widgets/add_wealth_item_modal.dart';
@@ -484,7 +485,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
               child: AppTextButton(
                 text: AppLocalizations.of(context)!.finish,
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, feedScreen);
+                  context.go('/feed');
                 },
               ),
             ),

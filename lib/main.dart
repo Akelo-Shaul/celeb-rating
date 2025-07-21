@@ -23,18 +23,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Celebrating',
       theme: AppTheme.lightTheme,
-      onGenerateRoute: RouteGenerator.generateRoute,
+      routerConfig: appRouter,
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
       darkTheme: AppTheme.darkTheme,
       themeMode: appState.themeMode,
       locale: appState.locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      home: const SplashScreen(),
     );
   }
 }

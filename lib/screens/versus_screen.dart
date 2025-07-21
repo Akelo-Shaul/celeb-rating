@@ -1,5 +1,6 @@
 import 'package:celebrating/utils/route.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/versus_user.dart';
@@ -213,10 +214,9 @@ class _VersusScreenState extends State<VersusScreen> {
                 onTap: () {
                   // This is the final display, maybe navigate to a versus detail screen
                   print('Versus initiated between ${_selectedUser1!.name} and ${_selectedUser2!.name}');
-                  Navigator.pushNamed(
-                    context,
-                    headToHeadScreen,
-                    arguments: {
+                  context.go(
+                    AppRoutes.headToHeadScreen,
+                    extra: {
                       'user1': _selectedUser1,
                       'user2': _selectedUser2,
                     },

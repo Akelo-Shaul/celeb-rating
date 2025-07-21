@@ -21,71 +21,45 @@ class BottomNavigation extends StatelessWidget {
     final Color unselectedLabelColor = isDark ? Colors.grey[400]! : Colors.grey[600]!;
     final localizations = AppLocalizations.of(context)!;
 
-    return NavigationBarTheme(
-      data: NavigationBarThemeData(
-        indicatorColor: indicatorColor,
-        labelTextStyle: WidgetStateProperty.resolveWith<TextStyle?>(
-          (Set<WidgetState> states) {
-            if (states.contains(WidgetState.selected)) {
-              return TextStyle(
-                color: selectedLabelColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-              );
-            } else {
-              return TextStyle(
-                color: unselectedLabelColor,
-                fontWeight: FontWeight.normal,
-                fontSize: 12,
-              );
-            }
-          },
+    return NavigationBar(
+      height: 64,
+      selectedIndex: selectedIndex,
+      onDestinationSelected: onDestinationSelected,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      indicatorColor: indicatorColor, // Direct property instead of theme
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      destinations: [
+        NavigationDestination(
+          icon: Icon(Icons.home_outlined, color: unselectedIconColor),
+          selectedIcon: Icon(Icons.home, color: selectedIconColor),
+          label: 'Home',
         ),
-      ),
-      child: NavigationBar(
-        height: 64,
-        selectedIndex: selectedIndex,
-        onDestinationSelected: onDestinationSelected,
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        destinations: [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined, color: unselectedIconColor),
-            selectedIcon: Icon(Icons.home, color: selectedIconColor),
-            // label: localizations.home,
-            label: 'Home'
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.search_outlined, color: unselectedIconColor),
-            selectedIcon: Icon(Icons.search, color: selectedIconColor),
-            // label: localizations.search,
-            label: 'Search'
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.add_box_outlined, color: unselectedIconColor),
-            selectedIcon: Icon(Icons.add_box, color: selectedIconColor),
-            // label: localizations.celebrate,
-            label: 'Celebrate'
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.movie_outlined, color: unselectedIconColor),
-            selectedIcon: Icon(Icons.movie, color: selectedIconColor),
-            // label: localizations.flick,
-            label: 'Flick'
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.live_tv_outlined, color: unselectedIconColor),
-            selectedIcon: Icon(Icons.live_tv, color: selectedIconColor),
-            // label: localizations.stream,
-            label: 'Stream'
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline, color: unselectedIconColor),
-            selectedIcon: Icon(Icons.person, color: selectedIconColor),
-            // label: localizations.profile,
-            label: 'Profile'
-          ),
-        ],
-      ),
+        NavigationDestination(
+          icon: Icon(Icons.search_outlined, color: unselectedIconColor),
+          selectedIcon: Icon(Icons.search, color: selectedIconColor),
+          label: 'Search',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.add_box_outlined, color: unselectedIconColor),
+          selectedIcon: Icon(Icons.add_box, color: selectedIconColor),
+          label: 'Celebrate',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.movie_outlined, color: unselectedIconColor),
+          selectedIcon: Icon(Icons.movie, color: selectedIconColor),
+          label: 'Flick',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.live_tv_outlined, color: unselectedIconColor),
+          selectedIcon: Icon(Icons.live_tv, color: selectedIconColor),
+          label: 'Stream',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.person_outline, color: unselectedIconColor),
+          selectedIcon: Icon(Icons.person, color: selectedIconColor),
+          label: 'Profile',
+        ),
+      ],
     );
   }
 }

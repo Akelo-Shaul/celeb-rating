@@ -3,6 +3,7 @@
 import 'package:celebrating/utils/route.dart';
 import 'package:flutter/material.dart';
 import 'package:celebrating/l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 // Assuming you have these custom widgets in your project
 import '../widgets/app_buttons.dart';
 import '../widgets/app_dropdown.dart';
@@ -699,7 +700,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 textColor: Color(0xFFD6AF0C),
                 onPressed: () {
                   //TODO: Navigate to profile
-                  Navigator.pushReplacementNamed(context, feedScreen);
+                  context.go('/feed');
                   setState(() {
                   });
                 },
@@ -708,7 +709,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               PartedButton(
                 onPressed: () {
                   // Switch to country/state selection tab
-                  Navigator.pushReplacementNamed(context, verificationScreen);
+                  context.go('/verification');
                   setState(() {
                   });
                 },
@@ -727,59 +728,62 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _countrySelect() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Image.asset(
-            'assets/images/celebratinglogo.png',
-            width: MediaQuery.of(context).size.width * 0.8
-        ),
-        AppDropdownFormField<String>(
-          labelText: AppLocalizations.of(context)!.selectCountry,
-          icon: Icons.public_outlined,
-          value: _onboardingCountry,
-          items: _countries.map((String country) {
-            return DropdownMenuItem<String>(
-              value: country,
-              child: Text(country, overflow: TextOverflow.ellipsis, softWrap: false),
-            );
-          }).toList(),
-          onChanged: (String? newValue) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Image.asset(
+              'assets/images/celebratinglogo.png',
+              width: MediaQuery.of(context).size.width * 0.8
+          ),
+          AppDropdownFormField<String>(
+            labelText: AppLocalizations.of(context)!.selectCountry,
+            icon: Icons.public_outlined,
+            value: _onboardingCountry,
+            items: _countries.map((String country) {
+              return DropdownMenuItem<String>(
+                value: country,
+                child: Text(country, overflow: TextOverflow.ellipsis, softWrap: false),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              setState(() {
+                _onboardingCountry = newValue;
+                _onboardingState = null;
+              });
+            },
+            onSaved: (newValue) => _onboardingCountry = newValue,
+            validator: (value) => value == null ? AppLocalizations.of(context)!.pleaseSelectCountry : null,
+          ),
+          const SizedBox(height: 16),
+          AppDropdownFormField<String>(
+            labelText: AppLocalizations.of(context)!.selectState,
+            icon: Icons.location_on_outlined,
+            value: _onboardingState,
+            items: (_states[_onboardingCountry] ?? []).map((String state) {
+              return DropdownMenuItem<String>(
+                value: state,
+                child: Text(state, overflow: TextOverflow.ellipsis, softWrap: false),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              setState(() {
+                _onboardingState = newValue;
+              });
+            },
+            onSaved: (newValue) => _onboardingState = newValue,
+            validator: (value) => value == null ? AppLocalizations.of(context)!.pleaseSelectState : null,
+          ),
+          const SizedBox(height: 50,),
+          AppButton(text: AppLocalizations.of(context)!.continueText, onPressed: (){
             setState(() {
-              _onboardingCountry = newValue;
-              _onboardingState = null;
+              _currentIndex = 3;
             });
-          },
-          onSaved: (newValue) => _onboardingCountry = newValue,
-          validator: (value) => value == null ? AppLocalizations.of(context)!.pleaseSelectCountry : null,
-        ),
-        const SizedBox(height: 16),
-        AppDropdownFormField<String>(
-          labelText: AppLocalizations.of(context)!.selectState,
-          icon: Icons.location_on_outlined,
-          value: _onboardingState,
-          items: (_states[_onboardingCountry] ?? []).map((String state) {
-            return DropdownMenuItem<String>(
-              value: state,
-              child: Text(state, overflow: TextOverflow.ellipsis, softWrap: false),
-            );
-          }).toList(),
-          onChanged: (String? newValue) {
-            setState(() {
-              _onboardingState = newValue;
-            });
-          },
-          onSaved: (newValue) => _onboardingState = newValue,
-          validator: (value) => value == null ? AppLocalizations.of(context)!.pleaseSelectState : null,
-        ),
-        const SizedBox(height: 50,),
-        AppButton(text: AppLocalizations.of(context)!.continueText, onPressed: (){
-          setState(() {
-            _currentIndex = 3;
-          });
-        })
-      ],
+          })
+        ],
+      ),
     );
   }
 

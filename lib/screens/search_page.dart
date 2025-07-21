@@ -5,6 +5,7 @@ import 'package:celebrating/widgets/stream_category_card.dart';
 
 import 'package:celebrating/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../models/audio_post.dart';
 import '../models/live_stream.dart';
@@ -118,12 +119,11 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
 
   void onFlickTap(Flick flick){
     final index = _searchFlickResults.indexOf(flick);
-    Navigator.pushNamed(
-      context,
-      flickScreen,
-      arguments: {
-        'flicks': _searchFlickResults,
-        'initialIndex': index,
+    context.go(
+      AppRoutes.flickScreen,
+      extra: {
+        'flicks': _searchFlickResults, // Your List of flicks
+        'initialIndex': 2, // Optional: defaults to 0 if not provided
       },
     );
   }
@@ -569,7 +569,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
     return UhondoList(
       uhondos: _searchUhondoResults,
       onTap: (post) {
-        Navigator.pushNamed(context, webView, arguments: {'url': post.blogLink});
+        context.go('${AppRoutes.webView}/${Uri.encodeComponent(post.blogLink)}');
       },
     );
   }

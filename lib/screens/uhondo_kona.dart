@@ -1,6 +1,7 @@
 import 'dart:ui'; // Keep this import for ImageFilter.blur
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../models/uhondo.dart'; // Assuming this exists
 import '../services/uhondo_service.dart'; // Assuming this exists
@@ -47,7 +48,7 @@ class _UhondoKonaState extends State<UhondoKona> {
           : UhondoList(
               uhondos: _posts ?? [],
               onTap: (post) {
-                Navigator.pushNamed(context, webView, arguments: {'url': post.blogLink});
+                context.go('${AppRoutes.webView}/${Uri.encodeComponent(post.blogLink)}');
               },
             ),
     );
