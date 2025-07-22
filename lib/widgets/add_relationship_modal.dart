@@ -7,20 +7,23 @@ import 'package:image_picker/image_picker.dart';
 import '../l10n/app_localizations.dart';
 import 'app_buttons.dart';
 import 'app_text_fields.dart';
+import '../utils/route.dart';
+import 'app_date_picker.dart';
 
-class AddFamilyMemberModal extends StatefulWidget {
+class AddRelationshipModal extends StatefulWidget {
   final void Function(Map<String, dynamic> member) onAdd;
-
-  const AddFamilyMemberModal({super.key, required this.onAdd});
+  final String? sectionTitle;
+  const AddRelationshipModal({super.key, required this.onAdd, this.sectionTitle});
 
   @override
-  State<AddFamilyMemberModal> createState() => _AddFamilyMemberModalState();
+  State<AddRelationshipModal> createState() => _AddFamilyMemberModalState();
 }
 
-class _AddFamilyMemberModalState extends State<AddFamilyMemberModal> {
+class _AddFamilyMemberModalState extends State<AddRelationshipModal> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
+  DateTime? _selectedBirthDate;
   final Map<String, TextEditingController> _socialControllers = {
     'Instagram': TextEditingController(),
     'Twitter': TextEditingController(),
@@ -30,6 +33,10 @@ class _AddFamilyMemberModalState extends State<AddFamilyMemberModal> {
   };
   XFile? _pickedImage;
   bool _isLoading = false;
+  final List<String> _relationshipTypes = [
+    'Mother', 'Father', 'Spouse', 'Grandparent', 'Sibling', 'Child', 'Friend', 'Pet', 'Aunt', 'Uncle', 'Cousin', 'Other'
+  ];
+  String? _selectedRelationship;
 
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
@@ -85,30 +92,49 @@ class _AddFamilyMemberModalState extends State<AddFamilyMemberModal> {
     final defaultTextColor = isDark ? Colors.white : Colors.black;
     final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
     final appPrimaryColor = Color(0xFFD6AF0C);
-
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Container(
-        decoration: BoxDecoration(
-          color: isDark ? Colors.grey.shade900 : Colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        padding: EdgeInsets.only(
-          top: 16.0,
-          left: 16.0,
-          right: 16.0,
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
+    final bool hasSectionTitle = (widget.sectionTitle != null && widget.sectionTitle!.isNotEmpty);
+    if (hasSectionTitle && _selectedRelationship != widget.sectionTitle) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_selectedRelationship != widget.sectionTitle) {
+          setState(() {
+            _selectedRelationship = widget.sectionTitle;
+          });
+        }
+      });
+    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 40), // leave space for the close button
+      child: SingleChildScrollView(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Container(
+            padding: EdgeInsets.only(
+              top: 24, // Ensures content is below the system UI
+              left: 16.0,
+              right: 16.0,
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            decoration: BoxDecoration(
+              color: isDark ? Colors.grey.shade900 : Colors.white,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.close, color: Colors.grey[700], size: 28),
+                      onPressed: () => Navigator.of(context).pop(),
+                      tooltip: 'Close',
+                    ),
+                  ],
+                ),
                 Text(
-                  AppLocalizations.of(context)!.addFamilyMember,
+                  widget.sectionTitle ?? 'Add Relationship',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -126,24 +152,57 @@ class _AddFamilyMemberModalState extends State<AddFamilyMemberModal> {
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                // Photo picker
-                Container(
-                  width: double.infinity,
-                  height: 160,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(18),
-                    color: Colors.grey[200],
+                // Relationship type dropdown
+                if (!hasSectionTitle)
+                  DropdownButtonFormField<String>(
+                    value: _selectedRelationship,
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.relationshipType,
+                      prefixIcon: Icon(Icons.group),
+                    ),
+                    items: _relationshipTypes.map((type) => DropdownMenuItem(
+                      value: type,
+                      child: Text(type),
+                    )).toList(),
+                    onChanged: (val) => setState(() => _selectedRelationship = val),
+                    validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.selectCategory : null,
                   ),
-                  clipBehavior: Clip.antiAlias,
-                  child: _pickedImage != null
-                      ? Image.file(
-                    File(_pickedImage!.path),
-                    width: double.infinity,
-                    height: 160,
-                    fit: BoxFit.cover,
-                  )
-                      : const Center(
-                    child: Icon(Icons.camera_alt, size: 48, color: Colors.grey),
+                if (hasSectionTitle)
+                  DropdownButtonFormField<String>(
+                    value: _selectedRelationship,
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.relationshipType,
+                      prefixIcon: Icon(Icons.group),
+                    ),
+                    items: [DropdownMenuItem(
+                      value: widget.sectionTitle,
+                      child: Text(widget.sectionTitle!),
+                    )],
+                    onChanged: null,
+                    validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.selectCategory : null,
+                  ),
+                const SizedBox(height: 14),
+                // Photo picker
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    height: 100,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      color: Colors.grey[200],
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: _pickedImage != null
+                        ? Image.file(
+                            File(_pickedImage!.path),
+                            height: 100,
+                            width: 100,
+                            fit: BoxFit.cover,
+                          )
+                        : const Center(
+                            child: Icon(Icons.camera_alt, size: 36, color: Colors.grey),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 10,),
@@ -169,32 +228,45 @@ class _AddFamilyMemberModalState extends State<AddFamilyMemberModal> {
                   ],
                 ),
                 const SizedBox(height: 18),
-                AppTextFormField(
+                TextFormField(
                   controller: _fullNameController,
-                  labelText: AppLocalizations.of(context)!.fullName,
-                  icon: Icons.person,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.fullName,
+                    prefixIcon: Icon(Icons.person),
+                  ),
                   validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterFullName : null,
                 ),
                 const SizedBox(height: 14),
-                AppTextFormField(
+                TextFormField(
                   controller: _ageController,
-                  labelText: AppLocalizations.of(context)!.age,
-                  icon: Icons.cake,
-                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.age,
+                    prefixIcon: Icon(Icons.cake),
+                  ),
+                  readOnly: true,
+                  onTap: () async {
+                    final picked = await CustomDatePicker.show(context);
+                    if (picked != null) {
+                      setState(() {
+                        _selectedBirthDate = picked;
+                        _ageController.text = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+                      });
+                    }
+                  },
                   validator: (v) {
                     if (v == null || v.trim().isEmpty) return AppLocalizations.of(context)!.enterAge;
-                    final n = int.tryParse(v);
-                    if (n == null || n < 0) return AppLocalizations.of(context)!.enterValidAge;
                     return null;
                   },
                 ),
                 const SizedBox(height: 14),
                 ..._socialControllers.entries.map((entry) => Padding(
                   padding: const EdgeInsets.only(bottom: 10),
-                  child: AppTextFormField(
+                  child: TextFormField(
                     controller: entry.value,
-                    labelText: AppLocalizations.of(context)!.socialUsername(entry.key),
-                    icon: _getSocialIcon(entry.key),
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.socialUsername(entry.key),
+                      prefixIcon: Icon(_getSocialIcon(entry.key)),
+                    ),
                   ),
                 )),
                 const SizedBox(height: 18),

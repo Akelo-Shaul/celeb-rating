@@ -214,13 +214,7 @@ class _VersusScreenState extends State<VersusScreen> {
                 onTap: () {
                   // This is the final display, maybe navigate to a versus detail screen
                   print('Versus initiated between ${_selectedUser1!.name} and ${_selectedUser2!.name}');
-                  context.go(
-                    AppRoutes.headToHeadScreen,
-                    extra: {
-                      'user1': _selectedUser1,
-                      'user2': _selectedUser2,
-                    },
-                  );
+                  context.pushHeadToHead(user1: _selectedUser1, user2: _selectedUser2);
                 },
               ),
               // Add other details or actions related to the selected versus

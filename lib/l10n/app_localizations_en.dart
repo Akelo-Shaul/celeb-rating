@@ -645,4 +645,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get versusAbbreviation => 'VS';
+
+  @override
+  String get stageName => 'Stage Name';
+
+  @override
+  String get zodiacSign => 'Zodiac Sign';
+
+  @override
+  String get religion => 'Religion';
+
+  @override
+  String get updateProfile => 'Update Profile';
+
+  @override
+  String get submit => 'Submit';
+
+  @override
+  String get relationshipType => 'Relationship Type';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get enterValidYear => 'Please enter a valid year.';
 }

@@ -232,5 +232,28 @@
   "searchCategoryHint": "Tafuta Kategoria...",
   "suggestedVersus": "Versus Zilizopendekezwa",
   "selectedVersus": "Versus Zilizochaguliwa",
-  "versusAbbreviation": "VS"
+  "versusAbbreviation": "VS",
+    "stageName": "Jina la Sanaa",
+    "@stageName": {
+      "description": "Lebo ya jina la sanaa la mtumiaji katika uundaji wa wasifu."
+    },
+    "zodiacSign": "Alama ya Nyota",
+    "@zodiacSign": {
+      "description": "Lebo ya alama ya nyota ya mtumiaji katika uundaji wa wasifu."
+    },
+    "religion": "Dini",
+    "@religion": {
+      "description": "Lebo ya dini ya mtumiaji katika uundaji wa wasifu."
+    },
+    "updateProfile": "Sasisha Wasifu",
+    "@updateProfile": {
+      "description": "Lebo ya kitufe cha kusasisha wasifu wa mtumiaji."
+    },
+    "submit": "Wasilisha",
+    "@submit": {
+      "description": "Lebo ya kitufe cha kuwasilisha fomu au hatua."
+    },
+  "relationshipType": "Aina ya Mahusiano",
+  "cancel": "Ghairi",
+  "enterValidYear": "Tafadhali weka mwaka halali."
 }

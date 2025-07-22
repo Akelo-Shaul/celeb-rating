@@ -38,35 +38,35 @@ class AppButton extends StatelessWidget {
         ),
         child: isLoading
             ? const SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  strokeWidth: 2.5,
-                ),
-              )
+          height: 24,
+          width: 24,
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            strokeWidth: 2.5,
+          ),
+        )
             : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  if (icon != null) ...[
-                    Icon(icon, color: textColor ?? (isDark ? Colors.white : Colors.black)),
-                    const SizedBox(width: 10),
-                  ],
-                  Flexible(
-                    child: Text(
-                      text.toUpperCase(),
-                      style: TextStyle(
-                        color: textColor ?? (isDark ? Colors.white : Colors.black),
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                  ),
-                ],
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, color: textColor ?? (isDark ? Colors.white : Colors.black)),
+              const SizedBox(width: 10),
+            ],
+            Flexible(
+              child: Text(
+                text.toUpperCase(),
+                style: TextStyle(
+                  color: textColor ?? (isDark ? Colors.white : Colors.black),
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -190,7 +190,6 @@ class AppTransparentButton extends StatelessWidget {
   }
 }
 
-
 class ResizableButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
@@ -228,26 +227,37 @@ class ResizableButton extends StatelessWidget {
     // Determine the child widget (loading indicator or text)
     final Widget buttonChild = isLoading
         ? const SizedBox(
-      height: 24, // Consistent size for the loading indicator
+      height: 24,
       width: 24,
       child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.white), // Assuming white for loading
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
         strokeWidth: 2.5,
       ),
     )
-        : Text(
-      text.toUpperCase(),
-      style: TextStyle(
-        color: effectiveTextColor,
-        fontWeight: FontWeight.bold,
-        letterSpacing: 1.2,
-      ),
+        : LayoutBuilder(
+      builder: (context, constraints) {
+        String displayText = text.toUpperCase();
+        // Adjust text based on width
+        if (constraints.maxWidth < 110) {
+          displayText = displayText.length > 6 ? displayText.substring(0, 6) + '…' : displayText;
+        } else if (constraints.maxWidth < 150) {
+          displayText = displayText.length > 10 ? displayText.substring(0, 10) + '…' : displayText;
+        }
+        return Text(
+          displayText,
+          style: TextStyle(
+            color: effectiveTextColor,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+          ),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        );
+      },
     );
 
     return SizedBox(
-      // If width is provided, use it. Otherwise, default to double.infinity.
       width: width ?? double.infinity,
-      // If height is provided, use it. Otherwise, default to 50.
       height: height ?? 50,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
@@ -257,8 +267,7 @@ class ResizableButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          // If padding is provided, use it. Otherwise, let ElevatedButton default.
-          padding: padding,
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: 10), // Reduced horizontal padding
         ),
         child: buttonChild,
       ),

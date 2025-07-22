@@ -1342,6 +1342,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'VS'**
   String get versusAbbreviation;
+
+  /// Label for the user's stage name in profile creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Stage Name'**
+  String get stageName;
+
+  /// Label for the user's zodiac sign in profile creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Zodiac Sign'**
+  String get zodiacSign;
+
+  /// Label for the user's religion in profile creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Religion'**
+  String get religion;
+
+  /// Button label for updating a user's profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Profile'**
+  String get updateProfile;
+
+  /// Button label for submitting a form or action.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submit;
+
+  /// No description provided for @relationshipType.
+  ///
+  /// In en, this message translates to:
+  /// **'Relationship Type'**
+  String get relationshipType;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @enterValidYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid year.'**
+  String get enterValidYear;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

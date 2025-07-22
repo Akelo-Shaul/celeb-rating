@@ -230,5 +230,28 @@
   "searchCategoryHint": "Search Category...",
   "suggestedVersus": "Suggested Versus",
   "selectedVersus": "Selected Versus",
-  "versusAbbreviation": "VS"
+  "versusAbbreviation": "VS",
+    "stageName": "Stage Name",
+    "@stageName": {
+      "description": "Label for the user's stage name in profile creation."
+    },
+    "zodiacSign": "Zodiac Sign",
+    "@zodiacSign": {
+      "description": "Label for the user's zodiac sign in profile creation."
+    },
+    "religion": "Religion",
+    "@religion": {
+      "description": "Label for the user's religion in profile creation."
+    },
+    "updateProfile": "Update Profile",
+    "@updateProfile": {
+      "description": "Button label for updating a user's profile."
+    },
+    "submit": "Submit",
+    "@submit": {
+      "description": "Button label for submitting a form or action."
+    },
+  "relationshipType": "Relationship Type",
+  "cancel": "Cancel",
+  "enterValidYear": "Please enter a valid year."
 }

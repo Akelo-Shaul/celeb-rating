@@ -700,7 +700,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 textColor: Color(0xFFD6AF0C),
                 onPressed: () {
                   //TODO: Navigate to profile
-                  context.go('/feed');
+                  context.goToFeed();
                   setState(() {
                   });
                 },
@@ -709,7 +709,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               PartedButton(
                 onPressed: () {
                   // Switch to country/state selection tab
-                  context.go('/verification');
+                  context.goToVerification();
                   setState(() {
                   });
                 },

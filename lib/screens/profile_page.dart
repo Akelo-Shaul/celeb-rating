@@ -1,3 +1,4 @@
+import 'package:celebrating/widgets/add_wealth_item_modal.dart';
 import 'package:celebrating/widgets/slideup_dialog.dart';
 import 'package:flutter/material.dart';
 
@@ -6,13 +7,20 @@ import '../models/post.dart';
 import '../models/user.dart';
 import '../services/user_service.dart';
 import '../utils/constants.dart';
+import '../widgets/add_education_modal.dart';
+import '../widgets/add_persona_modal.dart';
+import '../widgets/add_relationship_modal.dart';
 import '../widgets/app_buttons.dart';
 import '../widgets/post_card.dart';
 import '../widgets/profile_avatar.dart';
 import '../widgets/image_optional_text.dart';
+import '../utils/profile_action_popup.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  // Added userId parameter to enable viewing other user profiles
+  final String? userId;
+  const ProfilePage({super.key, this.userId});
+
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
@@ -23,29 +31,55 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   List<Post> posts = [];
   bool isLoading = true;
 
+  // --- MISSING VARIABLES AND METHODS ---
+  bool isOwnProfile = false; // Set to true if viewing own profile
+  bool statsLoading = false; // Set to true if stats are loading
+
+  void _handleFollowUnfollow() {
+    // Implement follow/unfollow logic here
+    setState(() {
+      // Toggle follow state for demo
+      isOwnProfile = !isOwnProfile;
+    });
+  }
+
+  String formatCount(int count) {
+    if (count >= 1000000) {
+      return (count / 1000000).toStringAsFixed(1) + 'M';
+    } else if (count >= 1000) {
+      return (count / 1000).toStringAsFixed(1) + 'K';
+    } else {
+      return count.toString();
+    }
+  }
+
   //TODO: Implement following code block when fetching logged in user
   /*** void fetchProfileUser() async {
-    // If your User model has a role or type field:
-    bool isCelebrity = loggedInUser.role == 'Celebrity';
+      // If your User model has a role or type field:
+      bool isCelebrity = loggedInUser.role == 'Celebrity';
 
-    final user = await UserService.fetchUser(loggedInUser.id.toString(), isCelebrity: isCelebrity);
+      final user = await UserService.fetchUser(loggedInUser.id.toString(), isCelebrity: isCelebrity);
 
-    setState(() {
+      setState(() {
       if (isCelebrity && user is CelebrityUser) {
-        this.user = user;
+      this.user = user;
       } else if (!isCelebrity && user is User) {
-        this.user = user as User;
+      this.user = user as User;
       }
-    });
-  } **/
+      });
+      } **/
 
   void fetchProfileUser() async {
-    final fetchedUser = await UserService.fetchUser('456', isCelebrity: true);
+    // Use widget.userId if provided, otherwise a default for testing/own profile
+    final String userIdToFetch = widget.userId ?? '456';
+    final fetchedUser = await UserService.fetchUser(userIdToFetch, isCelebrity: true);
     if (fetchedUser is CelebrityUser) {
       setState(() {
         user = fetchedUser;
         posts = fetchedUser.postsList ?? [];
         isLoading = false;
+        // Determine if it's the user's own profile (dummy logic for now)
+        isOwnProfile = (widget.userId == null || widget.userId == 'currentLoggedInUserId'); // Replace 'currentLoggedInUserId' with actual ID
       });
       print('Celebrity user: ${fetchedUser.fullName}');
       print('Occupation: ${fetchedUser.occupation}');
@@ -89,7 +123,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     super.initState();
     // Call the method to fetch a celebrity user
     fetchProfileUser();
-    _tabController = TabController(length: 5, vsync: this); 
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   final Map<String, IconData> _careerCategoryIcons = {
@@ -97,6 +131,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     'Debut Work': Icons.rocket_launch_outlined,
     'Awards': Icons.emoji_events_outlined,
     'Songs': Icons.music_note_outlined,
+    'Collaborations': Icons.group_add_outlined, // Added icon for collaborations
     // Add more as needed
   };
 
@@ -119,191 +154,191 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
     final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
-    final appPrimaryColor = Theme.of(context).primaryColor;
+    // Removed unused appPrimaryColor here as it's not directly used in the Scaffold/AppBar
     final tabBackgroundColor = isDark ? Colors.grey.shade800 : Colors.grey.shade200;
 
     return Scaffold(
-      appBar: _buildAppBar(defaultTextColor),
+      // appBar: _buildAppBar(defaultTextColor), // Re-enable if you want an AppBar
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildProfileHeader(defaultTextColor, secondaryTextColor),
-                _buildActionButtons(),
-                _buildStatsRow(defaultTextColor, secondaryTextColor),
-                _buildTabBar(isDark),
-                Expanded(child: _buildTabs()),
-              ],
-            ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar(Color defaultTextColor) {
-    return AppBar(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      elevation: 0,
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new_rounded, color: defaultTextColor),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.more_vert, color: defaultTextColor),
-          onPressed: () {},
+          : SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildProfileHeader(defaultTextColor, secondaryTextColor),
+            _buildActionButtons(),
+            _buildStatsRow(defaultTextColor, secondaryTextColor),
+            _buildTabBar(isDark),
+            Expanded(child: _buildTabs()),
+          ],
         ),
-      ],
+      ),
     );
   }
 
   Widget _buildProfileHeader(Color defaultTextColor, Color secondaryTextColor) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  user!.fullName,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: defaultTextColor,
-                  ),
-                ),
-                Text(
-                  user!.username,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: secondaryTextColor,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  user!.occupation,
-                  style: TextStyle(color: defaultTextColor),
-                ),
-                Text(
-                  user!.nationality,
-                  style: TextStyle(color: secondaryTextColor),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: List.generate(5, (index) {
-                    return Icon(
-                      index < 4 ? Icons.star : Icons.star_border,
-                      color: const Color(0xFFD6AF0C),
-                      size: 20,
-                    );
-                  }),
-                ),
-              ],
-            ),
-            const SizedBox(width: 10),
-            SizedBox(
-              height: 120 + 14 + 5,
-              width: 120,
-              child: Stack(
+    final isCelebrity = user is CelebrityUser;
+    final celeb = isCelebrity ? user as CelebrityUser : null;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    child: ProfileAvatar(
-                      radius: 60,
-                      imageUrl: user!.profileImageUrl,
+                  Text(
+                    user != null ? user!.fullName : '',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: defaultTextColor,
                     ),
                   ),
-                  Positioned(
-                    top: -2,
-                    right: -2,
-                    child: const Icon(Icons.verified, color:  const Color(0xFFD6AF0C), size: 30),
+                  Text(
+                    user != null ? user!.username : '',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: secondaryTextColor,
+                    ),
                   ),
-                  Positioned(
-                    bottom: 2,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.tiktok, size: 30, color: secondaryTextColor),
-                          const SizedBox(width: 12),
-                          Icon(Icons.camera_alt_outlined, size: 30, color: secondaryTextColor),
-                          const SizedBox(width: 12),
-                          Icon(Icons.tiktok, size: 30, color: secondaryTextColor),
-                        ],
+                  const SizedBox(height: 8),
+                  Text(
+                    isCelebrity && celeb != null ? celeb.occupation : '',
+                    style: TextStyle(color: defaultTextColor),
+                  ),
+                  Text(
+                    isCelebrity && celeb != null ? celeb.nationality : '',
+                    style: TextStyle(color: secondaryTextColor),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: List.generate(5, (index) {
+                      return Icon(
+                        index < 4 ? Icons.star : Icons.star_border,
+                        color: const Color(0xFFD6AF0C),
+                        size: 20,
+                      );
+                    }),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.menu, color: defaultTextColor),
+                    onPressed: () {},
+                  ),
+                  Stack(
+                    children: [
+                      ProfileAvatar(
+                        radius: 60,
+                        imageUrl: user != null ? user!.profileImageUrl : null,
                       ),
+                      if (isCelebrity) ...[
+                        Positioned(
+                          top: -2,
+                          right: -2,
+                          child: Icon(Icons.verified, color:  Colors.orange.shade700, size: 30),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.tiktok, size: 30, color: secondaryTextColor),
+                        const SizedBox(width: 12),
+                        Icon(Icons.camera_alt_outlined, size: 30, color: secondaryTextColor),
+                        const SizedBox(width: 12),
+                        Icon(Icons.tiktok, size: 30, color: secondaryTextColor),
+                      ],
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
-        ),
-        Text(
-          user!.bio,
-          style: TextStyle(color: defaultTextColor),
-        ),
-        GestureDetector(
-          onTap: () {
-            print('Website link tapped: \\${user!.website}');
-          },
-          child: Text(
-            user!.website,
-            style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+            ],
           ),
-        ),
-      ],
+          Text(
+            isCelebrity && celeb != null ? celeb.bio : '',
+            style: TextStyle(color: defaultTextColor),
+          ),
+          GestureDetector(
+            onTap: () {
+              if (isCelebrity && celeb != null) {
+                print('Website link tapped: ${celeb.website}'); // Corrected string interpolation
+              }
+            },
+            child: Text(
+              isCelebrity && celeb != null ? celeb.website : '',
+              style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-
   Widget _buildActionButtons() {
     final localizations = AppLocalizations.of(context)!;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            ResizableButton(
-              text: localizations.follow,
-              onPressed: () {},
-              width: 100,
-              height: 35,
-            ),
-            PostActionButton(
-              icon: Icons.comment_outlined,
-              onPressed: () {
-                print("Routing to messaging");
-              },
-            ),
-          ],
-        ),
-        ResizableButton(
-          text: localizations.events,
-          onPressed: () {},
-          width: 120,
-          height: 35,
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              if (!isOwnProfile)
+                ResizableButton(
+                  text: localizations.follow,
+                  onPressed: () {
+                    if (!(statsLoading || user == null)) {
+                      _handleFollowUnfollow();
+                    }
+                  },
+                  width: 100,
+                  height: 35,
+                ),
+              PostActionButton(
+                icon: Icons.comment_outlined,
+                onPressed: () {
+                  print("Routing to messaging");
+                },
+              ),
+            ],
+          ),
+          ResizableButton(
+            text: localizations.events,
+            onPressed: () {},
+            width: 120,
+            height: 35,
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildStatsRow(Color defaultTextColor, Color secondaryTextColor) {
     final localizations = AppLocalizations.of(context)!;
+    int followers = 0;
+    if (user is CelebrityUser) {
+      followers = (user as CelebrityUser).followers;
+    }
     return Padding(
-      padding: const EdgeInsets.only(top: 8.0, bottom: 0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0,),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            user != null && user!.followers != null ? '${formatCount(user!.followers)} ' : '0 ',
+            user != null ? '${formatCount(followers)} ' : '0 ',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: defaultTextColor,
@@ -350,33 +385,31 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       indicatorSize: TabBarIndicatorSize.tab,
       dividerHeight: 0,
       tabs: [
-        Tab(text: localizations.postsTab),
-        Tab(text: localizations.careerTab),
-        Tab(text: localizations.wealthTab),
+        Tab(text: 'Celebrations'),
         Tab(text: localizations.personalTab),
+        Tab(text: localizations.wealthTab),
+        Tab(text: localizations.careerTab),
         Tab(text: localizations.publicPersonaTab),
       ],
     );
   }
 
-  Widget _buildTabs(){
-    return Expanded(
-      child: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildPostsTab(),
-          _buildCareerTab(),
-          _buildWealthTab(),
-          _buildPersonalTab(),
-          _buildPublicPersonaTab()
-        ],
-      ),
+  Widget _buildTabs() {
+    return TabBarView(
+      controller: _tabController,
+      children: [
+        _buildPostsTab(), // Celebrations (renamed from posts)
+        _buildPersonalTab(),
+        _buildWealthTab(),
+        _buildCareerTab(),
+        _buildPublicPersonaTab(),
+      ],
     );
   }
 
   Widget _buildPostsTab(){
     if (posts.isEmpty) {
-      return const Center(child: Text('No posts to display.'));
+      return const Center(child: Text('No celebrations to display.'));
     }
     return ListView.builder(
       itemCount: posts.length,
@@ -394,98 +427,119 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     final celeb = user as CelebrityUser;
     final Map<String, List<Map<String, String>>> careerData = celeb.careerEntries;
 
-    return ListView(
-      children: careerData.entries
-          .where((entry) => entry.value.isNotEmpty)
-          .map((entry) {
-        final category = entry.key;
-        final items = entry.value;
-        final icon = _careerCategoryIcons[category] ?? Icons.info_outline;
+    return Column(
+      children: [
+        Expanded(
+          child: ListView(
+            children: careerData.entries
+                .where((entry) => entry.value.isNotEmpty)
+                .map((entry) {
+              final category = entry.key;
+              final items = entry.value;
+              final icon = _careerCategoryIcons[category] ?? Icons.info_outline;
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(icon, size: 32, color: iconColor),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: items.map((item) {
-                    if (category == 'Awards') {
-                      final title = item['title'];
-                      final award = item['award'];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 2.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (title != null)
-                              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
-                            if (award != null)
-                              Text(award, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
-                          ],
-                        ),
-                      );
-                    } else if (category == 'Collaborations') {
-                      final title = item['title'];
-                      final subtitle = item['subtitle'];
-                      final type = item['type'];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 2.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (title != null)
-                              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
-                            if (subtitle != null)
-                              Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
-                            if (type != null)
-                              Text(type, style: TextStyle(fontSize: 13, color: defaultTextColor.withOpacity(0.7))),
-                          ],
-                        ),
-                      );
-                    } else if (category == 'Debut Work') {
-                      final title = item['title'];
-                      final subtitle = item['subtitle'];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (title != null)
-                              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
-                            if (subtitle != null) ...[
-                              const SizedBox(height: 2),
-                              Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
-                            ],
-                          ],
-                        ),
-                      );
-                    } else {
-                      final title = item['title'];
-                      final subtitle = item['subtitle'];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 2.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (title != null)
-                              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
-                            if (subtitle != null)
-                              Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
-                          ],
-                        ),
-                      );
-                    }
-                  }).toList(),
+                  children: [
+                    Icon(icon, size: 32, color: iconColor),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: items.map((item) {
+                          if (category == 'Awards') {
+                            final title = item['title'];
+                            final award = item['award'];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 2.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (title != null)
+                                    Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
+                                  if (award != null)
+                                    Text(award, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
+                                ],
+                              ),
+                            );
+                          } else if (category == 'Collaborations') {
+                            final title = item['title'];
+                            final subtitle = item['subtitle'];
+                            final type = item['type'];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 2.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (title != null)
+                                    Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
+                                  if (subtitle != null)
+                                    Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
+                                  if (type != null)
+                                    Text(type, style: TextStyle(fontSize: 13, color: defaultTextColor.withOpacity(0.7))),
+                                ],
+                              ),
+                            );
+                          } else if (category == 'Debut Work') {
+                            final title = item['title'];
+                            final subtitle = item['subtitle'];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (title != null)
+                                    Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
+                                  if (subtitle != null) ...[
+                                    const SizedBox(height: 2),
+                                    Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
+                                  ],
+                                ],
+                              ),
+                            );
+                          } else { // Covers 'Profession' and any other general categories
+                            final title = item['title'];
+                            final subtitle = item['subtitle'];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 2.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (title != null)
+                                    Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
+                                  if (subtitle != null)
+                                    Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
+                                ],
+                              ),
+                            );
+                          }
+                        }).toList(),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+              );
+            }).toList(),
           ),
-        );
-      }).toList(),
+        ),
+        ElevatedButton(
+          onPressed: () {},
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFD6AF0C),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+          child: Text(
+            'Add Career Highlights',
+            style: const TextStyle(color: Colors.white, fontSize: 12),
+          ),
+        ),
+        const SizedBox(height: 10), // Add some padding at the bottom
+      ],
     );
   }
 
@@ -493,6 +547,9 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
     final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    if (user == null || user is! CelebrityUser) {
+      return const Center(child: Text("No wealth data available."));
+    }
     final celeb = user as CelebrityUser;
     final Map<String, List<Map<String, String>>> wealthData = celeb.wealthEntries;
     final localizations = AppLocalizations.of(context)!;
@@ -545,13 +602,38 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    localizedCategory,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        localizedCategory,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: defaultTextColor,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                        tooltip: 'Add Wealth',
+                        onPressed: () async {
+                          await showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) => WillPopScope(
+                              onWillPop: () async => true,
+                              child: AddWealthItemModal(
+                                sectionTitle: localizedCategory,
+                                onAdd: (item) {
+                                  // TODO: Add logic to update data
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   SizedBox(
@@ -583,400 +665,624 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     );
   }
 
-
   Widget _buildPersonalTab(){
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
     final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    if (user == null || user is! CelebrityUser) {
+      return const Center(child: Text("No personal data available."));
+    }
     final celeb = user as CelebrityUser;
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Sign
-            Text(
-              '${AppLocalizations.of(context)!.sign}: ${celeb.zodiacSign}',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: defaultTextColor,
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Sign
+              Text(
+                '${AppLocalizations.of(context)!.sign}: ${celeb.zodiacSign}',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: defaultTextColor,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-
-            // Family Section
-            Text(
-              AppLocalizations.of(context)!.family,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: defaultTextColor,
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 100,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: celeb.familyMembers.length,
-                itemBuilder: (context, index) {
-                  final member = celeb.familyMembers[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        _showProfilePreviewModal(
-                          context: context,
-                          userName: member['name'] ?? '',
-                          userProfession: member['relation'] ?? '',
-                          userProfileImageUrl: member['imageUrl'] ?? 'https://via.placeholder.com/150',
-                          onViewProfile: () {
-                            // You can add navigation or more logic here
-                            Navigator.of(context).pop();
+              const SizedBox(height: 20),
+              // Relationships Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Family and relationships',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: defaultTextColor,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                    tooltip: 'Add Relationship',
+                    onPressed: () async {
+                      await showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => AddRelationshipModal(
+                          onAdd: (relationship) {
+                            // TODO: Add logic to update dummy data
                           },
-                        );
-                      },
-                      child: Column(
-                        children: [
-                          ProfileAvatar(
-                            radius: 30,
-                            imageUrl: member['imageUrl'] ?? 'https://via.placeholder.com/150',
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 60,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: celeb.relationships.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: GestureDetector(
+                        onTapDown: (details) {
+                          showProfileActionPopup(
+                            context: context,
+                            globalPosition: details.globalPosition,
+                            onReview: () {},
+                            onSalute: () {},
+                            onRate: (rating) {},
+                            currentRating: 0,
+                          );
+                        },
+                        child: ProfileAvatar(
+                          radius: 30,
+                          imageUrl: celeb.relationships[index],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Education Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.education,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: defaultTextColor,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                    tooltip: 'Add Education',
+                    onPressed: () async {
+                      await showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => WillPopScope(
+                          onWillPop: () async => true,
+                          child: AddEducationModal(// Pass the section title
+                            onAdd: (education) {
+                              // TODO: Add logic to update dummy data
+                            },
                           ),
-                          const SizedBox(height: 5),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              ...celeb.educationEntries.map((entry) {
+                // entry: {'university': 'Princeton University', 'degrees': [ {title, year}, ... ] }
+                final university = entry['university'] ?? '';
+                final degrees = (entry['degrees'] as List?) ?? [];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTapDown: (details) {
+                          showProfileActionPopup(
+                            context: context,
+                            globalPosition: details.globalPosition,
+                            onReview: () {},
+                            onSalute: () {},
+                            onRate: (rating) {},
+                            currentRating: 0,
+                          );
+                        },
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(Icons.school_outlined, size: 35, color: Colors.orange,),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              university,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: defaultTextColor,
+                              ),
+                            ),
+                            ...degrees.map<Widget>((deg) {
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 4.0, left: 2.0),
+                                child: GestureDetector(
+                                  onTapDown: (details) {
+                                    showProfileActionPopup(
+                                      context: context,
+                                      globalPosition: details.globalPosition,
+                                      onReview: () {},
+                                      onSalute: () {},
+                                      onRate: (rating) {},
+                                      currentRating: 0,
+                                    );
+                                  },
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        deg['title'] ?? '',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                          color: defaultTextColor.withOpacity(0.85),
+                                        ),
+                                      ),
+                                      if (deg['year'] != null)
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 2.0),
+                                          child: Text(
+                                            deg['year'],
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              color: secondaryTextColor.withOpacity(0.7),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+              const SizedBox(height: 20),
+
+              // Hobbies Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.hobbies,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: defaultTextColor,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                    tooltip: 'Add Hobby',
+                    onPressed: () async {
+                      await showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => WillPopScope(
+                          onWillPop: () async => true,
+                          child: AddPersonaModal(
+                            sectionTitle: AppLocalizations.of(context)!.hobbies,
+                            onAdd: (hobby) {
+                              // TODO: Add logic to update dummy data
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 180,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: celeb.hobbies.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: GestureDetector(
+                        onTapDown: (details) {
+                          showProfileActionPopup(
+                            context: context,
+                            globalPosition: details.globalPosition,
+                            onReview: () {},
+                            onSalute: () {},
+                            onRate: (rating) {},
+                            currentRating: 0,
+                          );
+                        },
+                        child: ImageWithOptionalText(
+                          width: 100,
+                          height: 150,
+                          imageUrl: celeb.hobbies[index]['imageUrl'],
+                          bottomText: celeb.hobbies[index]['name'],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Lifestyle Section
+              Text(
+                AppLocalizations.of(context)!.lifestyle,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: defaultTextColor,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Diet: ${celeb.diet}',
+                style: TextStyle(fontSize: 14, color: defaultTextColor),
+              ),
+              Text(
+                'Spirituality: ${celeb.spirituality}',
+                style: TextStyle(fontSize: 14, color: defaultTextColor),
+              ),
+              const SizedBox(height: 20),
+
+              // Involved Causes Section
+              Text(
+                AppLocalizations.of(context)!.involvedCauses,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: defaultTextColor,
+                ),
+              ),
+              const SizedBox(height: 10),
+              ...celeb.involvedCauses.map((cause) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        // Icon here if needed
+                      ),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                            member['name'] ?? '',
-                            style: TextStyle(fontSize: 12, color: defaultTextColor),
+                            cause['name'] ?? '',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: defaultTextColor,
+                            ),
+                          ),
+                          Text(
+                            cause['role'] ?? '',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: secondaryTextColor,
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Relationships Section
-            Text(
-              AppLocalizations.of(context)!.relationships,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: defaultTextColor,
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 60,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: celeb.relationships.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: ProfileAvatar(
-                      radius: 30,
-                      imageUrl: celeb.relationships[index],
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Education Section
-            Text(
-              AppLocalizations.of(context)!.education,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: defaultTextColor,
-              ),
-            ),
-            const SizedBox(height: 10),
-            ...celeb.educationEntries.map((entry) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      // Icon here if needed
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          entry['degree'] ?? '',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: defaultTextColor,
-                          ),
-                        ),
-                        Text(
-                          entry['university'] ?? '',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: secondaryTextColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-            const SizedBox(height: 20),
-
-            // Hobbies Section
-            Text(
-              AppLocalizations.of(context)!.hobbies,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: defaultTextColor,
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 180,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: celeb.hobbies.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: ImageWithOptionalText(
-                      width: 100,
-                      height: 150,
-                      imageUrl: celeb.hobbies[index]['imageUrl'],
-                      bottomText: celeb.hobbies[index]['name'],
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Lifestyle Section
-            Text(
-              AppLocalizations.of(context)!.lifestyle,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: defaultTextColor,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Diet: ${celeb.diet}',
-              style: TextStyle(fontSize: 14, color: defaultTextColor),
-            ),
-            Text(
-              'Spirituality: ${celeb.spirituality}',
-              style: TextStyle(fontSize: 14, color: defaultTextColor),
-            ),
-            const SizedBox(height: 20),
-
-            // Involved Causes Section
-            Text(
-              AppLocalizations.of(context)!.involvedCauses,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: defaultTextColor,
-              ),
-            ),
-            const SizedBox(height: 10),
-            ...celeb.involvedCauses.map((cause) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      // Icon here if needed
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          cause['name'] ?? '',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: defaultTextColor,
-                          ),
-                        ),
-                        Text(
-                          cause['role'] ?? '',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: secondaryTextColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-            const SizedBox(height: 20),
-
-            // Pets Section
-            Text(
-              AppLocalizations.of(context)!.pets,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: defaultTextColor,
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 60,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: celeb.pets.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: ProfileAvatar(
-                      radius: 30,
-                      imageUrl: celeb.pets[index],
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Tattoos Section
-            Text(
-              AppLocalizations.of(context)!.tattoos,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: defaultTextColor,
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 150,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: celeb.tattoos.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: ImageWithOptionalText(
-                      width: 100,
-                      height: 150,
-                      imageUrl: celeb.tattoos[index],
-                      bottomText: null,
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Favourites Section
-            Row(
-              children: [
-                Text(
-                  AppLocalizations.of(context)!.favourites,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: defaultTextColor,
+                    ],
                   ),
-                ),
-                const SizedBox(width: 8),
-                DropdownButton<String>(
-                  value: 'Places',
-                  icon: Icon(Icons.keyboard_arrow_down, color: secondaryTextColor),
-                  underline: const SizedBox(),
-                  style: TextStyle(color: secondaryTextColor, fontSize: 14),
-                  onChanged: (String? newValue) {
-                    // Handle dropdown value change
-                  },
-                  items: <String>['Places', 'Food', 'Movies', 'Books']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 180,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: celeb.favouritePlaces.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: ImageWithOptionalText(
-                      width: 100,
-                      height: 150,
-                      imageUrl: celeb.favouritePlaces[index]['imageUrl'],
-                      bottomText: celeb.favouritePlaces[index]['name'],
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 20),
+                );
+              }).toList(),
+              const SizedBox(height: 20),
 
-            // Talents Section
-            Text(
-              AppLocalizations.of(context)!.talents,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: defaultTextColor,
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 180,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: celeb.talents.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: ImageWithOptionalText(
-                      width: 100,
-                      height: 150,
-                      imageUrl: celeb.talents[index]['imageUrl'],
-                      bottomText: celeb.talents[index]['name'],
+              // Pets Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.pets,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: defaultTextColor,
                     ),
-                  );
-                },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                    tooltip: 'Add Pet',
+                    onPressed: () async {
+                      await showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => WillPopScope(
+                          onWillPop: () async => true,
+                          child: AddRelationshipModal(
+                            sectionTitle: AppLocalizations.of(context)!.pets, // Ensure this modal takes a section title if needed
+                            onAdd: (pet) {
+                              // TODO: Add logic to update dummy data
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 20),
-          ],
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 60,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: celeb.pets.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: GestureDetector(
+                        onTapDown: (details) {
+                          showProfileActionPopup(
+                            context: context,
+                            globalPosition: details.globalPosition,
+                            onReview: () {},
+                            onSalute: () {},
+                            onRate: (rating) {},
+                            currentRating: 0,
+                          );
+                        },
+                        child: ProfileAvatar(
+                          radius: 30,
+                          imageUrl: celeb.pets[index],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Tattoos Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.tattoos,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: defaultTextColor,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                    tooltip: 'Add Tattoo',
+                    onPressed: () async {
+                      await showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => WillPopScope(
+                          onWillPop: () async => true,
+                          child: AddPersonaModal(
+                            sectionTitle: AppLocalizations.of(context)!.tattoos,
+                            onAdd: (tattoo) {
+                              // TODO: Add logic to update dummy data
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 150,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: celeb.tattoos.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: GestureDetector(
+                        onTapDown: (details) {
+                          showProfileActionPopup(
+                            context: context,
+                            globalPosition: details.globalPosition,
+                            onReview: () {},
+                            onSalute: () {},
+                            onRate: (rating) {},
+                            currentRating: 0,
+                          );
+                        },
+                        child: ImageWithOptionalText(
+                          width: 100,
+                          height: 150,
+                          imageUrl: celeb.tattoos[index],
+                          bottomText: null,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Favourites Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.favourites,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: defaultTextColor,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                    tooltip: 'Add Favourite Place',
+                    onPressed: () async {
+                      await showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => WillPopScope(
+                          onWillPop: () async => true,
+                          child: AddPersonaModal(
+                            sectionTitle: AppLocalizations.of(context)!.favourites,
+                            onAdd: (place) {
+                              // TODO: Add logic to update dummy data
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 180,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: celeb.favouritePlaces.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: GestureDetector(
+                        onTapDown: (details) {
+                          showProfileActionPopup(
+                            context: context,
+                            globalPosition: details.globalPosition,
+                            onReview: () {},
+                            onSalute: () {},
+                            onRate: (rating) {},
+                            currentRating: 0,
+                          );
+                        },
+                        child: ImageWithOptionalText(
+                          width: 100,
+                          height: 150,
+                          imageUrl: celeb.favouritePlaces[index]['imageUrl'],
+                          bottomText: celeb.favouritePlaces[index]['name'],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Talents Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.talents,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: defaultTextColor,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                    tooltip: 'Add Talent',
+                    onPressed: () async {
+                      await showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => WillPopScope(
+                          onWillPop: () async => true,
+                          child: AddPersonaModal(
+                            sectionTitle: AppLocalizations.of(context)!.talents,
+                            onAdd: (talent) {
+                              // TODO: Add logic to update dummy data
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 180,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: celeb.talents.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: GestureDetector(
+                        onTapDown: (details) {
+                          showProfileActionPopup(
+                            context: context,
+                            globalPosition: details.globalPosition,
+                            onReview: () {},
+                            onSalute: () {},
+                            onRate: (rating) {},
+                            currentRating: 0,
+                          );
+                        },
+                        child: ImageWithOptionalText(
+                          width: 100,
+                          height: 150,
+                          imageUrl: celeb.talents[index]['imageUrl'],
+                          bottomText: celeb.talents[index]['name'],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
@@ -985,8 +1291,10 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   Widget _buildPublicPersonaTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
     final appPrimaryColor = Theme.of(context).primaryColor;
+    if (user == null || user is! CelebrityUser) {
+      return const Center(child: Text("No public persona data available."));
+    }
     final celeb = user as CelebrityUser;
 
     // Social icon mapping (for demo, you can expand this)
@@ -996,6 +1304,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       'Spotify': Icons.music_video,
       'YouTube': Icons.ondemand_video,
       'Snapchat': Icons.chat_bubble_outline,
+      // Add more as needed
     };
     final Map<String, Color> socialColors = {
       'TikTok': Colors.black,
@@ -1003,6 +1312,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       'Spotify': Colors.green,
       'YouTube': Colors.red,
       'Snapchat': Colors.yellow,
+      // Add more as needed
     };
 
     return SingleChildScrollView(
@@ -1012,17 +1322,42 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Socials Section
-            Text(
-              AppLocalizations.of(context)!.socials,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: defaultTextColor,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.socials,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: defaultTextColor,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                  tooltip: 'Add Social',
+                  onPressed: () async {
+                    await showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => WillPopScope(
+                        onWillPop: () async => true,
+                        child: AddPersonaModal(
+                          sectionTitle: AppLocalizations.of(context)!.socials,
+                          onAdd: (social) {
+                            // TODO: Add logic to update dummy data
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 10),
             SizedBox(
-              height: 60,
+              height: 60, // Height for horizontal ListView of social icons
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: celeb.socials.length,
@@ -1034,7 +1369,11 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     padding: const EdgeInsets.only(right: 12.0),
                     child: GestureDetector(
                       onTap: () {
-                        // Open social['link']
+                        // Open social['link'] - assuming 'link' field exists
+                        if (social['link'] != null) {
+                          print('Opening social link: ${social['link']}');
+                          // You might use a package like url_launcher here
+                        }
                       },
                       child: Container(
                         width: 50,
@@ -1046,7 +1385,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                         child: Icon(
                           icon,
                           color: color,
-                          size: 30,
                         ),
                       ),
                     ),
@@ -1054,18 +1392,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 },
               ),
             ),
-            const SizedBox(height: 20),
-
-            // Public Image Section
-            Text(
-              AppLocalizations.of(context)!.publicImage,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: defaultTextColor,
-              ),
-            ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 10), // Spacing after social icons
             Text(
               celeb.publicImageDescription,
               style: TextStyle(
@@ -1090,20 +1417,46 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 controversyMedia: celeb.controversyMedia,
                 defaultTextColor: defaultTextColor,
                 cardColor: Theme.of(context).cardColor,
-              ),
+              )
+            else
+              const Center(child: Text("No controversies to display.")),
             const SizedBox(height: 20),
 
             // Fashion Style Section
-            Text(
-              AppLocalizations.of(context)!.fashionStyle,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: defaultTextColor,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.fashionStyle,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: defaultTextColor,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                  tooltip: 'Add Fashion Style',
+                  onPressed: () async {
+                    await showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => WillPopScope(
+                        onWillPop: () async => true,
+                        child: AddPersonaModal(
+                          sectionTitle: AppLocalizations.of(context)!.fashionStyle,
+                          onAdd: (fashion) {
+                            // TODO: Add logic to update dummy data
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-
+            const SizedBox(height: 10), // Spacing after Fashion Style title/button
             // Fashion Style Images
             ...celeb.fashionStyle.entries.map((entry) {
               return Column(
@@ -1131,7 +1484,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                             width: 100,
                             height: 150,
                             imageUrl: img,
-                            bottomText: null,
+                            bottomText: null, // No bottom text for fashion images
                           ),
                         );
                       },
@@ -1166,12 +1519,12 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 ),
               ),
             ),
+            const SizedBox(height: 10), // Add some padding at the bottom
           ],
         ),
       ),
     );
   }
-
 }
 
 class ProfilePreviewModalContent extends StatelessWidget {
@@ -1253,9 +1606,13 @@ class ProfilePreviewModalContent extends StatelessWidget {
             ),
           ],
         ),
-        const Expanded(
-          child: SizedBox(),
-        ),
+        // This Expanded SizedBox was preventing the lower content from rendering if the modal height was constrained.
+        // It's usually not needed unless you specifically want the content to push down.
+        // For a modal with Column, minAxisSize: MainAxisSize.min is better.
+        // const Expanded(
+        //   child: SizedBox(),
+        // ),
+        const SizedBox(height: 20), // Add some spacing here instead
         Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -1264,7 +1621,7 @@ class ProfilePreviewModalContent extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
-            userName,
+            userName, // This seems to be a placeholder, you might want a bio or description here
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -1309,6 +1666,10 @@ class _ControversyCarouselState extends State<_ControversyCarousel> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.controversyMedia.isEmpty) {
+      return const SizedBox.shrink(); // Don't build if no media
+    }
+
     final cont = widget.controversyMedia[_currentIndex];
     final List media = cont['media'] ?? [];
     final String controversy = cont['controversy'] ?? '';
@@ -1326,22 +1687,22 @@ class _ControversyCarouselState extends State<_ControversyCarousel> {
           border: Border.all(color: widget.defaultTextColor.withOpacity(0.2)),
         ),
         child: isVideo
-            ? const Center(child: Icon(Icons.play_circle_fill, size: 50, color: Colors.grey))
+            ? Center(child: Icon(Icons.play_circle_fill, size: 50, color: Colors.grey[400])) // Adjusted icon color
             : ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  url,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 50, color: Colors.grey),
-                ),
-              ),
+          borderRadius: BorderRadius.circular(12),
+          child: Image.network(
+            url,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 50, color: Colors.grey),
+          ),
+        ),
       );
     }
 
     List<Widget> buildGrid() {
       if (media.length == 1) {
-        final url = media[0];
-        final isVideo = url.toString().endsWith('.mp4');
+        final url = media[0].toString(); // Ensure it's a string
+        final isVideo = url.endsWith('.mp4');
         return [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -1355,9 +1716,9 @@ class _ControversyCarouselState extends State<_ControversyCarousel> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              buildMediaBox(media[0], isVideo: media[0].toString().endsWith('.mp4')),
+              buildMediaBox(media[0].toString(), isVideo: media[0].toString().endsWith('.mp4')),
               SizedBox(width: spacing),
-              buildMediaBox(media[1], isVideo: media[1].toString().endsWith('.mp4')),
+              buildMediaBox(media[1].toString(), isVideo: media[1].toString().endsWith('.mp4')),
             ],
           ),
         ];
@@ -1372,17 +1733,18 @@ class _ControversyCarouselState extends State<_ControversyCarousel> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  buildMediaBox(media[0], isVideo: media[0].toString().endsWith('.mp4')),
+                  buildMediaBox(media[0].toString(), isVideo: media[0].toString().endsWith('.mp4')),
                   SizedBox(height: spacing),
-                  buildMediaBox(media[1], isVideo: media[1].toString().endsWith('.mp4')),
+                  buildMediaBox(media[1].toString(), isVideo: media[1].toString().endsWith('.mp4')),
                 ],
               ),
               SizedBox(width: spacing),
               // Right column (one media, full height)
+              // Ensure this Container correctly wraps the media box and fits its content
               Container(
                 width: cardWidth,
                 height: cardHeight * 2 + spacing,
-                child: buildMediaBox(media[2], isVideo: media[2].toString().endsWith('.mp4')),
+                child: buildMediaBox(media[2].toString(), isVideo: media[2].toString().endsWith('.mp4')),
               ),
             ],
           ),
@@ -1406,6 +1768,7 @@ class _ControversyCarouselState extends State<_ControversyCarousel> {
               icon: Icon(Icons.arrow_left, color: widget.defaultTextColor),
               onPressed: widget.controversyMedia.length > 1 ? _goLeft : null,
             ),
+            // Correctly spread the list of widgets returned by buildGrid()
             ...buildGrid(),
             IconButton(
               icon: Icon(Icons.arrow_right, color: widget.defaultTextColor),

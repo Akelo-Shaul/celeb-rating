@@ -48,7 +48,7 @@ class _UhondoKonaState extends State<UhondoKona> {
           : UhondoList(
               uhondos: _posts ?? [],
               onTap: (post) {
-                context.go('${AppRoutes.webView}/${Uri.encodeComponent(post.blogLink)}');
+                context.pushWebView(url: post.blogLink);
               },
             ),
     );

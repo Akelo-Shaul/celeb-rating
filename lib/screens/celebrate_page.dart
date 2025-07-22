@@ -81,8 +81,8 @@ class _CelebratePageState extends State<CelebratePage> {
               decoration: BoxDecoration(
                 color: selected
                     ? (isDark
-                        ? Colors.black.withOpacity(0.18)
-                        : Colors.grey.shade400.withOpacity(0.38))
+                    ? Colors.black.withOpacity(0.18)
+                    : Colors.grey.shade400.withOpacity(0.38))
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(22),
               ),
@@ -293,6 +293,7 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
       builder: (context) => SafeArea(
         child: Wrap(
           children: [
+
             ListTile(
               leading: const Icon(Icons.photo_library),
               title: Text(AppLocalizations.of(context)!.addImages),
@@ -388,9 +389,9 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
       backgroundColor: Colors.transparent,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
             if (_mediaFiles.isNotEmpty || _captionController.text.trim().isNotEmpty)
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -428,53 +429,53 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
                             scrollDirection: Axis.horizontal,
                             itemCount: _mediaFiles.length,
                             itemBuilder: (context, idx) {
-                              final file = _mediaFiles[idx];
-                              final isVideo = _isVideoList[idx];
+                        final file = _mediaFiles[idx];
+                        final isVideo = _isVideoList[idx];
                               return Stack(
-                                alignment: Alignment.topRight,
-                                children: [
+                            alignment: Alignment.topRight,
+                            children: [
                                   // Wrap the media display with GestureDetector for preview
-                                  GestureDetector(
-                                    onTap: () => _showMediaPreview(file, isVideo),
+                              GestureDetector(
+                                onTap: () => _showMediaPreview(file, isVideo),
                                     child: Padding(
                                       padding: const EdgeInsets.only(right: 12),
-                                      child: ClipRRect(
+                                child: ClipRRect(
                                         borderRadius: BorderRadius.circular(16),
-                                        child: isVideo
-                                            ? FutureBuilder<Uint8List?>(
-                                          future: _getVideoThumbnail(file.path),
-                                          builder: (context, snapshot) {
-                                            if (snapshot.connectionState == ConnectionState.done && snapshot.data != null) {
-                                              return Stack(
-                                                alignment: Alignment.center,
-                                                children: [
-                                                  Image.memory(
-                                                    snapshot.data!,
-                                                    fit: BoxFit.cover,
+                                  child: isVideo
+                                      ? FutureBuilder<Uint8List?>(
+                                    future: _getVideoThumbnail(file.path),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.done && snapshot.data != null) {
+                                        return Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            Image.memory(
+                                              snapshot.data!,
+                                              fit: BoxFit.cover,
                                                     width: 120,
                                                     height: 180,
-                                                  ),
+                                            ),
                                                   const Icon(Icons.play_circle_fill, color: Colors.white, size: 48),
-                                                ],
-                                              );
-                                            } else {
-                                              return Container(
+                                          ],
+                                        );
+                                      } else {
+                                        return Container(
                                                 width: 120,
                                                 height: 180,
-                                                color: Colors.black12,
-                                                child: const Center(child: CircularProgressIndicator()),
-                                              );
-                                            }
-                                          },
-                                        )
-                                            : Image.file(
-                                          File(file.path),
-                                          fit: BoxFit.cover,
+                                          color: Colors.black12,
+                                          child: const Center(child: CircularProgressIndicator()),
+                                        );
+                                      }
+                                    },
+                                  )
+                                      : Image.file(
+                                    File(file.path),
+                                    fit: BoxFit.cover,
                                           width: 120,
                                           height: 180,
-                                        ),
-                                      ),
-                                    ),
+                                  ),
+                                ),
+                              ),
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.close_rounded, color: Colors.red, size: 28),
@@ -489,20 +490,20 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
                                 ],
                               );
                             },
-                          ),
-                        ),
-                      ),
-                    Padding(
+                ),
+              ),
+            ),
+            Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: TextField(
-                        controller: _captionController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: localizations.captionHint ?? 'What is on your mind?',
+              child: TextField(
+                controller: _captionController,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: localizations.captionHint ?? 'What is on your mind?',
                           hintStyle: const TextStyle(fontSize: 18, color: Colors.black87, fontWeight: FontWeight.w500),
                           contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                        ),
-                        style: const TextStyle(fontSize: 18, color: Colors.black),
+                ),
+                style: const TextStyle(fontSize: 18, color: Colors.black),
                         maxLines: 2,
                       ),
                     ),
@@ -511,13 +512,13 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
               ),
             ),
             AppSearchBar(
-              controller: _categorySearchController,
-              hintText: localizations.searchCategoryHint ?? 'Search Category...',
-              onChanged: (value) {
-                setState(() {
-                  _categorySearch = value;
-                });
-              },
+                    controller: _categorySearchController,
+                      hintText: localizations.searchCategoryHint ?? 'Search Category...',
+                    onChanged: (value) {
+                      setState(() {
+                        _categorySearch = value;
+                      });
+                    },
               onSearchPressed: () {
                 setState(() {
                   _categorySearch = _categorySearchController.text;
@@ -535,34 +536,34 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: SizedBox(
-                height: 38,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
+                    height: 38,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
                   children: firstLine.map((cat) => GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (_selectedCategories.contains(cat)) {
-                          _selectedCategories.remove(cat);
-                        } else {
-                          _selectedCategories.add(cat);
-                        }
-                      });
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Chip(
-                        label: Text(cat),
-                        backgroundColor: _selectedCategories.contains(cat)
+                        onTap: () {
+                          setState(() {
+                            if (_selectedCategories.contains(cat)) {
+                              _selectedCategories.remove(cat);
+                            } else {
+                              _selectedCategories.add(cat);
+                            }
+                          });
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Chip(
+                            label: Text(cat),
+                            backgroundColor: _selectedCategories.contains(cat)
                             ? Colors.amber.withOpacity(0.7)
-                            : Colors.grey.withOpacity(0.13),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                                : Colors.grey.withOpacity(0.13),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
                         ),
-                      ),
+                      )).toList(),
                     ),
-                  )).toList(),
-                ),
-              ),
+                  ),
             ),
             const SizedBox(height: 8),
             Padding(
@@ -599,33 +600,13 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  FloatingActionButton(
-                    heroTag: 'gallery_celebrate',
-                    backgroundColor: Colors.blue.withOpacity(0.13),
-                    child: const Icon(Icons.local_offer, color: Colors.blue, size: 32),
-                    onPressed: () {
-                      print('Tag button pressed');
-                    },
-                    tooltip: 'Tag',
-                  ),
-                  FloatingActionButton(
-                    heroTag: 'media_celebrate',
-                    backgroundColor: Colors.orange.withOpacity(0.13),
-                    child: const Icon(Icons.image, color: Colors.orange, size: 32),
-                    onPressed: _showMediaPickerDialog,
-                    tooltip: 'Pick from Gallery',
-                  ),
-                  FloatingActionButton(
-                    heroTag: 'camera_celebrate',
-                    backgroundColor: Colors.purple.withOpacity(0.13),
-                    child: const Icon(Icons.camera_alt, color: Colors.purple, size: 32),
-                    onPressed: _openCameraAndAddMedia,
-                    tooltip: 'Open Camera',
-                  ),
-                ],
+              child: FloatingActionButton(
+                heroTag: 'gallery_pick',
+                backgroundColor: Colors.white,
+                // Not mini, so it's larger
+                onPressed: _openCameraAndAddMedia,
+                tooltip: 'Pick from Gallery',
+                child: const Icon(Icons.photo_library, size: 38, color: Color(0xFFD6AF0C)),
               ),
             ),
             const SizedBox(height: 12),
@@ -636,12 +617,47 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
   }
 }
 
+
 class CameraCapturePage extends StatefulWidget {
   @override
   State<CameraCapturePage> createState() => _CameraCapturePageState();
 }
 
 class _CameraCapturePageState extends State<CameraCapturePage> {
+  Future<void> _pickFromGallery() async {
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Pick Image'),
+              onTap: () => Navigator.pop(context, 'image'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.video_library),
+              title: const Text('Pick Video'),
+              onTap: () => Navigator.pop(context, 'video'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (result == 'image') {
+      final picker = ImagePicker();
+      final image = await picker.pickImage(source: ImageSource.gallery);
+      if (image != null && mounted) {
+        Navigator.pop(context, {'file': image, 'isVideo': false});
+      }
+    } else if (result == 'video') {
+      final picker = ImagePicker();
+      final video = await picker.pickVideo(source: ImageSource.gallery);
+      if (video != null && mounted) {
+        Navigator.pop(context, {'file': video, 'isVideo': true});
+      }
+    }
+  }
   CameraController? _controller;
   List<CameraDescription>? _cameras;
   bool _isRecording = false;
@@ -746,73 +762,91 @@ class _CameraCapturePageState extends State<CameraCapturePage> {
       backgroundColor: Colors.black,
       body: _isCameraReady && _controller != null
           ? Stack(
-        children: [
-          CameraPreview(_controller!),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 40),
-              child: GestureDetector(
-                onTap: () {
-                  if (_isRecording) {
-                    _stopVideoRecording();
-                  } else {
-                    _takePhoto();
-                  }
-                },
-                onLongPress: () {
-                  if (!_isRecording) {
-                    _startVideoRecording();
-                  }
-                },
-                child: Container(
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    color: _isRecording ? Colors.red : Colors.white,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 4),
-                  ),
-                  child: Icon(
-                    _isRecording ? Icons.stop : Icons.camera_alt,
-                    color: _isRecording ? Colors.white : Colors.black,
-                    size: 40,
+              children: [
+                Positioned.fill(
+                  child: CameraPreview(_controller!),
+                ),
+                // Single gallery pick button
+                Positioned(
+                  bottom: 40,
+                  left: 30,
+                  child: FloatingActionButton(
+                    heroTag: 'gallery_pick',
+                    backgroundColor: Colors.white,
+                    // Not mini, so it's larger
+                    onPressed: _pickFromGallery,
+                    tooltip: 'Pick from Gallery',
+                    child: const Icon(Icons.photo_library, size: 38, color: Color(0xFFD6AF0C)),
                   ),
                 ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 40,
-            left: 20,
-            child: IconButton(
-              icon: const Icon(Icons.close, color: Colors.white, size: 32),
-              onPressed: () {
-                if (_isRecording) {
-                  _stopVideoRecording();
-                } else {
-                  Navigator.pop(context);
-                }
-              },
-            ),
-          ),
-          // New: Camera toggle button
-          if (_cameras != null && _cameras!.length > 1) // Only show if multiple cameras available
-            Positioned(
-              top: 40,
-              right: 20,
-              child: IconButton(
-                icon: const Icon(Icons.flip_camera_ios, color: Colors.white, size: 32),
-                onPressed: _isRecording ? null : _toggleCamera, // Disable if recording
-                tooltip: 'Toggle Camera',
-              ),
-            ),
-        ],
-      )
+                // Camera capture button
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 40),
+                    child: GestureDetector(
+                      onTap: () {
+                        if (_isRecording) {
+                          _stopVideoRecording();
+                        } else {
+                          _takePhoto();
+                        }
+                      },
+                      onLongPress: () {
+                        if (!_isRecording) {
+                          _startVideoRecording();
+                        }
+                      },
+                      child: Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          color: _isRecording ? Colors.red : Colors.white,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 4),
+                        ),
+                        child: Icon(
+                          _isRecording ? Icons.stop : Icons.camera_alt,
+                          color: _isRecording ? Colors.white : Colors.black,
+                          size: 40,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                // Close button
+                Positioned(
+                  top: 40,
+                  left: 20,
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white, size: 32),
+                    onPressed: () {
+                      if (_isRecording) {
+                        _stopVideoRecording();
+                      } else {
+                        Navigator.pop(context);
+                      }
+                    },
+                  ),
+                ),
+                // Camera toggle button
+                if (_cameras != null && _cameras!.length > 1)
+                  Positioned(
+                    top: 40,
+                    right: 20,
+                    child: IconButton(
+                      icon: const Icon(Icons.flip_camera_ios, color: Colors.white, size: 32),
+                      onPressed: _isRecording ? null : _toggleCamera,
+                      tooltip: 'Toggle Camera',
+                    ),
+                  ),
+              ],
+            )
           : const Center(child: CircularProgressIndicator()),
     );
   }
 }
+
 
 // New MediaPreviewScreen Widget
 class MediaPreviewScreen extends StatefulWidget {

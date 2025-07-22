@@ -645,4 +645,28 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get versusAbbreviation => 'VS';
+
+  @override
+  String get stageName => 'Jina la Sanaa';
+
+  @override
+  String get zodiacSign => 'Alama ya Nyota';
+
+  @override
+  String get religion => 'Dini';
+
+  @override
+  String get updateProfile => 'Sasisha Wasifu';
+
+  @override
+  String get submit => 'Wasilisha';
+
+  @override
+  String get relationshipType => 'Aina ya Mahusiano';
+
+  @override
+  String get cancel => 'Ghairi';
+
+  @override
+  String get enterValidYear => 'Tafadhali weka mwaka halali.';
 }

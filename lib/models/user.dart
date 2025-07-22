@@ -71,7 +71,7 @@ class CelebrityUser extends User {
   final String zodiacSign;
   final List<Map<String, dynamic>> familyMembers;
   final List<String> relationships;
-  final List<Map<String, String>> educationEntries;
+  final List<Map<String, dynamic>> educationEntries;
   final List<Map<String, dynamic>> hobbies;
   final String diet;
   final String spirituality;

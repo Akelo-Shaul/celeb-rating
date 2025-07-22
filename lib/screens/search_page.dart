@@ -119,13 +119,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
 
   void onFlickTap(Flick flick){
     final index = _searchFlickResults.indexOf(flick);
-    context.go(
-      AppRoutes.flickScreen,
-      extra: {
-        'flicks': _searchFlickResults, // Your List of flicks
-        'initialIndex': 2, // Optional: defaults to 0 if not provided
-      },
-    );
+    context.pushFlick(flicks: _searchFlickResults, initialIndex: 2);
   }
 
   void _onScroll() {
@@ -569,7 +563,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
     return UhondoList(
       uhondos: _searchUhondoResults,
       onTap: (post) {
-        context.go('${AppRoutes.webView}/${Uri.encodeComponent(post.blogLink)}');
+        context.pushWebView(url: post.blogLink);
       },
     );
   }

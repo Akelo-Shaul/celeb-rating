@@ -4,115 +4,89 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../l10n/app_localizations.dart';
 import 'app_buttons.dart';
+import 'app_date_picker.dart';
 import 'app_text_fields.dart';
 import 'app_dropdown.dart';
-import '../utils/route.dart';
 
-class AddWealthItemModal extends StatefulWidget {
-  final void Function(Map<String, dynamic> wealthItem) onAdd;
-  final String? sectionTitle;
-  const AddWealthItemModal({super.key, required this.onAdd, this.sectionTitle});
+class AddPersonaModal extends StatefulWidget {
+  final void Function(Map<String, dynamic> personaItem) onAdd;
+  final String sectionTitle;
+  const AddPersonaModal({super.key, required this.onAdd, required this.sectionTitle});
 
   @override
-  State<AddWealthItemModal> createState() => _AddWealthItemModalState();
+  State<AddPersonaModal> createState() => _AddPersonaModalState();
 }
 
-class _AddWealthItemModalState extends State<AddWealthItemModal> {
+class _AddPersonaModalState extends State<AddPersonaModal> {
   final _formKey = GlobalKey<FormState>();
   // Controllers for all possible fields
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
-  final TextEditingController _valueController = TextEditingController();
-  final TextEditingController _modelController = TextEditingController(); // car
-  final TextEditingController _yearController = TextEditingController(); // car, art
-  final TextEditingController _horsepowerController = TextEditingController(); // car
-  final TextEditingController _priceController = TextEditingController(); // car, jewellery
-  final TextEditingController _locationController = TextEditingController(); // house, property
-  final TextEditingController _painterController = TextEditingController(); // art
+  final TextEditingController _valueController = TextEditingController(); // unused now
+  final TextEditingController _bodyPartController = TextEditingController(); // tattoos
+  final TextEditingController _locationController = TextEditingController(); // favourite places
+  final TextEditingController _reasonController = TextEditingController(); // favourite places
+  final TextEditingController _startYearController = TextEditingController(); // talents, hobbies
+  final TextEditingController _inspirationController = TextEditingController(); // fashion style
   XFile? _pickedImage;
+  DateTime? _selectStartDate;
 
-  final List<String> _categories = [
-    'Car', 'House', 'Art', 'Property', 'Jewelry', 'Stocks', 'Business', 'Other'
+  final List<String> _personaTypes = [
+    'Tattoos', 'Favourite Places', 'Talents', 'Hobbies', 'Fashion Style'
   ];
-
-  String? _selectedCategory;
+  String? _selectedPersonaType;
 
   @override
   void dispose() {
     _nameController.dispose();
     _descController.dispose();
     _valueController.dispose();
-    _modelController.dispose();
-    _yearController.dispose();
-    _horsepowerController.dispose();
-    _priceController.dispose();
+    _bodyPartController.dispose();
     _locationController.dispose();
-    _painterController.dispose();
+    _reasonController.dispose();
+    _startYearController.dispose();
+    _inspirationController.dispose();
     super.dispose();
   }
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    final Map<String, dynamic> data = {'category': _selectedCategory};
-    switch (_selectedCategory) {
-      case 'Car':
+    final Map<String, dynamic> data = {'type': _selectedPersonaType};
+    switch (_selectedPersonaType) {
+      case 'Tattoos':
         data.addAll({
-          'model': _modelController.text.trim(),
-          'year': _yearController.text.trim(),
-          'horsepower': _horsepowerController.text.trim(),
-          'price': _priceController.text.trim(),
+          'name': _nameController.text.trim(),
+          'bodyPart': _bodyPartController.text.trim(),
           'description': _descController.text.trim(),
         });
         break;
-      case 'House':
+      case 'Favourite Places':
         data.addAll({
           'location': _locationController.text.trim(),
           'description': _descController.text.trim(),
-          'value': _valueController.text.trim(),
+          'reason': _reasonController.text.trim(),
         });
         break;
-      case 'Jewelry':
+      case 'Talents':
         data.addAll({
           'name': _nameController.text.trim(),
           'description': _descController.text.trim(),
-          'price': _priceController.text.trim(),
+          'startYear': _startYearController.text.trim(),
         });
         break;
-      case 'Art':
-        data.addAll({
-          'painter': _painterController.text.trim(),
-          'value': _valueController.text.trim(),
-          'year': _yearController.text.trim(),
-          'name': _nameController.text.trim(),
-          'description': _descController.text.trim(),
-        });
-        break;
-      case 'Property':
-        data.addAll({
-          'location': _locationController.text.trim(),
-          'value': _valueController.text.trim(),
-          'description': _descController.text.trim(),
-          'name': _nameController.text.trim(),
-        });
-        break;
-      case 'Stocks':
-        data.addAll({
-          'name': _nameController.text.trim(),
-          'value': _valueController.text.trim(),
-        });
-        break;
-      case 'Business':
-        data.addAll({
-          'name': _nameController.text.trim(),
-          'value': _valueController.text.trim(),
-        });
-        break;
-      case 'Other':
+      case 'Hobbies':
         data.addAll({
           'name': _nameController.text.trim(),
           'description': _descController.text.trim(),
-          'value': _valueController.text.trim(),
+          'startYear': _startYearController.text.trim(),
         });
+        break;
+      case 'Fashion Style':
+        data.addAll({
+      'name': _nameController.text.trim(),
+      'description': _descController.text.trim(),
+          'inspiration': _inspirationController.text.trim(),
+    });
         break;
     }
     widget.onAdd(data);
@@ -129,48 +103,27 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
     }
   }
 
-  List<Widget> _buildFieldsForCategory(String? category) {
+  List<Widget> _buildFieldsForType(String? type) {
     final loc = AppLocalizations.of(context)!;
-    switch (category) {
-      case 'Car':
+    switch (type) {
+      case 'Tattoos':
         return [
           TextFormField(
-            controller: _modelController,
+            controller: _nameController,
             decoration: InputDecoration(
-              labelText: 'Car Model',
-              prefixIcon: Icon(Icons.directions_car),
+              labelText: loc.name,
+              prefixIcon: Icon(Icons.label),
             ),
-            validator: (v) => v == null || v.trim().isEmpty ? 'Enter car model' : null,
+            validator: (v) => v == null || v.trim().isEmpty ? loc.enterName : null,
           ),
           const SizedBox(height: 14),
           TextFormField(
-            controller: _yearController,
+            controller: _bodyPartController,
             decoration: InputDecoration(
-              labelText: 'Year',
-              prefixIcon: Icon(Icons.calendar_today),
+              labelText: 'Body Part',
+              prefixIcon: Icon(Icons.accessibility_new),
             ),
-            keyboardType: TextInputType.number,
-            validator: (v) => v == null || v.trim().isEmpty ? 'Enter year' : null,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _horsepowerController,
-            decoration: InputDecoration(
-              labelText: 'Horsepower',
-              prefixIcon: Icon(Icons.speed),
-            ),
-            keyboardType: TextInputType.number,
-            validator: (v) => v == null || v.trim().isEmpty ? 'Enter horsepower' : null,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _priceController,
-            decoration: InputDecoration(
-              labelText: 'Price',
-              prefixIcon: Icon(Icons.attach_money),
-            ),
-            keyboardType: TextInputType.number,
-            validator: (v) => v == null || v.trim().isEmpty ? 'Enter price' : null,
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter body part' : null,
           ),
           const SizedBox(height: 14),
           TextFormField(
@@ -182,7 +135,7 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
             validator: (v) => v == null || v.trim().isEmpty ? loc.enterDescription : null,
           ),
         ];
-      case 'House':
+      case 'Favourite Places':
         return [
           TextFormField(
             controller: _locationController,
@@ -203,15 +156,15 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
           ),
           const SizedBox(height: 14),
           TextFormField(
-            controller: _valueController,
+            controller: _reasonController,
             decoration: InputDecoration(
-              labelText: loc.estimatedValueOptional,
-              prefixIcon: Icon(Icons.attach_money),
+              labelText: 'Reason',
+              prefixIcon: Icon(Icons.question_answer),
             ),
-            keyboardType: TextInputType.number,
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter reason' : null,
           ),
         ];
-      case 'Jewelry':
+      case 'Talents':
         return [
           TextFormField(
             controller: _nameController,
@@ -232,45 +185,29 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
           ),
           const SizedBox(height: 14),
           TextFormField(
-            controller: _priceController,
+            controller: _startYearController,
             decoration: InputDecoration(
-              labelText: 'Price',
-              prefixIcon: Icon(Icons.attach_money),
-            ),
-            keyboardType: TextInputType.number,
-            validator: (v) => v == null || v.trim().isEmpty ? 'Enter price' : null,
-          ),
-        ];
-      case 'Art':
-        return [
-          TextFormField(
-            controller: _painterController,
-            decoration: InputDecoration(
-              labelText: 'Painter',
-              prefixIcon: Icon(Icons.brush),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? 'Enter painter' : null,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _valueController,
-            decoration: InputDecoration(
-              labelText: loc.estimatedValueOptional,
-              prefixIcon: Icon(Icons.attach_money),
-            ),
-            keyboardType: TextInputType.number,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _yearController,
-            decoration: InputDecoration(
-              labelText: 'Year',
+              labelText: 'Start Year',
               prefixIcon: Icon(Icons.calendar_today),
             ),
-            keyboardType: TextInputType.number,
-            validator: (v) => v == null || v.trim().isEmpty ? 'Enter year' : null,
+            readOnly: true,
+            onTap: () async {
+              final picked = await CustomDatePicker.show(context);
+              if (picked != null) {
+                setState(() {
+                  _selectStartDate = picked;
+                  _startYearController.text = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+                });
+              }
+            },
+            validator: (v) {
+              if (v == null || v.trim().isEmpty) return AppLocalizations.of(context)!.enterAge;
+              return null;
+            },
           ),
-          const SizedBox(height: 14),
+        ];
+      case 'Hobbies':
+        return [
           TextFormField(
             controller: _nameController,
             decoration: InputDecoration(
@@ -288,25 +225,34 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
             ),
             validator: (v) => v == null || v.trim().isEmpty ? loc.enterDescription : null,
           ),
-        ];
-      case 'Property':
-        return [
-          TextFormField(
-            controller: _locationController,
-            decoration: InputDecoration(
-              labelText: 'Location',
-              prefixIcon: Icon(Icons.location_on),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? 'Enter location' : null,
-          ),
           const SizedBox(height: 14),
           TextFormField(
-            controller: _valueController,
+            controller: _startYearController,
             decoration: InputDecoration(
-              labelText: loc.estimatedValueOptional,
-              prefixIcon: Icon(Icons.attach_money),
+              labelText: 'Start Year',
+              prefixIcon: Icon(Icons.calendar_today),
             ),
-            keyboardType: TextInputType.number,
+            readOnly: true,
+            onTap: () async {
+              final picked = await CustomDatePicker.show(context);
+              if (picked != null) {
+                setState(() {
+                  _selectStartDate = picked;
+                  _startYearController.text = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+                });
+              }
+            },
+          ),
+        ];
+      case 'Fashion Style':
+        return [
+          TextFormField(
+            controller: _nameController,
+            decoration: InputDecoration(
+              labelText: loc.name,
+              prefixIcon: Icon(Icons.label),
+            ),
+            validator: (v) => v == null || v.trim().isEmpty ? loc.enterName : null,
           ),
           const SizedBox(height: 14),
           TextFormField(
@@ -319,84 +265,16 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
           ),
           const SizedBox(height: 14),
           TextFormField(
-            controller: _nameController,
+            controller: _inspirationController,
             decoration: InputDecoration(
-              labelText: loc.name,
-              prefixIcon: Icon(Icons.label),
+              labelText: 'Inspiration',
+              prefixIcon: Icon(Icons.lightbulb_outline),
             ),
-            validator: (v) => v == null || v.trim().isEmpty ? loc.enterName : null,
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter inspiration' : null,
           ),
         ];
-      case 'Stocks':
-        return [
-          TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              labelText: loc.name,
-              prefixIcon: Icon(Icons.label),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? loc.enterName : null,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _valueController,
-            decoration: InputDecoration(
-              labelText: loc.estimatedValueOptional,
-              prefixIcon: Icon(Icons.attach_money),
-            ),
-            keyboardType: TextInputType.number,
-          ),
-        ];
-      case 'Business':
-        return [
-          TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              labelText: loc.name,
-              prefixIcon: Icon(Icons.label),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? loc.enterName : null,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _valueController,
-            decoration: InputDecoration(
-              labelText: loc.estimatedValueOptional,
-              prefixIcon: Icon(Icons.attach_money),
-            ),
-            keyboardType: TextInputType.number,
-          ),
-        ];
-      case 'Other':
       default:
-        return [
-          TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              labelText: loc.name,
-              prefixIcon: Icon(Icons.label),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? loc.enterName : null,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _descController,
-            decoration: InputDecoration(
-              labelText: loc.description,
-              prefixIcon: Icon(Icons.description),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? loc.enterDescription : null,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _valueController,
-            decoration: InputDecoration(
-              labelText: loc.estimatedValueOptional,
-              prefixIcon: Icon(Icons.attach_money),
-            ),
-            keyboardType: TextInputType.number,
-          ),
-        ];
+        return [];
     }
   }
 
@@ -405,12 +283,12 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
     final appPrimaryColor = const Color(0xFFD6AF0C);
-    final bool hasSectionTitle = (widget.sectionTitle != null && widget.sectionTitle!.isNotEmpty);
-    if (hasSectionTitle && _selectedCategory != widget.sectionTitle) {
+    final bool hasSectionTitle = (widget.sectionTitle.isNotEmpty);
+    if (hasSectionTitle && _selectedPersonaType != widget.sectionTitle) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_selectedCategory != widget.sectionTitle) {
+        if (_selectedPersonaType != widget.sectionTitle) {
           setState(() {
-            _selectedCategory = widget.sectionTitle;
+            _selectedPersonaType = widget.sectionTitle;
           });
         }
       });
@@ -418,22 +296,22 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
     return Padding(
       padding: const EdgeInsets.only(top: 40), // leave space for the close button
       child: SingleChildScrollView(
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Container(
-            padding: EdgeInsets.only(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Container(
+          padding: EdgeInsets.only(
               top: 24,
-              left: 16.0,
-              right: 16.0,
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
+            left: 16.0,
+            right: 16.0,
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
             decoration: BoxDecoration(
               color: isDark ? Colors.grey.shade900 : Colors.white,
               borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             ),
-            child: Form(
-              key: _formKey,
+          child: Form(
+            key: _formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -449,7 +327,7 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
                     ],
                   ),
                   Text(
-                    widget.sectionTitle ?? AppLocalizations.of(context)!.addWealthItem,
+                    widget.sectionTitle,
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
@@ -463,6 +341,36 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
+                  // Persona type dropdown
+                  if (!hasSectionTitle)
+                    DropdownButtonFormField<String>(
+                      value: _selectedPersonaType,
+                      decoration: InputDecoration(
+                        labelText: 'Type',
+                        prefixIcon: Icon(Icons.category),
+                      ),
+                      items: _personaTypes.map((type) => DropdownMenuItem(
+                        value: type,
+                        child: Text(type),
+                      )).toList(),
+                      onChanged: (val) => setState(() => _selectedPersonaType = val),
+                      validator: (v) => v == null || v.isEmpty ? 'Select type' : null,
+                    ),
+                  if (hasSectionTitle)
+                    DropdownButtonFormField<String>(
+                      value: _selectedPersonaType,
+                      decoration: InputDecoration(
+                        labelText: 'Type',
+                        prefixIcon: Icon(Icons.category),
+                      ),
+                      items: [DropdownMenuItem(
+                        value: widget.sectionTitle,
+                        child: Text(widget.sectionTitle),
+                      )],
+                      onChanged: null,
+                      validator: (v) => v == null || v.isEmpty ? 'Select type' : null,
+                    ),
+                  const SizedBox(height: 14),
                   // Photo picker
                   Align(
                     alignment: Alignment.centerLeft,
@@ -508,20 +416,8 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 18),
-                  AppDropdownFormField<String>(
-                    labelText: AppLocalizations.of(context)!.category,
-                    icon: Icons.category,
-                    value: _selectedCategory,
-                    items: _categories.map((cat) => DropdownMenuItem(
-                      value: cat,
-                      child: Text(AppLocalizations.of(context)!.categoryValue(cat)),
-                    )).toList(),
-                    onChanged: hasSectionTitle ? null : (val) => setState(() => _selectedCategory = val),
-                    validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.selectCategory : null,
-                  ),
                   const SizedBox(height: 14),
-                  ..._buildFieldsForCategory(_selectedCategory),
+                  ..._buildFieldsForType(_selectedPersonaType),
                   const SizedBox(height: 18),
                   SizedBox(
                     width: double.infinity,

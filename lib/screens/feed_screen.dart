@@ -155,7 +155,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 fontSize: 20,
                 onPressed: () {
                   print('Awards tapped');
-                  //TODO: Add navigation logic
+                  context.goToAward();
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
@@ -167,7 +167,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 fontSize: 20,
                 onPressed: () {
                   print('Profile button tapped');
-                  context.go('/profile');
+                  context.goToProfile();
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners

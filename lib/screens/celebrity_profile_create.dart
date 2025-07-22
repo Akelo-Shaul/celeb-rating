@@ -6,9 +6,10 @@ import 'package:celebrating/widgets/app_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
-import 'package:celebrating/widgets/add_family_member_modal.dart';
 import 'package:celebrating/widgets/add_wealth_item_modal.dart';
 
+import '../widgets/add_education_modal.dart';
+import '../widgets/add_relationship_modal.dart';
 import '../widgets/app_text_fields.dart';
 
 class CelebrityProfileCreate extends StatefulWidget {
@@ -35,6 +36,25 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
   final TextEditingController _degreeController = TextEditingController();
   final TextEditingController _universityController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
+
+  // --- MISSING VARIABLES FOR _updateProfile ---
+  final GlobalKey<FormState> _formKeyUpdateProfile = GlobalKey<FormState>();
+  String? _updateStageName;
+  String? _updateSign;
+  String? _updateReligion;
+  String? _updateNetWorth;
+  bool _isSubmitting = false;
+
+  void _submitUpdates() async {
+    if (!_formKeyUpdateProfile.currentState!.validate()) return;
+    _formKeyUpdateProfile.currentState!.save();
+    setState(() { _isSubmitting = true; });
+    // Simulate a network call or save logic
+    await Future.delayed(const Duration(seconds: 1));
+    setState(() { _isSubmitting = false; });
+    _goToNextTab();
+    // Removed snackbar with missing localization key
+  }
 
   @override
   void initState() {
@@ -75,10 +95,20 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
     });
   }
 
+
   void _goToNextTab() {
     setState(() {
-      if (_currentIndex < 3) {
+      // There are 6 steps: 0,1,2,3,4,5 (3 is skipped in build)
+      if (_currentIndex < 5) {
         _currentIndex++;
+      }
+    });
+  }
+
+  void _goToPreviousTab() {
+    setState(() {
+      if (_currentIndex > 0) {
+        _currentIndex--;
       }
     });
   }
@@ -88,6 +118,9 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryColor = const Color(0xFFD6AF0C);
     final textColorLight = isDark ? Colors.grey[700]! : Colors.grey[300]!;
+    final theme = Theme.of(context);
+    final textColor = theme.colorScheme.onBackground;
+    final secondaryTextColor = theme.textTheme.bodyMedium?.color ?? textColor;
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -95,13 +128,89 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
             if (_currentIndex == 0)
               _celebrateYou(),
             if (_currentIndex == 1)
-              _addFamily(),
+              Column(
+                children: [
+                  Expanded(child: _updateProfile()),
+                  // Profile summary
+                  if (_updateStageName != null || _updateSign != null || _updateReligion != null || _updateNetWorth != null)
+                    Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: ListTile(
+                        leading: const Icon(Icons.person),
+                        title: Text(AppLocalizations.of(context)!.updateProfile),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (_updateStageName != null && _updateStageName!.isNotEmpty)
+                              Text('${AppLocalizations.of(context)!.stageName}: $_updateStageName'),
+                            if (_updateSign != null && _updateSign!.isNotEmpty)
+                              Text('${AppLocalizations.of(context)!.zodiacSign}: $_updateSign'),
+                            if (_updateReligion != null && _updateReligion!.isNotEmpty)
+                              Text('${AppLocalizations.of(context)!.religion}: $_updateReligion'),
+                            if (_updateNetWorth != null && _updateNetWorth!.isNotEmpty)
+                              Text('${AppLocalizations.of(context)!.netWorth}: $_updateNetWorth'),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             if (_currentIndex == 2)
-              _addWealth(),
+              Column(
+                children: [
+                  Expanded(child: _addFamily()),
+                  // Family summary (example, you may want to store added family in state)
+                  // if (_addedFamily.isNotEmpty) ...
+                ],
+              ),
             if (_currentIndex == 3)
-              _addEducation(),
+              Column(
+                children: [
+                  Expanded(child: _addWealth()),
+                  // Wealth summary (example, you may want to store added wealth in state)
+                  // if (_addedWealth.isNotEmpty) ...
+                ],
+              ),
+            if (_currentIndex == 4)
+              Column(
+                children: [
+                  Expanded(child: _addEducation()),
+                  if (_degrees.isNotEmpty)
+                    SizedBox(
+                      height: 220, // Adjust height as needed
+                      child: ListView(
+                        padding: EdgeInsets.zero,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.addedDegrees,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: textColor,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          ..._degrees.map((deg) => Card(
+                            margin: const EdgeInsets.symmetric(vertical: 4),
+                            child: ListTile(
+                              leading: const Icon(Icons.school),
+                              title: Text(
+                                '${deg['university']} (${deg['year']})',
+                                style: theme.textTheme.bodyMedium?.copyWith(color: secondaryTextColor),
+                              ),
+                              subtitle: Text(
+                                deg['degree'] ?? '',
+                                style: theme.textTheme.bodyLarge?.copyWith(color: textColor),
+                              ),
+                            ),
+                          )),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            // Progress indicator row remains here
             PositionedDirectional(
-              bottom: 0,
+              bottom: 10,
               start: 0,
               end: 0,
               child: Container(
@@ -109,7 +218,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(4, (index) {
+                  children: List.generate(5, (index) {
                     return _currentIndex == index
                         ? Container(
                       margin: const EdgeInsetsDirectional.all(10),
@@ -171,91 +280,168 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
     );
   }
 
-  Widget _addFamily() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 40),
-            Text(
-              AppLocalizations.of(context)!.addFamily,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            Text(AppLocalizations.of(context)!.searchAndAddFamily, textAlign: TextAlign.center),
-            const SizedBox(height: 24),
-            TextField(
-              decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.searchByNameOrUsername,
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              onChanged: _onSearchChanged,
-            ),
-
-            const SizedBox(height: 8),
-            _isLoadingUsers
-                ? const Center(child: CircularProgressIndicator())
-                : Expanded(
-                    child: _searchQuery.isEmpty
-                        ? const SizedBox.shrink() // Don't show any list until user types
-                        : _filteredUsers.isEmpty
-                            ? ListView(
-                                children: [
-                                  ListTile(
-                                    leading: const CircleAvatar(child: Icon(Icons.person_add)),
-                                    title: Text(_searchQuery),
-                                    subtitle: Text(AppLocalizations.of(context)!.notFound),
-                                    trailing: ElevatedButton(
-                                      onPressed: () {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text(AppLocalizations.of(context)!.inviteSent(_searchQuery))),
-                                        );
-                                      },
-                                      child: Text(AppLocalizations.of(context)!.invite),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : ListView.builder(
-                                itemCount: _filteredUsers.length,
-                                itemBuilder: (context, index) {
-                                  final user = _filteredUsers[index];
-                                  return ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundImage: user.profileImageUrl != null
-                                          ? NetworkImage(user.profileImageUrl!)
-                                          : null,
-                                      child: user.profileImageUrl == null
-                                          ? const Icon(Icons.person)
-                                          : null,
-                                    ),
-                                    title: Text(user.fullName),
-                                    subtitle: Text('@${user.username}'),
-                                    trailing: SizedBox(
-                                      width: 110,
-                                      child: AppButton(
-                                        text: AppLocalizations.of(context)!.add,
-                                        icon: Icons.person_add,
-                                        onPressed: () {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text(AppLocalizations.of(context)!.addedFamilyMember(user.fullName))),
-                                          );
-                                        },
-                                        backgroundColor: const Color(0xFFD6AF0C),
-                                        textColor: Colors.white,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
+  Widget _updateProfile(){
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Expanded(
+            child: Form(
+              key: _formKeyUpdateProfile,
+              child: ListView(
+                children: [
+                  const SizedBox(height: 40),
+                  Text(
+                    AppLocalizations.of(context)!.updateProfile,
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
                   ),
-            const SizedBox(height: 8),
-            AppButton(
+                  const SizedBox(height: 16),
+                  Text('Update your profile information', textAlign: TextAlign.center),
+                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.stageName,
+                      prefixIcon: Icon(Icons.mic),
+                    ),
+                    onSaved: (v) => _updateStageName = v,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.zodiacSign,
+                      prefixIcon: Icon(Icons.assignment_ind_outlined),
+                    ),
+                    onSaved: (v) => _updateSign = v,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.religion,
+                      prefixIcon: Icon(Icons.back_hand_outlined),
+                    ),
+                    onSaved: (v) => _updateReligion = v,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.netWorth,
+                      prefixIcon: Icon(Icons.money),
+                    ),
+                    onSaved: (v) => _updateNetWorth = v,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          _BottomActions(
+            mainButton: AppButton(
+              text: AppLocalizations.of(context)!.submit,
+              isLoading: _isSubmitting,
+              onPressed: _submitUpdates,
+            ),
+            secondaryButton: AppTextButton(
+              text: AppLocalizations.of(context)!.skip,
+              onPressed: _goToNextTab,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _addFamily() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              children: [
+                const SizedBox(height: 40),
+                Text(
+                  AppLocalizations.of(context)!.addFamily,
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                Text(AppLocalizations.of(context)!.searchAndAddFamily, textAlign: TextAlign.center),
+                const SizedBox(height: 24),
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: AppLocalizations.of(context)!.searchByNameOrUsername,
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onChanged: _onSearchChanged,
+                ),
+                const SizedBox(height: 8),
+                _isLoadingUsers
+                    ? const Center(child: CircularProgressIndicator())
+                    : (_searchQuery.isEmpty
+                    ? const SizedBox.shrink()
+                    : _filteredUsers.isEmpty
+                    ? ListView(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  children: [
+                    ListTile(
+                      leading: const CircleAvatar(child: Icon(Icons.person_add)),
+                      title: Text(_searchQuery),
+                      subtitle: Text(AppLocalizations.of(context)!.notFound),
+                      trailing: ElevatedButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(AppLocalizations.of(context)!.inviteSent(_searchQuery))),
+                          );
+                        },
+                        child: Text(AppLocalizations.of(context)!.invite),
+                      ),
+                    ),
+                  ],
+                )
+                    : ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: _filteredUsers.length,
+                  itemBuilder: (context, index) {
+                    final user = _filteredUsers[index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: user.profileImageUrl != null
+                            ? NetworkImage(user.profileImageUrl!)
+                            : null,
+                        child: user.profileImageUrl == null
+                            ? const Icon(Icons.person)
+                            : null,
+                      ),
+                      title: Text(user.fullName),
+                      subtitle: Text('@${user.username}'),
+                      trailing: SizedBox(
+                        width: 110,
+                        child: AppButton(
+                          text: AppLocalizations.of(context)!.add,
+                          icon: Icons.person_add,
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(AppLocalizations.of(context)!.addedFamilyMember(user.fullName))),
+                            );
+                          },
+                          backgroundColor: const Color(0xFFD6AF0C),
+                          textColor: Colors.white,
+                        ),
+                      ),
+                    );
+                  },
+                )
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+          _BottomActions(
+            mainButton: AppButton(
               text: AppLocalizations.of(context)!.addManually,
               icon: Icons.group_add,
               onPressed: () async {
@@ -263,7 +449,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                   context: context,
                   isScrollControlled: true,
                   backgroundColor: Colors.transparent,
-                  builder: (context) => AddFamilyMemberModal(
+                  builder: (context) => AddRelationshipModal(
                     onAdd: (member) {
                       Navigator.of(context).pop(member);
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -277,44 +463,38 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                 }
               },
             ),
-            const SizedBox(height: 50),
-
-            Align(
-              alignment: Alignment.bottomRight,
-              child: AppTextButton(
-                text: AppLocalizations.of(context)!.skip,
-                onPressed: () {
-                  _goToNextTab();
-                },
-              ),
+            secondaryButton: AppTextButton(
+              text: AppLocalizations.of(context)!.skip,
+              onPressed: _goToNextTab,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _addWealth() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 40),
-            Text(
-              AppLocalizations.of(context)!.addWealth,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              children: [
+                const SizedBox(height: 40),
+                Text(
+                  AppLocalizations.of(context)!.addWealth,
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                Text(AppLocalizations.of(context)!.addWealthInfo, textAlign: TextAlign.center),
+                const SizedBox(height: 8),
+              ],
             ),
-            const SizedBox(height: 16),
-            Text(AppLocalizations.of(context)!.addWealthInfo, textAlign: TextAlign.center),
-
-            const SizedBox(height: 8),
-            const Spacer(),
-            const SizedBox(height: 8),
-            AppButton(
+          ),
+          _BottomActions(
+            mainButton: AppButton(
               text: AppLocalizations.of(context)!.addManually,
               icon: Icons.group_add,
               onPressed: () async {
@@ -336,19 +516,12 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                 }
               },
             ),
-            const SizedBox(height: 50),
-
-            Align(
-              alignment: Alignment.bottomRight,
-              child: AppTextButton(
-                text: AppLocalizations.of(context)!.skip,
-                onPressed: () {
-                  _goToNextTab();
-                },
-              ),
+            secondaryButton: AppTextButton(
+              text: AppLocalizations.of(context)!.skip,
+              onPressed: _goToNextTab,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -357,142 +530,150 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
     final theme = Theme.of(context);
     final textColor = theme.colorScheme.onBackground;
     final secondaryTextColor = theme.textTheme.bodyMedium?.color ?? textColor;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 40),
-            Text(
-              'Add Education',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            Text('Add Education Information', textAlign: TextAlign.center),
-
-            const SizedBox(height: 8),
-            const SizedBox(height: 24),
-            AppTextFormField(
-              controller: _degreeController,
-              labelText: AppLocalizations.of(context)!.degreeLabel,
-              icon: Icons.school,
-              validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterDegree : null,
-            ),
-            const SizedBox(height: 14),
-            AppTextFormField(
-              controller: _universityController,
-              labelText: AppLocalizations.of(context)!.certifyingUniversity,
-              icon: Icons.account_balance,
-              validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterUniversity : null,
-            ),
-            const SizedBox(height: 14),
-            AppTextFormField(
-              controller: _yearController,
-              labelText: AppLocalizations.of(context)!.yearOfCompletion,
-              icon: Icons.calendar_today,
-              keyboardType: TextInputType.number,
-              validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterYear : null,
-            ),
-            const SizedBox(height: 20),
-            AppButton(
-              text: AppLocalizations.of(context)!.addDegree,
-              icon: Icons.add,
-              onPressed: () {
-                final degree = _degreeController.text.trim();
-                final university = _universityController.text.trim();
-                final year = _yearController.text.trim();
-                if (degree.isEmpty || university.isEmpty || year.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(AppLocalizations.of(context)!.pleaseFillAllFieldsToAddDegree)),
-                  );
-                  return;
-                }
-                setState(() {
-                  _degrees.add({
-                    'degree': degree,
-                    'university': university,
-                    'year': year,
-                  });
-                  _degreeController.clear();
-                  _universityController.clear();
-                  _yearController.clear();
-                });
-              },
-            ),
-            const SizedBox(height: 24),
-            if (_degrees.isNotEmpty)
-              SizedBox(
-                height: 220, // Adjust height as needed
-                child: ListView(
-                  padding: EdgeInsets.zero,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.addedDegrees,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    ..._degrees.map((deg) => Card(
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      child: ListTile(
-                        leading: const Icon(Icons.school),
-                        title: Text(
-                          deg['degree'] ?? '',
-                          style: theme.textTheme.bodyLarge?.copyWith(color: textColor),
-                        ),
-                        subtitle: Text(
-                          '${deg['university']} (${deg['year']})',
-                          style: theme.textTheme.bodyMedium?.copyWith(color: secondaryTextColor),
-                        ),
-                      ),
-                    )),
-                  ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              children: [
+                const SizedBox(height: 40),
+                Text(
+                  AppLocalizations.of(context)!.addEducation,
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-            const Spacer(),
-            const SizedBox(height: 8),
-            AppButton(
-              text: AppLocalizations.of(context)!.addManually,
-              icon: Icons.group_add,
-              onPressed: () async {
-                final result = await showModalBottomSheet<Map<String, dynamic>>(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => AddWealthItemModal(
-                    onAdd: (item) {
-                      Navigator.of(context).pop(item);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(AppLocalizations.of(context)!.addedWealthItem(item['name']))),
-                      );
-                    },
+                const SizedBox(height: 16),
+                Text('Add Education Information', textAlign: TextAlign.center),
+                const SizedBox(height: 24),
+                TextFormField(
+                  controller: _universityController,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.certifyingUniversity,
+                    prefixIcon: Icon(Icons.account_balance),
                   ),
-                );
-                if (result != null) {
-                  // Optionally update your state with the new wealth item
-                }
-              },
-            ),
-            const SizedBox(height: 50),
+                  validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterUniversity : null,
+                ),
+                // Replace custom AppTextFormField with standard TextFormField
+                const SizedBox(height: 14),
 
-            Align(
-              alignment: Alignment.bottomRight,
-              child: AppTextButton(
-                text: AppLocalizations.of(context)!.finish,
-                onPressed: () {
-                  context.go('/feed');
-                },
-              ),
+                TextFormField(
+                  controller: _degreeController,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.degreeLabel,
+                    prefixIcon: Icon(Icons.school),
+                  ),
+                  validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterDegree : null,
+                ),
+                const SizedBox(height: 14),
+                TextFormField(
+                  controller: _yearController,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.yearOfCompletion,
+                    prefixIcon: Icon(Icons.calendar_today),
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterYear : null,
+                ),
+                const SizedBox(height: 20),
+                AppButton(
+                  text: AppLocalizations.of(context)!.addEducation,
+                  icon: Icons.add,
+                  onPressed: () {
+                    final degree = _degreeController.text.trim();
+                    final university = _universityController.text.trim();
+                    final year = _yearController.text.trim();
+                    if (degree.isEmpty || university.isEmpty || year.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseFillAllFieldsToAddDegree)),
+                      );
+                      return;
+                    }
+                    setState(() {
+                      _degrees.add({
+                        'degree': degree,
+                        'university': university,
+                        'year': year,
+                      });
+                      _degreeController.clear();
+                      _universityController.clear();
+                      _yearController.clear();
+                    });
+                  },
+                ),
+                const SizedBox(height: 24),
+                if (_degrees.isNotEmpty)
+                  SizedBox(
+                    height: 220, // Adjust height as needed
+                    child: ListView(
+                      padding: EdgeInsets.zero,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.addedDegrees,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        ..._degrees.map((deg) => Card(
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          child: ListTile(
+                            leading: const Icon(Icons.school),
+                            title: Text(
+                              '${deg['university']} (${deg['year']})',
+                              style: theme.textTheme.bodyMedium?.copyWith(color: secondaryTextColor),
+                            ),
+                            subtitle: Text(
+                              deg['degree'] ?? '',
+                              style: theme.textTheme.bodyLarge?.copyWith(color: textColor),
+                            ),
+                          ),
+                        )),
+                      ],
+                    ),
+                  ),
+              ],
             ),
+          ),
+          _BottomActions(
+            secondaryButton: AppTextButton(
+              text: AppLocalizations.of(context)!.finish,
+              onPressed: () {
+                context.goToFeed();
+              },
+            ), mainButton: null,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BottomActions extends StatelessWidget {
+  final Widget? mainButton;
+  final Widget? secondaryButton;
+  const _BottomActions({required this.mainButton, this.secondaryButton});
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8.0, bottom: 0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ?mainButton,
+            if (secondaryButton != null) ...[
+              const SizedBox(height: 22),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: secondaryButton!,
+              ),
+            ],
           ],
         ),
       ),
     );
   }
-
 }

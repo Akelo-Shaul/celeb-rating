@@ -429,9 +429,11 @@ class UserService {
       ];
 
       // Dummy data for Education, Diet, Spirituality, and Involved Causes
-      final List<Map<String, String>> educationEntries = [
-        {'degree': "Bachelor's degree in Sociology", 'university': 'Princeton University'},
-        {'degree': "Bachelor's degree in Psychology", 'university': 'Princeton University'},
+      final List<Map<String, dynamic>> educationEntries = [
+        {'university': 'Princeton University', 'degrees': [
+          {"title":"Bachelor's degree in Sociology", "year":"2013"},
+          {"title": "Bachelor's degree in Psychology", "year": "2013"}
+        ],},
       ];
       final String diet = 'Vegan';
       final String spirituality = 'Buddhist';

@@ -22,17 +22,24 @@ class _SearchUserCardState extends State<SearchUserCard> {
     final Color cardBg = isDark ? Colors.grey.shade900 : Colors.white;
     final Color borderColor = isDark ? Colors.grey.shade800 : Colors.grey.shade300;
 
+    final user = widget.user;
+    final isCelebrity = user is CelebrityUser || user.role.toUpperCase() == 'CELEBRITY';
+    final occupation = isCelebrity ? (user as dynamic).occupation : null;
+    final nationality = isCelebrity ? (user as dynamic).nationality : null;
+    final followers = isCelebrity ? (user as dynamic).followers : null;
+    final publicImageDescription = isCelebrity ? (user as dynamic).publicImageDescription : null;
+
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
           color: cardBg,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Avatar
               ProfileAvatar(
-                imageUrl: widget.user.profileImageUrl,
+                imageUrl: user.profileImageUrl,
                 radius: 20,
               ),
               const SizedBox(width: 12),
@@ -44,32 +51,46 @@ class _SearchUserCardState extends State<SearchUserCard> {
                     Row(
                       children: [
                         Text(
-                          widget.user.fullName,
+                          user.fullName,
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: nameColor),
                         ),
-                        const SizedBox(width: 4),
-                        Icon(Icons.verified, color: Colors.orange.shade700, size: 18),
+                        if (isCelebrity) ...[
+                          const SizedBox(width: 4),
+                          Icon(Icons.verified, color: Colors.orange.shade700, size: 18),
+                        ],
                       ],
                     ),
                     Text(
-                      '@${widget.user.username}',
+                      '@${user.username}',
                       style: TextStyle(color: usernameColor, fontSize: 13, fontWeight: FontWeight.w400),
                     ),
-                    Text(
-                      'Musician, Public Speaker',
-                      style: TextStyle(color: subtitleColor, fontSize: 13, fontWeight: FontWeight.w400),
-                    ),
-                    Text(
-                      '2,355 followers',
-                      style: TextStyle(color: subtitleColor, fontSize: 13, fontWeight: FontWeight.w400),
-                    ),
+                    if (isCelebrity && occupation != null && occupation.isNotEmpty)
+                      Text(
+                        occupation,
+                        style: TextStyle(color: subtitleColor, fontSize: 13, fontWeight: FontWeight.w400),
+                      ),
+                    if (isCelebrity && nationality != null && nationality.isNotEmpty)
+                      Text(
+                        nationality,
+                        style: TextStyle(color: subtitleColor, fontSize: 13, fontWeight: FontWeight.w400),
+                      ),
+                    if (isCelebrity && publicImageDescription != null && publicImageDescription.isNotEmpty)
+                      Text(
+                        publicImageDescription,
+                        style: TextStyle(color: subtitleColor, fontSize: 13, fontWeight: FontWeight.w400),
+                      ),
+                    if (isCelebrity && followers != null)
+                      Text(
+                        '${followers.toString()} followers',
+                        style: TextStyle(color: subtitleColor, fontSize: 13, fontWeight: FontWeight.w400),
+                      ),
                   ],
                 ),
               ),
               ResizableButton(
                 text: "Follow",
                 onPressed: () {},
-                width: 100,
+                width: MediaQuery.of(context).size.width * 0.28,
                 height: 35,
               )
             ],

@@ -120,7 +120,7 @@ class _PostCardState extends State<PostCard> {
                       fontWeight: FontWeight.bold,
                       fontSize: 16),),
                   const SizedBox(width: 4,),
-                  const Icon(Icons.verified, color: Color(0xFFD6AF0C), size: 16,)
+                  Icon(Icons.verified, color: Colors.orange.shade700, size: 16,)
                 ],
               ),
               Text(

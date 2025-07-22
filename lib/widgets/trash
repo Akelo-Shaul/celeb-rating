@@ -1,0 +1,229 @@
+
+class CameraCapturePage extends StatefulWidget {
+  @override
+  State<CameraCapturePage> createState() => _CameraCapturePageState();
+}
+
+class _CameraCapturePageState extends State<CameraCapturePage> {
+  Future<void> _pickFromGallery() async {
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Pick Image'),
+              onTap: () => Navigator.pop(context, 'image'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.video_library),
+              title: const Text('Pick Video'),
+              onTap: () => Navigator.pop(context, 'video'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (result == 'image') {
+      final picker = ImagePicker();
+      final image = await picker.pickImage(source: ImageSource.gallery);
+      if (image != null && mounted) {
+        Navigator.pop(context, {'file': image, 'isVideo': false});
+      }
+    } else if (result == 'video') {
+      final picker = ImagePicker();
+      final video = await picker.pickVideo(source: ImageSource.gallery);
+      if (video != null && mounted) {
+        Navigator.pop(context, {'file': video, 'isVideo': true});
+      }
+    }
+  }
+  CameraController? _controller;
+  List<CameraDescription>? _cameras;
+  bool _isRecording = false;
+  bool _isCameraReady = false;
+  int _selectedCameraIndex = 0; // New: To keep track of the selected camera index
+
+  @override
+  void initState() {
+    super.initState();
+    _initCamera();
+  }
+
+  Future<void> _initCamera() async {
+    try {
+      _cameras = await availableCameras();
+      if (_cameras != null && _cameras!.isNotEmpty) {
+        // Initialize with the selected camera
+        _controller = CameraController(_cameras![_selectedCameraIndex], ResolutionPreset.high);
+        await _controller!.initialize();
+        setState(() {
+          _isCameraReady = true;
+        });
+      }
+    } catch (e) {
+      print("Error initializing camera: $e");
+      // Handle camera error (e.g., show a message to the user)
+    }
+  }
+
+  // New: Function to toggle between front and back cameras
+  Future<void> _toggleCamera() async {
+    // Cannot toggle if no cameras, only one camera, or currently recording
+    if (_cameras == null || _cameras!.length <= 1 || _isRecording) {
+      return;
+    }
+
+    setState(() {
+      _isCameraReady = false; // Set to false while camera is re-initializing
+    });
+
+    // Dispose the current controller
+    await _controller?.dispose();
+
+    // Toggle camera index
+    _selectedCameraIndex = (_selectedCameraIndex + 1) % _cameras!.length;
+
+    // Re-initialize camera with the new index
+    await _initCamera();
+  }
+
+  Future<void> _takePhoto() async {
+    if (!_isRecording && _controller != null && _controller!.value.isInitialized) {
+      try {
+        final file = await _controller!.takePicture();
+        if (mounted) {
+          Navigator.pop(context, {'file': file, 'isVideo': false});
+        }
+      } catch (e) {
+        print("Error taking photo: $e");
+      }
+    }
+  }
+
+  Future<void> _startVideoRecording() async {
+    if (_controller != null && !_isRecording && _controller!.value.isInitialized) {
+      try {
+        await _controller!.startVideoRecording();
+        setState(() {
+          _isRecording = true;
+        });
+      } catch (e) {
+        print("Error starting video recording: $e");
+      }
+    }
+  }
+
+  Future<void> _stopVideoRecording() async {
+    if (_controller != null && _isRecording) {
+      try {
+        final file = await _controller!.stopVideoRecording();
+        setState(() {
+          _isRecording = false;
+        });
+        if (mounted) {
+          Navigator.pop(context, {'file': file, 'isVideo': true});
+        }
+      } catch (e) {
+        print("Error stopping video recording: $e");
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: _isCameraReady && _controller != null
+          ? Stack(
+              children: [
+                Positioned.fill(
+                  child: CameraPreview(_controller!),
+                ),
+                // Single gallery pick button
+                Positioned(
+                  bottom: 40,
+                  left: 30,
+                  child: FloatingActionButton(
+                    heroTag: 'gallery_pick',
+                    backgroundColor: Colors.white,
+                    // Not mini, so it's larger
+                    onPressed: _pickFromGallery,
+                    tooltip: 'Pick from Gallery',
+                    child: const Icon(Icons.photo_library, size: 38, color: Color(0xFFD6AF0C)),
+                  ),
+                ),
+                // Camera capture button
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 40),
+                    child: GestureDetector(
+                      onTap: () {
+                        if (_isRecording) {
+                          _stopVideoRecording();
+                        } else {
+                          _takePhoto();
+                        }
+                      },
+                      onLongPress: () {
+                        if (!_isRecording) {
+                          _startVideoRecording();
+                        }
+                      },
+                      child: Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          color: _isRecording ? Colors.red : Colors.white,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 4),
+                        ),
+                        child: Icon(
+                          _isRecording ? Icons.stop : Icons.camera_alt,
+                          color: _isRecording ? Colors.white : Colors.black,
+                          size: 40,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                // Close button
+                Positioned(
+                  top: 40,
+                  left: 20,
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white, size: 32),
+                    onPressed: () {
+                      if (_isRecording) {
+                        _stopVideoRecording();
+                      } else {
+                        Navigator.pop(context);
+                      }
+                    },
+                  ),
+                ),
+                // Camera toggle button
+                if (_cameras != null && _cameras!.length > 1)
+                  Positioned(
+                    top: 40,
+                    right: 20,
+                    child: IconButton(
+                      icon: const Icon(Icons.flip_camera_ios, color: Colors.white, size: 32),
+                      onPressed: _isRecording ? null : _toggleCamera,
+                      tooltip: 'Toggle Camera',
+                    ),
+                  ),
+              ],
+            )
+          : const Center(child: CircularProgressIndicator()),
+    );
+  }
+}

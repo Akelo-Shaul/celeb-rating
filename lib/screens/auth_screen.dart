@@ -368,7 +368,11 @@ class _AuthScreenState extends State<AuthScreen> {
     final currentLocale = appState.locale;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Celebrating'),
+        leadingWidth: 120,
+        leading: Image.asset(
+          'assets/images/celebratinglogo.png',
+          fit: BoxFit.fitHeight, // Ensures the whole image is visible
+        ),
         actions: [
           DropdownButtonHideUnderline(
             child: DropdownButton<SupportedLanguage>(
