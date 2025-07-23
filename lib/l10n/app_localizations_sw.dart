@@ -272,6 +272,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get invite => 'Alika';
 
   @override
+  String get tag => 'Weka';
+
+  @override
   String inviteSent(Object name) {
     return 'Mwaliko umetumwa kwa \"$name\"';
   }
@@ -669,4 +672,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get enterValidYear => 'Tafadhali weka mwaka halali.';
+
+  @override
+  String get tagPeople => 'Weka Watu';
 }

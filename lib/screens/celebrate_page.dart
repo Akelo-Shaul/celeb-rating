@@ -8,6 +8,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart' as vt;
 
+import '../models/user.dart';
+import '../services/search_service.dart';
+import '../widgets/app_buttons.dart';
 import '../widgets/app_search_bar.dart'; // Import your AppSearchBar here
 
 class CelebratePage extends StatefulWidget {
@@ -172,7 +175,13 @@ class _FlicksCameraTabState extends State<_FlicksCameraTab> {
         final file = await _cameraController!.stopVideoRecording();
         setState(() {
           _isRecording = false;
+          _videoFile = file; // Set the recorded video for preview
         });
+        // Dispose camera before playing video
+        await _cameraController?.dispose();
+        _cameraController = null;
+        // Add a short delay to ensure file is ready
+        await Future.delayed(const Duration(milliseconds: 300));
         _playVideo(file.path);
       } catch (e) {}
     }
@@ -199,6 +208,23 @@ class _FlicksCameraTabState extends State<_FlicksCameraTab> {
       });
   }
 
+  void _goToFlicksPostScreen() async {
+    if (_videoFile != null && File(_videoFile!.path).existsSync()) {
+      // Dispose camera before navigating
+      await _cameraController?.dispose();
+      _cameraController = null;
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => FlicksPostScreen(videoFile: _videoFile!),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No video to preview.')),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _cameraController?.dispose();
@@ -220,6 +246,22 @@ class _FlicksCameraTabState extends State<_FlicksCameraTab> {
             child: AspectRatio(
               aspectRatio: _videoPlayerController!.value.aspectRatio,
               child: VideoPlayer(_videoPlayerController!),
+            ),
+          ),
+        // Top-right Next button after video is selected or recorded
+        if (_videoFile != null)
+          Positioned(
+            top: 40,
+            right: 24,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFD6AF0C),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              ),
+              onPressed: _goToFlicksPostScreen,
+              child: const Text('Next', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ),
           ),
         Positioned(
@@ -269,10 +311,34 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
   List<XFile> _mediaFiles = [];
   List<bool> _isVideoList = [];
 
+  // Tag user search variables
+  List<User> _filteredUsers = [];
+  bool _isLoadingUsers = false;
+  String _searchQuery = '';
+
   @override
   void initState() {
     super.initState();
     _captionController.addListener(_onCaptionChanged);
+  }
+
+  void _onSearchChanged(String query) async {
+    setState(() {
+      _searchQuery = query;
+      _isLoadingUsers = true;
+    });
+    if (query.isEmpty) {
+      setState(() {
+        _filteredUsers = [];
+        _isLoadingUsers = false;
+      });
+      return;
+    }
+    final users = await SearchService.searchUsers(query);
+    setState(() {
+      _filteredUsers = users;
+      _isLoadingUsers = false;
+    });
   }
 
   void _onCaptionChanged() {
@@ -336,6 +402,33 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
       imageFormat: vt.ImageFormat.PNG,
       maxWidth: 120,
       quality: 60,
+    );
+  }
+
+  Future<void> _openTagScreen() async {
+    setState(() {
+      _filteredUsers = [];
+      _isLoadingUsers = false;
+      _searchQuery = '';
+    });
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      builder: (_) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.8,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          expand: false,
+          builder: (context, scrollController) {
+            return Padding(
+              padding: MediaQuery.of(context).viewInsets,
+              child: TagUserSearch(scrollController: scrollController),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -403,7 +496,7 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
                       print('Selected Categories: $_selectedCategories');
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: Color(0xFFD6AF0C),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18),
@@ -511,30 +604,22 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
                 ),
               ),
             ),
-            AppSearchBar(
-                    controller: _categorySearchController,
-                      hintText: localizations.searchCategoryHint ?? 'Search Category...',
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: TextField(
+                controller: _categorySearchController,
+                obscureText: true,
+                decoration: InputDecoration(labelText: localizations.searchCategoryHint,labelStyle: TextStyle(color: Colors.grey)),
                     onChanged: (value) {
                       setState(() {
                         _categorySearch = value;
                       });
                     },
-              onSearchPressed: () {
-                setState(() {
-                  _categorySearch = _categorySearchController.text;
-                });
-                FocusScope.of(context).unfocus();
-              },
-              onFilterPressed: () {
-                // Implement filter logic if needed
-              },
-              showSearchButton: true,
-              showFilterButton: true,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  ),
             ),
             const SizedBox(height: 8),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: SizedBox(
                     height: 38,
                     child: ListView(
@@ -567,48 +652,30 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
             ),
             const SizedBox(height: 8),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: SizedBox(
-                height: 38,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: secondLine.map((cat) => GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (_selectedCategories.contains(cat)) {
-                          _selectedCategories.remove(cat);
-                        } else {
-                          _selectedCategories.add(cat);
-                        }
-                      });
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Chip(
-                        label: Text(cat),
-                        backgroundColor: _selectedCategories.contains(cat)
-                            ? Colors.amber.withOpacity(0.7)
-                            : Colors.grey.withOpacity(0.13),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                    ),
-                  )).toList(),
-                ),
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              child: Row(
+                children: [
+                  FloatingActionButton(
+                    heroTag: 'gallery_pick',
+                    backgroundColor: Colors.white,
+                    // Not mini, so it's larger
+                    mini: true,
+                    onPressed: _openCameraAndAddMedia,
+                    tooltip: 'Pick from Gallery',
+                    child: const Icon(Icons.photo_library, size: 25, color: Color(0xFFD6AF0C)),
+                  ),
+                  FloatingActionButton(
+                    heroTag: 'tag_users',
+                    backgroundColor: Colors.white,
+                    // Not mini, so it's larger
+                    mini: true,
+                    onPressed: _openTagScreen, //TODO: Implement function to Navigate to a new screen where user can search and tag users
+                    tooltip: 'Tag Users',
+                    child: const Icon(Icons.local_offer, size: 25, color: Color(0xFFD6AF0C)),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              child: FloatingActionButton(
-                heroTag: 'gallery_pick',
-                backgroundColor: Colors.white,
-                // Not mini, so it's larger
-                onPressed: _openCameraAndAddMedia,
-                tooltip: 'Pick from Gallery',
-                child: const Icon(Icons.photo_library, size: 38, color: Color(0xFFD6AF0C)),
-              ),
+              ],
             ),
+          ),
             const SizedBox(height: 12),
           ],
         ),
@@ -921,6 +988,430 @@ class _MediaPreviewScreenState extends State<MediaPreviewScreen> {
           fit: BoxFit.contain, // Fit entire image without cropping
         ),
       ),
+    );
+  }
+}
+
+// Reusable widget for tagging users
+class TagUserSearch extends StatefulWidget {
+  final void Function(User user)? onUserTag;
+  final String? inviteLabel;
+  final String? tagLabel;
+  final String? notFoundLabel;
+  final String? searchHint;
+  final ScrollController? scrollController;
+  const TagUserSearch({
+    Key? key,
+    this.onUserTag,
+    this.inviteLabel,
+    this.tagLabel,
+    this.notFoundLabel,
+    this.searchHint,
+    this.scrollController,
+  }) : super(key: key);
+
+  @override
+  State<TagUserSearch> createState() => _TagUserSearchState();
+}
+
+class _TagUserSearchState extends State<TagUserSearch> {
+  List<User> _filteredUsers = [];
+  bool _isLoadingUsers = false;
+  String _searchQuery = '';
+
+  void _onSearchChanged(String query) async {
+    setState(() {
+      _searchQuery = query;
+      _isLoadingUsers = true;
+    });
+    if (query.isEmpty) {
+      setState(() {
+        _filteredUsers = [];
+        _isLoadingUsers = false;
+      });
+      return;
+    }
+    final users = await SearchService.searchUsers(query);
+    setState(() {
+      _filteredUsers = users;
+      _isLoadingUsers = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final inviteLabel = widget.inviteLabel ?? localizations.invite;
+    final tagLabel = widget.tagLabel ?? localizations.tag;
+    final notFoundLabel = widget.notFoundLabel ?? localizations.notFound;
+    final searchHint = widget.searchHint ?? localizations.searchByNameOrUsername;
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 17.0, vertical: 12.0),
+          child: TextField(
+            style: const TextStyle(
+              color: Colors.grey, // Example: Dark purple text
+              fontSize: 16.0,
+              fontWeight: FontWeight.normal,
+            ),
+            decoration: InputDecoration(
+              hintText: searchHint,
+              hintStyle: const TextStyle(color: Colors.grey),
+            ),
+            onChanged: _onSearchChanged,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: _isLoadingUsers
+              ? const Center(child: CircularProgressIndicator())
+              : _searchQuery.isEmpty
+                  ? Center(child: Text(localizations.searchByNameOrUsername, style: const TextStyle(color: Colors.grey)))
+                  : _filteredUsers.isEmpty
+                      ? Center(child: Text(notFoundLabel, style: const TextStyle(color: Colors.grey)))
+                      : ListView.builder(
+                          controller: widget.scrollController,
+                          itemCount: _filteredUsers.length,
+                          itemBuilder: (context, index) {
+                            final user = _filteredUsers[index];
+                            return ListTile(
+                              leading: CircleAvatar(
+                                backgroundImage: user.profileImageUrl != null
+                                    ? NetworkImage(user.profileImageUrl!)
+                                    : null,
+                                child: user.profileImageUrl == null
+                                    ? const Icon(Icons.person)
+                                    : null,
+                              ),
+                              title: Text(user.fullName, style: TextStyle(color: Colors.black),),
+                              subtitle: Text('@${user.username}', style: TextStyle(color: Colors.black)),
+                              trailing: SizedBox(
+                                width: 110,
+                                child: AppButton(
+                                  text: tagLabel,
+                                  icon: Icons.person_add,
+                                  onPressed: widget.onUserTag != null ? () => widget.onUserTag!(user) : null,
+                                  backgroundColor: const Color(0xFFD6AF0C),
+                                  textColor: Colors.white,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+        ),
+      ],
+    );
+  }
+}
+
+// New: FlicksPostScreen for adding caption and tagging people after video selection
+class FlicksPostScreen extends StatefulWidget {
+  final XFile videoFile;
+  const FlicksPostScreen({Key? key, required this.videoFile}) : super(key: key);
+
+  @override
+  State<FlicksPostScreen> createState() => _FlicksPostScreenState();
+}
+
+class _FlicksPostScreenState extends State<FlicksPostScreen> {
+  final TextEditingController _captionController = TextEditingController();
+  final TextEditingController _categorySearchController = TextEditingController();
+  String _categorySearch = '';
+  List<String> _categories = [];
+  final List<String> _selectedCategories = [];
+  final List<User> _taggedUsers = [];
+
+  @override
+  void dispose() {
+    _captionController.dispose();
+    _categorySearchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _openTagScreen() async {
+    final User? tagged = await showModalBottomSheet<User>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      builder: (_) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.8,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          expand: false,
+          builder: (context, scrollController) {
+            return Padding(
+              padding: MediaQuery.of(context).viewInsets,
+              child: TagUserSearch(
+                scrollController: scrollController,
+                onUserTag: (user) {
+                  Navigator.of(context).pop(user);
+                },
+              ),
+            );
+          },
+        );
+      },
+    );
+    if (tagged != null && !_taggedUsers.any((u) => u.id == tagged.id)) {
+      setState(() {
+        _taggedUsers.add(tagged);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    // Initialize _categories with localized values if empty
+    if (_categories.isEmpty) {
+      _categories = [
+        localizations.lifestyle,
+        localizations.fashionStyle,
+        localizations.artCollection,
+        localizations.cars,
+        localizations.houses,
+        localizations.wealthTab,
+        localizations.careerTab,
+        localizations.personalTab,
+        localizations.publicPersonaTab,
+        localizations.family,
+      ];
+    }
+    final filtered = _categorySearch.isEmpty
+        ? _categories
+        : _categories.where((c) => c.toLowerCase().contains(_categorySearch.toLowerCase())).toList();
+    final mid = (filtered.length / 2).ceil();
+    final firstLine = filtered.take(mid).toList();
+    final secondLine = filtered.skip(mid).toList();
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text(localizations.flick),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0,
+        actions: [
+          TextButton(
+            onPressed: () {
+              // Handle post action
+              print('Caption:  [${_captionController.text}]');
+              print('Video File:  [${widget.videoFile.path}]');
+              print('Selected Categories: $_selectedCategories');
+              print('Tagged Users: ${_taggedUsers.map((u) => u.username).toList()}');
+            },
+            child: Text(localizations.post, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Video preview
+                Center(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    child: AspectRatio(
+                      aspectRatio: 12 / 9,
+                      child: VideoPlayerWidget(file: widget.videoFile),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Caption input
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: TextField(
+                    controller: _captionController,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: localizations.captionHint ?? 'What is on your mind?',
+                      hintStyle: const TextStyle(fontSize: 18, color: Colors.black87, fontWeight: FontWeight.w500),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                    ),
+                    style: const TextStyle(fontSize: 18, color: Colors.black),
+                    maxLines: 2,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Category search field
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: TextField(
+                    controller: _categorySearchController,
+                    decoration: InputDecoration(
+                      labelText: localizations.searchCategoryHint,
+                      labelStyle: const TextStyle(color: Colors.grey),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _categorySearch = value;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
+                // Category chips (first line)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: SizedBox(
+                    height: 38,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: firstLine.map((cat) => GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            if (_selectedCategories.contains(cat)) {
+                              _selectedCategories.remove(cat);
+                            } else {
+                              _selectedCategories.add(cat);
+                            }
+                          });
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Chip(
+                            label: Text(cat),
+                            backgroundColor: _selectedCategories.contains(cat)
+                                ? Colors.amber.withOpacity(0.7)
+                                : Colors.grey.withOpacity(0.13),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                        ),
+                      )).toList(),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                // Category chips (second line, if any)
+                if (secondLine.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: SizedBox(
+                      height: 38,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: secondLine.map((cat) => GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              if (_selectedCategories.contains(cat)) {
+                                _selectedCategories.remove(cat);
+                              } else {
+                                _selectedCategories.add(cat);
+                              }
+                            });
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            child: Chip(
+                              label: Text(cat),
+                              backgroundColor: _selectedCategories.contains(cat)
+                                  ? Colors.amber.withOpacity(0.7)
+                                  : Colors.grey.withOpacity(0.13),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                          ),
+                        )).toList(),
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 8),
+                // Tag users chips
+                if (_taggedUsers.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Wrap(
+                      spacing: 6,
+                      children: _taggedUsers.map((user) => Chip(
+                        label: Text('@${user.username}'),
+                        onDeleted: () {
+                          setState(() {
+                            _taggedUsers.removeWhere((u) => u.id == user.id);
+                          });
+                        },
+                      )).toList(),
+                    ),
+                  ),
+                // Tag users button
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  child: Row(
+                    children: [
+                      FloatingActionButton(
+                        heroTag: 'tag_users',
+                        backgroundColor: Colors.white,
+                        mini: true,
+                        onPressed: _openTagScreen,
+                        tooltip: 'Tag Users',
+                        child: const Icon(Icons.local_offer, size: 25, color: Color(0xFFD6AF0C)),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Helper widget for video preview in FlicksPostScreen
+class VideoPlayerWidget extends StatefulWidget {
+  final XFile file;
+  const VideoPlayerWidget({Key? key, required this.file}) : super(key: key);
+
+  @override
+  State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
+}
+
+class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
+  VideoPlayerController? _controller;
+  Future<void>? _initializeVideoPlayerFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.file(File(widget.file.path));
+    _initializeVideoPlayerFuture = _controller!.initialize().then((_) {
+      _controller!.setLooping(true);
+      _controller!.play();
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _initializeVideoPlayerFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return AspectRatio(
+            aspectRatio: _controller!.value.aspectRatio,
+            child: VideoPlayer(_controller!),
+          );
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
     );
   }
 }

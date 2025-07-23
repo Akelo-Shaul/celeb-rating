@@ -3,6 +3,7 @@ import 'package:celebrating/widgets/slideup_dialog.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
+import '../models/comment.dart';
 import '../models/post.dart';
 import '../models/user.dart';
 import '../services/user_service.dart';
@@ -11,6 +12,7 @@ import '../widgets/add_education_modal.dart';
 import '../widgets/add_persona_modal.dart';
 import '../widgets/add_relationship_modal.dart';
 import '../widgets/app_buttons.dart';
+import '../widgets/comments_modal.dart';
 import '../widgets/post_card.dart';
 import '../widgets/profile_avatar.dart';
 import '../widgets/image_optional_text.dart';
@@ -55,19 +57,19 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
   //TODO: Implement following code block when fetching logged in user
   /*** void fetchProfileUser() async {
-      // If your User model has a role or type field:
-      bool isCelebrity = loggedInUser.role == 'Celebrity';
+    // If your User model has a role or type field:
+    bool isCelebrity = loggedInUser.role == 'Celebrity';
 
-      final user = await UserService.fetchUser(loggedInUser.id.toString(), isCelebrity: isCelebrity);
+    final user = await UserService.fetchUser(loggedInUser.id.toString(), isCelebrity: isCelebrity);
 
-      setState(() {
+    setState(() {
       if (isCelebrity && user is CelebrityUser) {
-      this.user = user;
+        this.user = user;
       } else if (!isCelebrity && user is User) {
-      this.user = user as User;
+        this.user = user as User;
       }
-      });
-      } **/
+    });
+  } **/
 
   void fetchProfileUser() async {
     // Use widget.userId if provided, otherwise a default for testing/own profile
@@ -123,7 +125,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     super.initState();
     // Call the method to fetch a celebrity user
     fetchProfileUser();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 5, vsync: this); 
   }
 
   final Map<String, IconData> _careerCategoryIcons = {
@@ -147,6 +149,23 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+
+  void _showCommentsModal(BuildContext context, List<Comment> comments, {required String postId}) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Allows the modal to take up more height
+      builder: (BuildContext context) {
+        return FractionallySizedBox(
+          heightFactor: 0.85, // Adjust this to control how much screen height the modal takes
+          child: CommentsModal(
+            comments: comments,
+            postId: postId,
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -396,14 +415,14 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
   Widget _buildTabs() {
     return TabBarView(
-      controller: _tabController,
-      children: [
+        controller: _tabController,
+        children: [
         _buildPostsTab(), // Celebrations (renamed from posts)
         _buildPersonalTab(),
         _buildWealthTab(),
         _buildCareerTab(),
         _buildPublicPersonaTab(),
-      ],
+        ],
     );
   }
 
@@ -431,97 +450,97 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       children: [
         Expanded(
           child: ListView(
-            children: careerData.entries
-                .where((entry) => entry.value.isNotEmpty)
-                .map((entry) {
-              final category = entry.key;
-              final items = entry.value;
-              final icon = _careerCategoryIcons[category] ?? Icons.info_outline;
+      children: careerData.entries
+          .where((entry) => entry.value.isNotEmpty)
+          .map((entry) {
+        final category = entry.key;
+        final items = entry.value;
+        final icon = _careerCategoryIcons[category] ?? Icons.info_outline;
 
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                child: Row(
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, size: 32, color: iconColor),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(icon, size: 32, color: iconColor),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: items.map((item) {
-                          if (category == 'Awards') {
-                            final title = item['title'];
-                            final award = item['award'];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 2.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (title != null)
-                                    Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
-                                  if (award != null)
-                                    Text(award, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
-                                ],
-                              ),
-                            );
-                          } else if (category == 'Collaborations') {
-                            final title = item['title'];
-                            final subtitle = item['subtitle'];
-                            final type = item['type'];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 2.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (title != null)
-                                    Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
-                                  if (subtitle != null)
-                                    Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
-                                  if (type != null)
-                                    Text(type, style: TextStyle(fontSize: 13, color: defaultTextColor.withOpacity(0.7))),
-                                ],
-                              ),
-                            );
-                          } else if (category == 'Debut Work') {
-                            final title = item['title'];
-                            final subtitle = item['subtitle'];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (title != null)
-                                    Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
-                                  if (subtitle != null) ...[
-                                    const SizedBox(height: 2),
-                                    Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
-                                  ],
-                                ],
-                              ),
-                            );
+                  children: items.map((item) {
+                    if (category == 'Awards') {
+                      final title = item['title'];
+                      final award = item['award'];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 2.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (title != null)
+                              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
+                            if (award != null)
+                              Text(award, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
+                          ],
+                        ),
+                      );
+                    } else if (category == 'Collaborations') {
+                      final title = item['title'];
+                      final subtitle = item['subtitle'];
+                      final type = item['type'];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 2.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (title != null)
+                              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
+                            if (subtitle != null)
+                              Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
+                            if (type != null)
+                              Text(type, style: TextStyle(fontSize: 13, color: defaultTextColor.withOpacity(0.7))),
+                          ],
+                        ),
+                      );
+                    } else if (category == 'Debut Work') {
+                      final title = item['title'];
+                      final subtitle = item['subtitle'];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (title != null)
+                              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
+                            if (subtitle != null) ...[
+                              const SizedBox(height: 2),
+                              Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
+                            ],
+                          ],
+                        ),
+                      );
                           } else { // Covers 'Profession' and any other general categories
-                            final title = item['title'];
-                            final subtitle = item['subtitle'];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 2.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (title != null)
-                                    Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
-                                  if (subtitle != null)
-                                    Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
-                                ],
-                              ),
-                            );
-                          }
-                        }).toList(),
-                      ),
-                    ),
-                  ],
+                      final title = item['title'];
+                      final subtitle = item['subtitle'];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 2.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (title != null)
+                              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
+                            if (subtitle != null)
+                              Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
+                          ],
+                        ),
+                      );
+                    }
+                  }).toList(),
                 ),
-              );
-            }).toList(),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
           ),
         ),
         ElevatedButton(
@@ -604,14 +623,14 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        localizedCategory,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: defaultTextColor,
-                        ),
+                children: [
+                  Text(
+                    localizedCategory,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: defaultTextColor,
+                    ),
                       ),
                       IconButton(
                         icon: Icon(Icons.add_circle_outline, color: Colors.orange),
@@ -645,11 +664,27 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                         final item = items[index];
                         return Padding(
                           padding: const EdgeInsets.only(right: 12.0),
-                          child: ImageWithOptionalText(
-                            width: 100,
-                            height: 150,
-                            imageUrl: item['imageUrl'],
-                            bottomText: item['name'],
+                          child: GestureDetector(
+                            onTapDown: (details) {
+                              showProfileActionPopup(
+                                context: context,
+                                globalPosition: details.globalPosition,
+                                onReview: () {
+                                  // Use empty list and dummy postId if not available
+                                  _showCommentsModal(context, [], postId: 'profile');
+                                },
+                                onPreview: () {},
+                                onSalute: () {},
+                                onRate: (rating) {},
+                                currentRating: 0,
+                              );
+                            },
+                            child: ImageWithOptionalText(
+                              width: 100,
+                              height: 150,
+                              imageUrl: item['imageUrl'],
+                              bottomText: item['name'],
+                            ),
                           ),
                         );
                       },
@@ -734,8 +769,24 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                           showProfileActionPopup(
                             context: context,
                             globalPosition: details.globalPosition,
-                            onReview: () {},
+                            onReview: () {
+                              // Use empty list and dummy postId if not available
+                              _showCommentsModal(context, [], postId: 'profile');
+                            },
                             onSalute: () {},
+                            onPreview: () {
+                              if (user != null) {
+                                _showProfilePreviewModal(
+                                  context: context,
+                                  userName: user!.fullName,
+                                  userProfession: user is CelebrityUser ? (user as CelebrityUser).occupation : '',
+                                  userProfileImageUrl: user!.profileImageUrl,
+                                  onViewProfile: () {
+                                    // Optionally handle view profile action
+                                  },
+                                );
+                              }
+                            },
                             onRate: (rating) {},
                             currentRating: 0,
                           );
@@ -750,7 +801,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 ),
               ),
               const SizedBox(height: 20),
-
+      
               // Education Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -775,8 +826,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                           onWillPop: () async => true,
                           child: AddEducationModal(// Pass the section title
                             onAdd: (education) {
-                              // TODO: Add logic to update dummy data
-                            },
+                            // TODO: Add logic to update dummy data
+                          },
                           ),
                         ),
                       );
@@ -799,7 +850,11 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                           showProfileActionPopup(
                             context: context,
                             globalPosition: details.globalPosition,
-                            onReview: () {},
+                            onReview: () {
+                              // Use empty list and dummy postId if not available
+                              _showCommentsModal(context, [], postId: 'profile');
+                            },
+                            onPreview: () {},
                             onSalute: () {},
                             onRate: (rating) {},
                             currentRating: 0,
@@ -819,15 +874,15 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
+                children: [
+                  Text(
                               university,
-                              style: TextStyle(
+                    style: TextStyle(
                                 fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: defaultTextColor,
-                              ),
-                            ),
+                      fontWeight: FontWeight.bold,
+                      color: defaultTextColor,
+                    ),
+                  ),
                             ...degrees.map<Widget>((deg) {
                               return Padding(
                                 padding: const EdgeInsets.only(top: 4.0, left: 2.0),
@@ -836,7 +891,11 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                                     showProfileActionPopup(
                                       context: context,
                                       globalPosition: details.globalPosition,
-                                      onReview: () {},
+                                      onReview: () {
+                                        // Use empty list and dummy postId if not available
+                                        _showCommentsModal(context, [], postId: 'profile');
+                                      },
+                                      onPreview: () {},
                                       onSalute: () {},
                                       onRate: (rating) {},
                                       currentRating: 0,
@@ -871,13 +930,13 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                             }).toList(),
                           ],
                         ),
-                      ),
-                    ],
                   ),
+                ],
+              ),
                 );
               }).toList(),
               const SizedBox(height: 20),
-
+      
               // Hobbies Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -901,10 +960,10 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                         builder: (context) => WillPopScope(
                           onWillPop: () async => true,
                           child: AddPersonaModal(
-                            sectionTitle: AppLocalizations.of(context)!.hobbies,
-                            onAdd: (hobby) {
-                              // TODO: Add logic to update dummy data
-                            },
+                          sectionTitle: AppLocalizations.of(context)!.hobbies,
+                          onAdd: (hobby) {
+                            // TODO: Add logic to update dummy data
+                          },
                           ),
                         ),
                       );
@@ -926,17 +985,21 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                           showProfileActionPopup(
                             context: context,
                             globalPosition: details.globalPosition,
-                            onReview: () {},
+                            onReview: () {
+                              // Use empty list and dummy postId if not available
+                              _showCommentsModal(context, [], postId: 'profile');
+                            },
+                            onPreview: () {},
                             onSalute: () {},
                             onRate: (rating) {},
                             currentRating: 0,
                           );
                         },
-                        child: ImageWithOptionalText(
-                          width: 100,
-                          height: 150,
-                          imageUrl: celeb.hobbies[index]['imageUrl'],
-                          bottomText: celeb.hobbies[index]['name'],
+                      child: ImageWithOptionalText(
+                        width: 100,
+                        height: 150,
+                        imageUrl: celeb.hobbies[index]['imageUrl'],
+                        bottomText: celeb.hobbies[index]['name'],
                         ),
                       ),
                     );
@@ -944,7 +1007,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 ),
               ),
               const SizedBox(height: 20),
-
+      
               // Lifestyle Section
               Text(
                 AppLocalizations.of(context)!.lifestyle,
@@ -964,7 +1027,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 style: TextStyle(fontSize: 14, color: defaultTextColor),
               ),
               const SizedBox(height: 20),
-
+      
               // Involved Causes Section
               Text(
                 AppLocalizations.of(context)!.involvedCauses,
@@ -1015,7 +1078,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 );
               }).toList(),
               const SizedBox(height: 20),
-
+      
               // Pets Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1040,9 +1103,9 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                           onWillPop: () async => true,
                           child: AddRelationshipModal(
                             sectionTitle: AppLocalizations.of(context)!.pets, // Ensure this modal takes a section title if needed
-                            onAdd: (pet) {
-                              // TODO: Add logic to update dummy data
-                            },
+                          onAdd: (pet) {
+                            // TODO: Add logic to update dummy data
+                          },
                           ),
                         ),
                       );
@@ -1064,7 +1127,11 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                           showProfileActionPopup(
                             context: context,
                             globalPosition: details.globalPosition,
-                            onReview: () {},
+                            onReview: () {
+                              // Use empty list and dummy postId if not available
+                              _showCommentsModal(context, [], postId: 'profile');
+                            },
+                            onPreview: () {},
                             onSalute: () {},
                             onRate: (rating) {},
                             currentRating: 0,
@@ -1080,7 +1147,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 ),
               ),
               const SizedBox(height: 20),
-
+      
               // Tattoos Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1104,10 +1171,10 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                         builder: (context) => WillPopScope(
                           onWillPop: () async => true,
                           child: AddPersonaModal(
-                            sectionTitle: AppLocalizations.of(context)!.tattoos,
-                            onAdd: (tattoo) {
-                              // TODO: Add logic to update dummy data
-                            },
+                          sectionTitle: AppLocalizations.of(context)!.tattoos,
+                          onAdd: (tattoo) {
+                            // TODO: Add logic to update dummy data
+                          },
                           ),
                         ),
                       );
@@ -1129,17 +1196,21 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                           showProfileActionPopup(
                             context: context,
                             globalPosition: details.globalPosition,
-                            onReview: () {},
+                            onReview: () {
+                              // Use empty list and dummy postId if not available
+                              _showCommentsModal(context, [], postId: 'profile');
+                            },
                             onSalute: () {},
+                            onPreview: () {},
                             onRate: (rating) {},
                             currentRating: 0,
                           );
                         },
-                        child: ImageWithOptionalText(
-                          width: 100,
-                          height: 150,
-                          imageUrl: celeb.tattoos[index],
-                          bottomText: null,
+                      child: ImageWithOptionalText(
+                        width: 100,
+                        height: 150,
+                        imageUrl: celeb.tattoos[index],
+                        bottomText: null,
                         ),
                       ),
                     );
@@ -1147,7 +1218,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 ),
               ),
               const SizedBox(height: 20),
-
+      
               // Favourites Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1171,10 +1242,10 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                         builder: (context) => WillPopScope(
                           onWillPop: () async => true,
                           child: AddPersonaModal(
-                            sectionTitle: AppLocalizations.of(context)!.favourites,
-                            onAdd: (place) {
-                              // TODO: Add logic to update dummy data
-                            },
+                          sectionTitle: AppLocalizations.of(context)!.favourites,
+                          onAdd: (place) {
+                            // TODO: Add logic to update dummy data
+                          },
                           ),
                         ),
                       );
@@ -1196,17 +1267,21 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                           showProfileActionPopup(
                             context: context,
                             globalPosition: details.globalPosition,
-                            onReview: () {},
+                            onReview: () {
+                              // Use empty list and dummy postId if not available
+                              _showCommentsModal(context, [], postId: 'profile');
+                            },
                             onSalute: () {},
+                            onPreview: () {},
                             onRate: (rating) {},
                             currentRating: 0,
                           );
                         },
-                        child: ImageWithOptionalText(
-                          width: 100,
-                          height: 150,
-                          imageUrl: celeb.favouritePlaces[index]['imageUrl'],
-                          bottomText: celeb.favouritePlaces[index]['name'],
+                      child: ImageWithOptionalText(
+                        width: 100,
+                        height: 150,
+                        imageUrl: celeb.favouritePlaces[index]['imageUrl'],
+                        bottomText: celeb.favouritePlaces[index]['name'],
                         ),
                       ),
                     );
@@ -1214,7 +1289,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 ),
               ),
               const SizedBox(height: 20),
-
+      
               // Talents Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1238,10 +1313,10 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                         builder: (context) => WillPopScope(
                           onWillPop: () async => true,
                           child: AddPersonaModal(
-                            sectionTitle: AppLocalizations.of(context)!.talents,
-                            onAdd: (talent) {
-                              // TODO: Add logic to update dummy data
-                            },
+                          sectionTitle: AppLocalizations.of(context)!.talents,
+                          onAdd: (talent) {
+                            // TODO: Add logic to update dummy data
+                          },
                           ),
                         ),
                       );
@@ -1263,17 +1338,21 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                           showProfileActionPopup(
                             context: context,
                             globalPosition: details.globalPosition,
-                            onReview: () {},
+                            onReview: () {
+                              // Use empty list and dummy postId if not available
+                              _showCommentsModal(context, [], postId: 'profile');
+                            },
                             onSalute: () {},
+                            onPreview: () {},
                             onRate: (rating) {},
                             currentRating: 0,
                           );
                         },
-                        child: ImageWithOptionalText(
-                          width: 100,
-                          height: 150,
-                          imageUrl: celeb.talents[index]['imageUrl'],
-                          bottomText: celeb.talents[index]['name'],
+                      child: ImageWithOptionalText(
+                        width: 100,
+                        height: 150,
+                        imageUrl: celeb.talents[index]['imageUrl'],
+                        bottomText: celeb.talents[index]['name'],
                         ),
                       ),
                     );
@@ -1344,10 +1423,10 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                       builder: (context) => WillPopScope(
                         onWillPop: () async => true,
                         child: AddPersonaModal(
-                          sectionTitle: AppLocalizations.of(context)!.socials,
-                          onAdd: (social) {
-                            // TODO: Add logic to update dummy data
-                          },
+                        sectionTitle: AppLocalizations.of(context)!.socials,
+                        onAdd: (social) {
+                          // TODO: Add logic to update dummy data
+                        },
                         ),
                       ),
                     );
@@ -1445,10 +1524,10 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                       builder: (context) => WillPopScope(
                         onWillPop: () async => true,
                         child: AddPersonaModal(
-                          sectionTitle: AppLocalizations.of(context)!.fashionStyle,
-                          onAdd: (fashion) {
-                            // TODO: Add logic to update dummy data
-                          },
+                        sectionTitle: AppLocalizations.of(context)!.fashionStyle,
+                        onAdd: (fashion) {
+                          // TODO: Add logic to update dummy data
+                        },
                         ),
                       ),
                     );

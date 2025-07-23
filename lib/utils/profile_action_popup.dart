@@ -8,6 +8,7 @@ void showProfileActionPopup({
   required VoidCallback onReview,
   // required VoidCallback onFollow,
   required VoidCallback onSalute,
+  required VoidCallback onPreview,
   required ValueChanged<int> onRate,
   int currentRating = 0,
 }) {
@@ -56,6 +57,10 @@ void showProfileActionPopup({
               onRate: (rating) {
                 entry.remove();
                 onRate(rating);
+              },
+              onPreview: (){
+                entry.remove();
+                onPreview();
               },
               currentRating: currentRating,
             ),

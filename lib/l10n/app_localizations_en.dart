@@ -272,6 +272,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invite => 'Invite';
 
   @override
+  String get tag => 'Tag';
+
+  @override
   String inviteSent(Object name) {
     return 'Invite sent to \"$name\"';
   }
@@ -669,4 +672,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterValidYear => 'Please enter a valid year.';
+
+  @override
+  String get tagPeople => 'Tag People';
 }

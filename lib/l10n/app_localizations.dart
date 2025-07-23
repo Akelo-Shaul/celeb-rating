@@ -617,6 +617,12 @@ abstract class AppLocalizations {
   /// **'Invite'**
   String get invite;
 
+  /// No description provided for @tag.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag'**
+  String get tag;
+
   /// No description provided for @inviteSent.
   ///
   /// In en, this message translates to:
@@ -1390,6 +1396,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter a valid year.'**
   String get enterValidYear;
+
+  /// No description provided for @tagPeople.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag People'**
+  String get tagPeople;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

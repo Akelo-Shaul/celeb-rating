@@ -87,6 +87,7 @@
   "searchByNameOrUsername": "Search by name or username",
   "notFound": "Not found",
   "invite": "Invite",
+  "tag": "Tag",
   "inviteSent": "Invite sent to \"{name}\"",
   "postsTab": "Posts",
   "careerTab": "Career",
@@ -253,5 +254,6 @@
     },
   "relationshipType": "Relationship Type",
   "cancel": "Cancel",
-  "enterValidYear": "Please enter a valid year."
+  "enterValidYear": "Please enter a valid year.",
+  "tagPeople": "Tag People"
 }

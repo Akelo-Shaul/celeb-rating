@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:celebrating/utils/route.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -194,34 +196,227 @@ class _VersusScreenState extends State<VersusScreen> {
 
   Widget _buildSelectedVersusDisplay() {
     // This state is reached only when both users are selected
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8.0),
-          child: Text(
-            'Selected Versus',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+    final left = _selectedUser1!;
+    final right = _selectedUser2!;
+    final fields = [
+      {'label': 'Age', 'key': 'age'},
+      {'label': 'Spouse', 'key': 'spouse'},
+      {'label': 'Children', 'key': 'children'},
+      {'label': 'Profession', 'key': 'profession'},
+      {'label': 'Birthplace', 'key': 'birthplace'},
+      {'label': 'Net Worth', 'key': 'netWorth'},
+    ];
+    String getValue(VersusUser user, String key) {
+      if (user.extraAttributes != null && user.extraAttributes!.containsKey(key)) {
+        return user.extraAttributes![key] ?? '';
+      }
+      return '';
+    }
+    LinearGradient _buildRandomizedGradient(Color baseColor, {bool reverse = false}) {
+      final Random random = Random();
+      final Color startColor = baseColor.withOpacity(0.8 - (random.nextDouble() * 0.2));
+      final Color endColor = baseColor.withOpacity(0.6 + (random.nextDouble() * 0.2));
+      return LinearGradient(
+        colors: reverse ? [endColor, startColor] : [startColor, endColor],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      );
+    }
+    final Color leftCol = const Color(0xFF3B5E1F);
+    final Color rightCol = const Color(0xFF6A1B1A);
+    final Color labelCol = const Color(0xFF4B2067);
+    final Color labelText = Colors.white;
+    final Color leftText = Colors.white;
+    final Color rightText = Colors.white;
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(
+              'Selected Versus',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
           ),
-        ),
-        Expanded(
-          child: ListView(
+          // Top row: Avatars/images only
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              _VersusUserPairListItem(
-                user1: _selectedUser1!,
-                user2: _selectedUser2!,
-                onTap: () {
-                  // This is the final display, maybe navigate to a versus detail screen
-                  print('Versus initiated between ${_selectedUser1!.name} and ${_selectedUser2!.name}');
-                  context.pushHeadToHead(user1: _selectedUser1, user2: _selectedUser2);
-                },
+              Expanded(
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  child: left.imageUrl.isNotEmpty
+                      ? Image.network(
+                          left.imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Center(child: Icon(Icons.error_outline, size: 50));
+                          },
+                        )
+                      : Container(
+                          color: Colors.grey[200],
+                          child: const Center(
+                            child: Icon(Icons.person, size: 50, color: Colors.grey),
+                          ),
+                        ),
+                ),
               ),
-              // Add other details or actions related to the selected versus
+              Expanded(
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  child: right.imageUrl.isNotEmpty
+                      ? Image.network(
+                          right.imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Center(child: Icon(Icons.error_outline, size: 50));
+                          },
+                        )
+                      : Container(
+                          color: Colors.grey[200],
+                          child: const Center(
+                            child: Icon(Icons.person, size: 50, color: Colors.grey),
+                          ),
+                        ),
+                ),
+              ),
             ],
           ),
-        ),
-      ],
+          const SizedBox(height: 8),
+          // Names and VS row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  left.name,
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 22, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Container(
+                width: 80,
+                alignment: Alignment.center,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: const Text(
+                  'VS',
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                    letterSpacing: 2,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  right.name,
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 22, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          // Table with gradient columns and alternating rows
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Left column
+              Expanded(
+                child: Column(
+                  children: List.generate(fields.length, (index) {
+                    final field = fields[index];
+                    final baseColor = leftCol;
+                    final gradient = _buildRandomizedGradient(baseColor, reverse: index % 2 != 0);
+                    return Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        gradient: gradient,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        getValue(left, field['key']!),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 16),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+              // Label column
+              Container(
+                width: 110,
+                child: Column(
+                  children: List.generate(fields.length, (index) {
+                    final field = fields[index];
+                    final baseColor = labelCol;
+                    final gradient = _buildRandomizedGradient(baseColor, reverse: index % 2 == 0);
+                    return Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        gradient: gradient,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        field['label']!,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 16),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+              // Right column
+              Expanded(
+                child: Column(
+                  children: List.generate(fields.length, (index) {
+                    final field = fields[index];
+                    final baseColor = rightCol;
+                    final gradient = _buildRandomizedGradient(baseColor, reverse: index % 2 != 0);
+                    return Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        gradient: gradient,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        getValue(right, field['key']!),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 16),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          // Vote buttons
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(child: Align(alignment: Alignment.center, child: _VoteButton())),
+              const SizedBox(width: 40),
+              Expanded(child: Align(alignment: Alignment.center, child: _VoteButton())),
+            ],
+          ),
+          const SizedBox(height: 24),
+          // Star ratings
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(child: Align(alignment: Alignment.center, child: _StarRating(rating: 4))),
+              const SizedBox(width: 40),
+              Expanded(child: Align(alignment: Alignment.center, child: _StarRating(rating: 4))),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -342,6 +537,44 @@ class _UserListItem extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+
+class _StarRating extends StatelessWidget {
+  final int rating;
+  const _StarRating({required this.rating});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(5, (i) {
+        return Icon(
+          i < rating ? Icons.star : Icons.star_border,
+          color: Colors.orange,
+          size: 22,
+        );
+      }),
+    );
+  }
+}
+
+class _VoteButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.blue,
+        elevation: 0,
+        side: const BorderSide(color: Colors.blue),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      onPressed: () {},
+      child: const Text('VOTE', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
     );
   }
 }

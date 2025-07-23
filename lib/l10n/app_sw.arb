@@ -87,6 +87,7 @@
   "searchByNameOrUsername": "Tafuta kwa jina au jina la mtumiaji",
   "notFound": "Haijapatikana",
   "invite": "Alika",
+  "tag": "Weka",
   "inviteSent": "Mwaliko umetumwa kwa \"{name}\"",
   "postsTab": "Machapisho",
   "careerTab": "Kazi",
@@ -255,5 +256,6 @@
     },
   "relationshipType": "Aina ya Mahusiano",
   "cancel": "Ghairi",
-  "enterValidYear": "Tafadhali weka mwaka halali."
+  "enterValidYear": "Tafadhali weka mwaka halali.",
+  "tagPeople": "Weka Watu"
 }

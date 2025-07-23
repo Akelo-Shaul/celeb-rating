@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../models/versus_user.dart';
@@ -5,19 +7,50 @@ import '../models/versus_user.dart';
 class HeadToHead extends StatelessWidget {
   final VersusUser user1;
   final VersusUser user2;
-
-  const HeadToHead({
-    super.key,
-    required this.user1,
-    required this.user2,
-  });
+  const HeadToHead({Key? key, required this.user1, required this.user2}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Define a consistent width for the central column elements (Vs, Rankings, etc.)
-    // This width needs to accommodate the widest central element (e.g., 'Interesting')
-    // and provide enough horizontal padding.
-    const double centerColumnWidth = 120.0; // Adjusted for better visual alignment
+    final VersusUser left = user1;
+    final VersusUser right = user2;
+
+    final fields = [
+      {'label': 'Age', 'key': 'age'},
+      {'label': 'Spouse', 'key': 'spouse'},
+      {'label': 'Children', 'key': 'children'},
+      {'label': 'Profession', 'key': 'profession'},
+      {'label': 'Birthplace', 'key': 'birthplace'},
+      {'label': 'Net Worth', 'key': 'netWorth'},
+    ];
+
+    String getValue(VersusUser user, String key) {
+      if (user.extraAttributes != null && user.extraAttributes!.containsKey(key)) {
+        return user.extraAttributes![key] ?? '';
+      }
+      return '';
+    }
+
+    // Define a helper function to generate a slightly randomized gradient
+    LinearGradient _buildRandomizedGradient(Color baseColor, {bool reverse = false}) {
+      final Random random = Random();
+      // Adjust opacity to reduce sharpness
+      final Color startColor = baseColor.withOpacity(0.8 - (random.nextDouble() * 0.2)); // 0.6 - 0.8 opacity
+      final Color endColor = baseColor.withOpacity(0.6 + (random.nextDouble() * 0.2));   // 0.6 - 0.8 opacity
+
+      return LinearGradient(
+        colors: reverse ? [endColor, startColor] : [startColor, endColor],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      );
+    }
+
+    // Colors for the table
+    final Color leftCol = const Color(0xFF3B5E1F);
+    final Color rightCol = const Color(0xFF6A1B1A);
+    final Color labelCol = const Color(0xFF4B2067); // Deep purple for label
+    final Color labelText = Colors.white;
+    final Color leftText = Colors.white;
+    final Color rightText = Colors.white;
 
     return Scaffold(
       appBar: AppBar(
@@ -26,115 +59,181 @@ class HeadToHead extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(0),
           child: Column(
             children: [
-              // User Avatars and Names Row with 'Vs'
+              // Top row: Avatars/images only
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Expanded(child: _UserColumn(user: user1, type: _UserColumnType.header)),
-                  SizedBox(
-                    width: centerColumnWidth, // Use fixed width for 'Vs' section
-                    child: Center(
-                      child: Text(
-                        'Vs',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                      ),
+                  Expanded(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      child: left.imageUrl.isNotEmpty
+                          ? Image.network(
+                              left.imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Center(child: Icon(Icons.error_outline, size: 50));
+                              },
+                            )
+                          : Container(
+                              color: Colors.grey[200],
+                              child: const Center(
+                                child: Icon(Icons.person, size: 50, color: Colors.grey),
+                              ),
+                            ),
                     ),
                   ),
-                  Expanded(child: _UserColumn(user: user2, type: _UserColumnType.header)),
+                  Expanded(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      child: right.imageUrl.isNotEmpty
+                          ? Image.network(
+                              right.imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Center(child: Icon(Icons.error_outline, size: 50));
+                              },
+                            )
+                          : Container(
+                              color: Colors.grey[200],
+                              child: const Center(
+                                child: Icon(Icons.person, size: 50, color: Colors.grey),
+                              ),
+                            ),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 8),
-
-              // First row of Vote buttons
+              // Names and VS row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Text(
+                      left.name,
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 22, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Container(
+                    width: 80,
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: const Text(
+                      'VS',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      right.name,
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 22, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              // Table with gradient columns and alternating rows
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Left column
+                  Expanded(
+                    child: Column(
+                      children: List.generate(fields.length, (index) {
+                        final field = fields[index];
+                        final baseColor = const Color(0xFF3B5E1F); // Your original leftCol
+                        final gradient = _buildRandomizedGradient(baseColor, reverse: index % 2 != 0); // Alternate gradient direction
+                        return Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                            gradient: gradient,
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            getValue(left, field['key']!),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 16), // White text for better contrast on gradient
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  // Label column
+                  Container(
+                    width: 110,
+                    child: Column(
+                      children: List.generate(fields.length, (index) {
+                        final field = fields[index];
+                        final baseColor = const Color(0xFF4B2067); // Your original labelCol
+                        final gradient = _buildRandomizedGradient(baseColor, reverse: index % 2 == 0); // Alternate gradient direction
+                        return Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                            gradient: gradient,
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            field['label']!,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 16), // White text for better contrast
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  // Right column
+                  Expanded(
+                    child: Column(
+                      children: List.generate(fields.length, (index) {
+                        final field = fields[index];
+                        final baseColor = const Color(0xFF6A1B1A); // Your original rightCol
+                        final gradient = _buildRandomizedGradient(baseColor, reverse: index % 2 != 0); // Alternate gradient direction
+                        return Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                            gradient: gradient,
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            getValue(right, field['key']!),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 16), // White text for better contrast
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              // Vote buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(child: Align(alignment: Alignment.center, child: _VoteButton())),
-                  const SizedBox(width: centerColumnWidth), // Match center column width
+                  const SizedBox(width: 40),
                   Expanded(child: Align(alignment: Alignment.center, child: _VoteButton())),
                 ],
               ),
-              const SizedBox(height: 16),
-
-              // Rankings Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(child: Align(alignment: Alignment.center, child: _UserColumn(user: user1, type: _UserColumnType.ranking))),
-                  SizedBox(
-                    width: centerColumnWidth, // Use fixed width for StatRow
-                    child: _StatRow(icon: Icons.bar_chart, label: 'Rankings', value: ''),
-                  ),
-                  Expanded(child: Align(alignment: Alignment.center, child: _UserColumn(user: user2, type: _UserColumnType.ranking))),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Followers Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(child: Align(alignment: Alignment.center, child: _UserColumn(user: user1, type: _UserColumnType.followers))),
-                  SizedBox(
-                    width: centerColumnWidth, // Use fixed width for StatRow
-                    child: _StatRow(icon: Icons.groups, label: 'Followers', value: ''),
-                  ),
-                  Expanded(child: Align(alignment: Alignment.center, child: _UserColumn(user: user2, type: _UserColumnType.followers))),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Flow Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(child: Align(alignment: Alignment.center, child: _UserColumn(user: user1, type: _UserColumnType.flow))),
-                  SizedBox(
-                    width: centerColumnWidth, // Use fixed width for StatRow
-                    child: _StatRow(icon: Icons.alt_route, label: 'Flow', value: ''),
-                  ),
-                  Expanded(child: Align(alignment: Alignment.center, child: _UserColumn(user: user2, type: _UserColumnType.flow))),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Comical Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(child: Align(alignment: Alignment.center, child: _UserColumn(user: user1, type: _UserColumnType.comical))),
-                  SizedBox(
-                    width: centerColumnWidth, // Use fixed width for StatRow
-                    child: _StatRow(icon: Icons.emoji_emotions, label: 'Comical', value: ''),
-                  ),
-                  Expanded(child: Align(alignment: Alignment.center, child: _UserColumn(user: user2, type: _UserColumnType.comical))),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Interesting Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(child: Align(alignment: Alignment.center, child: _UserColumn(user: user1, type: _UserColumnType.interesting))),
-                  SizedBox(
-                    width: centerColumnWidth, // Use fixed width for StatRow
-                    child: _StatRow(icon: Icons.interests, label: 'Interesting', value: ''),
-                  ),
-                  Expanded(child: Align(alignment: Alignment.center, child: _UserColumn(user: user2, type: _UserColumnType.interesting))),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Star Ratings Row
+              const SizedBox(height: 24),
+              // Star ratings
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(child: Align(alignment: Alignment.center, child: _StarRating(rating: 4))),
-                  const SizedBox(width: centerColumnWidth), // Match center column width
+                  const SizedBox(width: 40),
                   Expanded(child: Align(alignment: Alignment.center, child: _StarRating(rating: 4))),
                 ],
               ),
@@ -179,111 +278,6 @@ class _StarRating extends StatelessWidget {
           size: 22,
         );
       }),
-    );
-  }
-}
-
-// Define an enum to differentiate what _UserColumn should display
-enum _UserColumnType {
-  header,
-  ranking,
-  followers,
-  flow,
-  comical,
-  interesting,
-  none, // For cases where it's just a placeholder in the Row
-}
-
-class _UserColumn extends StatelessWidget {
-  final VersusUser user;
-  final _UserColumnType type;
-
-  const _UserColumn({required this.user, this.type = _UserColumnType.none});
-
-  @override
-  Widget build(BuildContext context) {
-    // Only display content if it's a header or a specific stat type
-    if (type == _UserColumnType.header) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Avatar
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
-            child: CircleAvatar(
-              radius: 36,
-              backgroundColor: Colors.grey.withOpacity(0.18),
-              backgroundImage: user.imageUrl.isNotEmpty ? NetworkImage(user.imageUrl) : null,
-            ),
-          ),
-          // Name
-          Text(
-            user.name,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      );
-    } else if (type == _UserColumnType.ranking) {
-      return Container(
-        width: 70, // Fixed width to match the image
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: const Text(
-          '4.6', // Hardcoded as per image
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          textAlign: TextAlign.center,
-        ),
-      );
-    } else if (type == _UserColumnType.followers) {
-      return Container(
-        width: 70, // Fixed width to match the image
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: const Text(
-          '34.7k', // Hardcoded as per image
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          textAlign: TextAlign.center,
-        ),
-      );
-    } else if (type == _UserColumnType.flow ||
-        type == _UserColumnType.comical ||
-        type == _UserColumnType.interesting) {
-      return _VoteButton();
-    }
-    return const SizedBox(width: 80); // Placeholder for alignment
-  }
-}
-
-class _StatRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value; // Value is empty, as it's handled by _UserColumn
-
-  const _StatRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    // The previous horizontal padding `24.0` was part of the problem.
-    // By making the parent SizedBox fixed width, the content inside this
-    // _StatRow can simply be centered.
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center, // Center contents vertically within its space
-      children: [
-        Icon(icon, size: 28, color: Colors.black),
-        const SizedBox(height: 4),
-        Text(label, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15)),
-      ],
     );
   }
 }

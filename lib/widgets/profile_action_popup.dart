@@ -5,6 +5,7 @@ class ProfileActionPopup extends StatelessWidget {
   final VoidCallback onReview;
   // final VoidCallback onFollow;
   final VoidCallback onSalute;
+  final VoidCallback onPreview;
   final ValueChanged<int> onRate;
   final int currentRating;
 
@@ -14,6 +15,7 @@ class ProfileActionPopup extends StatelessWidget {
     required this.onReview,
     // required this.onFollow,
     required this.onSalute,
+    required this.onPreview,
     required this.onRate,
     this.currentRating = 0,
   }) : super(key: key);
@@ -86,8 +88,8 @@ class ProfileActionPopup extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _ActionButton(icon: Icons.rate_review, label: 'Review', onTap: onReview),
-                // _ActionButton(icon: Icons.bookmark, label: 'Follow', onTap: onFollow),
-                _ActionButton(icon: Icons.thumb_up, label: 'Like', onTap: onSalute),
+                _ActionButton(icon: Icons.preview, label: 'Preview', onTap: onPreview),
+                _ActionButton(icon: Icons.thumb_up, label: 'Salute', onTap: onSalute),
               ],
             ),
           ],

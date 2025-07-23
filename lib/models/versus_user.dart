@@ -4,11 +4,13 @@ class VersusUser {
   final String id;
   final String name;
   final String imageUrl;
+  final Map<String, String>? extraAttributes;
 
   const VersusUser({
     required this.id,
     required this.name,
     required this.imageUrl,
+    this.extraAttributes,
   });
 
   // Factory constructor to convert a User object to VersusUser
