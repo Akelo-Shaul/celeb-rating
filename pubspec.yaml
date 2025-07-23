@@ -48,7 +48,8 @@ dependencies:
   video_thumbnail:
   flutter_staggered_grid_view:
   webview_flutter: ^4.13.0
-  go_router: 
+  go_router: ^13.2.0
+  flutter_secure_storage: ^9.0.0
 
 
 

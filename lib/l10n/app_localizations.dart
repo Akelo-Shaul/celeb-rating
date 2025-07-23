@@ -443,6 +443,54 @@ abstract class AppLocalizations {
   /// **'Year'**
   String get year;
 
+  /// No description provided for @yearOfAchievement.
+  ///
+  /// In en, this message translates to:
+  /// **'Year of Achievement'**
+  String get yearOfAchievement;
+
+  /// No description provided for @collaborators.
+  ///
+  /// In en, this message translates to:
+  /// **'Collaborators'**
+  String get collaborators;
+
+  /// No description provided for @awardsRecognition.
+  ///
+  /// In en, this message translates to:
+  /// **'Awards & Recognition'**
+  String get awardsRecognition;
+
+  /// No description provided for @enterYourRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Your Role'**
+  String get enterYourRole;
+
+  /// No description provided for @yourRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Role'**
+  String get yourRole;
+
+  /// No description provided for @enterHighlightTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Highlight Title'**
+  String get enterHighlightTitle;
+
+  /// No description provided for @highlightTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Highlight Title'**
+  String get highlightTitle;
+
+  /// No description provided for @addCareerHighlight.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Career Highlight'**
+  String get addCareerHighlight;
+
   /// No description provided for @req.
   ///
   /// In en, this message translates to:

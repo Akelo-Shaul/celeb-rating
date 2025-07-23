@@ -61,11 +61,10 @@ class _CameraScreenState extends State<CameraScreen> {
   Future<void> capturePhoto() async{
     if(_cameraController != null && _cameraController!.value.isInitialized){
       imageFile = await _cameraController!.takePicture();
-      // print(imageFile);
       setState(() {});
       print('The IMaGe PatH');
       print(imageFile!.path);
-      context.go(widget.returnRoute, extra: {'selectedImage': imageFile});
+      context.pop(imageFile);
     }
   }
 
@@ -73,11 +72,10 @@ class _CameraScreenState extends State<CameraScreen> {
     print('Image Picker Start');
     XFile? pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
     if(pickedFile != null){
-
       setState(() {
         imageFile = pickedFile;
       });
-      context.go(widget.returnRoute, extra: {'selectedImage': pickedFile});
+      context.pop(pickedFile);
       print('ROuting HOOME');
       print(pickedFile);
     }

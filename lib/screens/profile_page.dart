@@ -1,6 +1,8 @@
+import 'package:celebrating/widgets/add_career_higlights_modal.dart';
 import 'package:celebrating/widgets/add_wealth_item_modal.dart';
 import 'package:celebrating/widgets/slideup_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/comment.dart';
@@ -16,7 +18,6 @@ import '../widgets/comments_modal.dart';
 import '../widgets/post_card.dart';
 import '../widgets/profile_avatar.dart';
 import '../widgets/image_optional_text.dart';
-import '../utils/profile_action_popup.dart';
 
 class ProfilePage extends StatefulWidget {
   // Added userId parameter to enable viewing other user profiles
@@ -27,7 +28,8 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStateMixin{
+class _ProfilePageState extends State<ProfilePage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   CelebrityUser? user;
   List<Post> posts = [];
@@ -57,31 +59,34 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
   //TODO: Implement following code block when fetching logged in user
   /*** void fetchProfileUser() async {
-    // If your User model has a role or type field:
-    bool isCelebrity = loggedInUser.role == 'Celebrity';
+      // If your User model has a role or type field:
+      bool isCelebrity = loggedInUser.role == 'Celebrity';
 
-    final user = await UserService.fetchUser(loggedInUser.id.toString(), isCelebrity: isCelebrity);
+      final user = await UserService.fetchUser(loggedInUser.id.toString(), isCelebrity: isCelebrity);
 
-    setState(() {
+      setState(() {
       if (isCelebrity && user is CelebrityUser) {
-        this.user = user;
+      this.user = user;
       } else if (!isCelebrity && user is User) {
-        this.user = user as User;
+      this.user = user as User;
       }
-    });
-  } **/
+      });
+      } **/
 
   void fetchProfileUser() async {
     // Use widget.userId if provided, otherwise a default for testing/own profile
     final String userIdToFetch = widget.userId ?? '456';
-    final fetchedUser = await UserService.fetchUser(userIdToFetch, isCelebrity: true);
+    final fetchedUser =
+    await UserService.fetchUser(userIdToFetch, isCelebrity: true);
     if (fetchedUser is CelebrityUser) {
       setState(() {
         user = fetchedUser;
         posts = fetchedUser.postsList ?? [];
         isLoading = false;
         // Determine if it's the user's own profile (dummy logic for now)
-        isOwnProfile = (widget.userId == null || widget.userId == 'currentLoggedInUserId'); // Replace 'currentLoggedInUserId' with actual ID
+        isOwnProfile = (widget.userId == null ||
+            widget.userId ==
+                'currentLoggedInUserId'); // Replace 'currentLoggedInUserId' with actual ID
       });
       print('Celebrity user: ${fetchedUser.fullName}');
       print('Occupation: ${fetchedUser.occupation}');
@@ -99,7 +104,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final secondaryTextColor =
+    isDark ? Colors.grey.shade400 : Colors.grey.shade600;
     final appPrimaryColor = Theme.of(context).primaryColor;
 
     showSlideUpDialog(
@@ -125,7 +131,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     super.initState();
     // Call the method to fetch a celebrity user
     fetchProfileUser();
-    _tabController = TabController(length: 5, vsync: this); 
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   final Map<String, IconData> _careerCategoryIcons = {
@@ -133,7 +139,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     'Debut Work': Icons.rocket_launch_outlined,
     'Awards': Icons.emoji_events_outlined,
     'Songs': Icons.music_note_outlined,
-    'Collaborations': Icons.group_add_outlined, // Added icon for collaborations
+    'Collaborations':
+    Icons.group_add_outlined, // Added icon for collaborations
     // Add more as needed
   };
 
@@ -151,14 +158,15 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     super.dispose();
   }
 
-
-  void _showCommentsModal(BuildContext context, List<Comment> comments, {required String postId}) {
+  void _showCommentsModal(BuildContext context, List<Comment> comments,
+      {required String postId}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true, // Allows the modal to take up more height
       builder: (BuildContext context) {
         return FractionallySizedBox(
-          heightFactor: 0.85, // Adjust this to control how much screen height the modal takes
+          heightFactor:
+          0.85, // Adjust this to control how much screen height the modal takes
           child: CommentsModal(
             comments: comments,
             postId: postId,
@@ -172,9 +180,11 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final secondaryTextColor =
+    isDark ? Colors.grey.shade400 : Colors.grey.shade600;
     // Removed unused appPrimaryColor here as it's not directly used in the Scaffold/AppBar
-    final tabBackgroundColor = isDark ? Colors.grey.shade800 : Colors.grey.shade200;
+    final tabBackgroundColor =
+    isDark ? Colors.grey.shade800 : Colors.grey.shade200;
 
     return Scaffold(
       // appBar: _buildAppBar(defaultTextColor), // Re-enable if you want an AppBar
@@ -251,7 +261,9 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 children: [
                   IconButton(
                     icon: Icon(Icons.menu, color: defaultTextColor),
-                    onPressed: () {},
+                    onPressed: () {
+                      context.pushNamed('settings');
+                    },
                   ),
                   Stack(
                     children: [
@@ -263,7 +275,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                         Positioned(
                           top: -2,
                           right: -2,
-                          child: Icon(Icons.verified, color:  Colors.orange.shade700, size: 30),
+                          child: Icon(Icons.verified,
+                              color: Colors.orange.shade700, size: 30),
                         ),
                       ],
                     ],
@@ -275,7 +288,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                       children: [
                         Icon(Icons.tiktok, size: 30, color: secondaryTextColor),
                         const SizedBox(width: 12),
-                        Icon(Icons.camera_alt_outlined, size: 30, color: secondaryTextColor),
+                        Icon(Icons.camera_alt_outlined,
+                            size: 30, color: secondaryTextColor),
                         const SizedBox(width: 12),
                         Icon(Icons.tiktok, size: 30, color: secondaryTextColor),
                       ],
@@ -292,7 +306,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
           GestureDetector(
             onTap: () {
               if (isCelebrity && celeb != null) {
-                print('Website link tapped: ${celeb.website}'); // Corrected string interpolation
+                print(
+                    'Website link tapped: ${celeb.website}'); // Corrected string interpolation
               }
             },
             child: Text(
@@ -326,7 +341,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                   height: 35,
                 ),
               PostActionButton(
-                icon: Icons.comment_outlined,
+                icon: Icons.chat_bubble_outline,
                 onPressed: () {
                   print("Routing to messaging");
                 },
@@ -351,7 +366,9 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       followers = (user as CelebrityUser).followers;
     }
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0,),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10.0,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -369,7 +386,9 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
           ),
           const SizedBox(width: 20),
           Text(
-            user != null && user!.postsList != null ? '${user!.postsList!.length} ' : '0 ',
+            user != null && user!.postsList != null
+                ? '${user!.postsList!.length} '
+                : '0 ',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: defaultTextColor,
@@ -391,9 +410,11 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       isScrollable: true,
       tabAlignment: TabAlignment.start,
       labelColor: isDark ? const Color(0xFFFFA726) : const Color(0xFFFF6F00),
-      unselectedLabelColor: isDark ? Colors.grey.shade500 : Colors.grey.shade600,
+      unselectedLabelColor:
+      isDark ? Colors.grey.shade500 : Colors.grey.shade600,
       labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-      unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
+      unselectedLabelStyle:
+      const TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
       indicator: UnderlineTabIndicator(
         borderSide: BorderSide(
           width: 3.0,
@@ -404,7 +425,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       indicatorSize: TabBarIndicatorSize.tab,
       dividerHeight: 0,
       tabs: [
-        Tab(text: 'Celebrations'),
+        const Tab(text: 'Celebrations'),
         Tab(text: localizations.personalTab),
         Tab(text: localizations.wealthTab),
         Tab(text: localizations.careerTab),
@@ -415,24 +436,25 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
   Widget _buildTabs() {
     return TabBarView(
-        controller: _tabController,
-        children: [
+      controller: _tabController,
+      children: [
         _buildPostsTab(), // Celebrations (renamed from posts)
         _buildPersonalTab(),
         _buildWealthTab(),
         _buildCareerTab(),
         _buildPublicPersonaTab(),
-        ],
+      ],
     );
   }
 
-  Widget _buildPostsTab(){
+  Widget _buildPostsTab() {
     if (posts.isEmpty) {
       return const Center(child: Text('No celebrations to display.'));
     }
     return ListView.builder(
       itemCount: posts.length,
-      itemBuilder: (context, i) => PostCard(post: posts[i], showFollowButton: false),
+      itemBuilder: (context, i) =>
+          PostCard(post: posts[i], showFollowButton: false),
     );
   }
 
@@ -444,107 +466,152 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       return const Center(child: Text("No career data available."));
     }
     final celeb = user as CelebrityUser;
-    final Map<String, List<Map<String, String>>> careerData = celeb.careerEntries;
+    final Map<String, List<Map<String, String>>> careerData =
+        celeb.careerEntries;
 
     return Column(
       children: [
         Expanded(
           child: ListView(
-      children: careerData.entries
-          .where((entry) => entry.value.isNotEmpty)
-          .map((entry) {
-        final category = entry.key;
-        final items = entry.value;
-        final icon = _careerCategoryIcons[category] ?? Icons.info_outline;
+            children: careerData.entries
+                .where((entry) => entry.value.isNotEmpty)
+                .map((entry) {
+              final category = entry.key;
+              final items = entry.value;
+              final icon = _careerCategoryIcons[category] ?? Icons.info_outline;
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(icon, size: 32, color: iconColor),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
+              return Padding(
+                padding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: items.map((item) {
-                    if (category == 'Awards') {
-                      final title = item['title'];
-                      final award = item['award'];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 2.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (title != null)
-                              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
-                            if (award != null)
-                              Text(award, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
-                          ],
-                        ),
-                      );
-                    } else if (category == 'Collaborations') {
-                      final title = item['title'];
-                      final subtitle = item['subtitle'];
-                      final type = item['type'];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 2.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (title != null)
-                              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
-                            if (subtitle != null)
-                              Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
-                            if (type != null)
-                              Text(type, style: TextStyle(fontSize: 13, color: defaultTextColor.withOpacity(0.7))),
-                          ],
-                        ),
-                      );
-                    } else if (category == 'Debut Work') {
-                      final title = item['title'];
-                      final subtitle = item['subtitle'];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (title != null)
-                              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
-                            if (subtitle != null) ...[
-                              const SizedBox(height: 2),
-                              Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
-                            ],
-                          ],
-                        ),
-                      );
-                          } else { // Covers 'Profession' and any other general categories
-                      final title = item['title'];
-                      final subtitle = item['subtitle'];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 2.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (title != null)
-                              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
-                            if (subtitle != null)
-                              Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
-                          ],
-                        ),
-                      );
-                    }
-                  }).toList(),
+                  children: [
+                    Icon(icon, size: 32, color: iconColor),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: items.map((item) {
+                          if (category == 'Awards') {
+                            final title = item['title'];
+                            final award = item['award'];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 2.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (title != null)
+                                    Text(title,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: defaultTextColor)),
+                                  if (award != null)
+                                    Text(award,
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            color: defaultTextColor.withOpacity(0.8))),
+                                ],
+                              ),
+                            );
+                          } else if (category == 'Collaborations') {
+                            final title = item['title'];
+                            final subtitle = item['subtitle'];
+                            final type = item['type'];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 2.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (title != null)
+                                    Text(title,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: defaultTextColor)),
+                                  if (subtitle != null)
+                                    Text(subtitle,
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            color: defaultTextColor.withOpacity(0.8))),
+                                  if (type != null)
+                                    Text(type,
+                                        style: TextStyle(
+                                            fontSize: 13,
+                                            color: defaultTextColor.withOpacity(0.7))),
+                                ],
+                              ),
+                            );
+                          } else if (category == 'Debut Work') {
+                            final title = item['title'];
+                            final subtitle = item['subtitle'];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (title != null)
+                                    Text(title,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: defaultTextColor)),
+                                  if (subtitle != null) ...[
+                                    const SizedBox(height: 2),
+                                    Text(subtitle,
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            color: defaultTextColor.withOpacity(0.8))),
+                                  ],
+                                ],
+                              ),
+                            );
+                          } else {
+                            // Covers 'Profession' and any other general categories
+                            final title = item['title'];
+                            final subtitle = item['subtitle'];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 2.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (title != null)
+                                    Text(title,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: defaultTextColor)),
+                                  if (subtitle != null)
+                                    Text(subtitle,
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            color: defaultTextColor.withOpacity(0.8))),
+                                ],
+                              ),
+                            );
+                          }
+                        }).toList(),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
+              );
+            }).toList(),
           ),
         ),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () async {
+            await showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (context) => AddCareerHighlightsModal(
+              onAdd: (item) {
+                // TODO: Add logic to update data
+              },
+            ),
+            );
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFFD6AF0C),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -552,9 +619,10 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
               borderRadius: BorderRadius.circular(20),
             ),
           ),
-          child: Text(
+          child: const Text(
             'Add Career Highlights',
-            style: const TextStyle(color: Colors.white, fontSize: 12),
+
+            style: TextStyle(color: Colors.white, fontSize: 12),
           ),
         ),
         const SizedBox(height: 10), // Add some padding at the bottom
@@ -562,15 +630,17 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildWealthTab(){
+  Widget _buildWealthTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final secondaryTextColor =
+    isDark ? Colors.grey.shade400 : Colors.grey.shade600;
     if (user == null || user is! CelebrityUser) {
       return const Center(child: Text("No wealth data available."));
     }
     final celeb = user as CelebrityUser;
-    final Map<String, List<Map<String, String>>> wealthData = celeb.wealthEntries;
+    final Map<String, List<Map<String, String>>> wealthData =
+        celeb.wealthEntries;
     final localizations = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       child: Padding(
@@ -623,31 +693,29 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    localizedCategory,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
+                    children: [
+                      Text(
+                        localizedCategory,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: defaultTextColor,
+                        ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                        icon: const Icon(Icons.add_circle_outline,
+                            color: Colors.orange),
                         tooltip: 'Add Wealth',
                         onPressed: () async {
                           await showModalBottomSheet(
                             context: context,
                             isScrollControlled: true,
                             backgroundColor: Colors.transparent,
-                            builder: (context) => WillPopScope(
-                              onWillPop: () async => true,
-                              child: AddWealthItemModal(
-                                sectionTitle: localizedCategory,
-                                onAdd: (item) {
-                                  // TODO: Add logic to update data
-                                },
-                              ),
+                            builder: (context) => AddWealthItemModal(
+                              sectionTitle: localizedCategory,
+                              onAdd: (item) {
+                                // TODO: Add logic to update data
+                              },
                             ),
                           );
                         },
@@ -665,20 +733,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                         return Padding(
                           padding: const EdgeInsets.only(right: 12.0),
                           child: GestureDetector(
-                            onTapDown: (details) {
-                              showProfileActionPopup(
-                                context: context,
-                                globalPosition: details.globalPosition,
-                                onReview: () {
-                                  // Use empty list and dummy postId if not available
-                                  _showCommentsModal(context, [], postId: 'profile');
-                                },
-                                onPreview: () {},
-                                onSalute: () {},
-                                onRate: (rating) {},
-                                currentRating: 0,
-                              );
-                            },
+                            onTapDown: (details) {},
                             child: ImageWithOptionalText(
                               width: 100,
                               height: 150,
@@ -700,10 +755,11 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildPersonalTab(){
+  Widget _buildPersonalTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final secondaryTextColor =
+    isDark ? Colors.grey.shade400 : Colors.grey.shade600;
     if (user == null || user is! CelebrityUser) {
       return const Center(child: Text("No personal data available."));
     }
@@ -738,17 +794,30 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                    icon: const Icon(Icons.add_circle_outline,
+                        color: Colors.orange),
                     tooltip: 'Add Relationship',
                     onPressed: () async {
                       await showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
                         backgroundColor: Colors.transparent,
-                        builder: (context) => AddRelationshipModal(
-                          onAdd: (relationship) {
-                            // TODO: Add logic to update dummy data
+                        isDismissible: true,
+                        enableDrag: true,
+                        useSafeArea: true,
+                        builder: (context) => PopScope(
+                          canPop: true,
+                          onPopInvoked: (didPop) {
+                            if (!didPop) {
+                              Navigator.pop(context);
+                            }
                           },
+                          child: AddRelationshipModal(
+                            onAdd: (relationship) {
+                              // TODO: Add logic to update dummy data
+                              Navigator.pop(context);
+                            },
+                          ),
                         ),
                       );
                     },
@@ -766,30 +835,19 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                       padding: const EdgeInsets.only(right: 12.0),
                       child: GestureDetector(
                         onTapDown: (details) {
-                          showProfileActionPopup(
-                            context: context,
-                            globalPosition: details.globalPosition,
-                            onReview: () {
-                              // Use empty list and dummy postId if not available
-                              _showCommentsModal(context, [], postId: 'profile');
-                            },
-                            onSalute: () {},
-                            onPreview: () {
-                              if (user != null) {
-                                _showProfilePreviewModal(
-                                  context: context,
-                                  userName: user!.fullName,
-                                  userProfession: user is CelebrityUser ? (user as CelebrityUser).occupation : '',
-                                  userProfileImageUrl: user!.profileImageUrl,
-                                  onViewProfile: () {
-                                    // Optionally handle view profile action
-                                  },
-                                );
-                              }
-                            },
-                            onRate: (rating) {},
-                            currentRating: 0,
-                          );
+                          if (user != null) {
+                            _showProfilePreviewModal(
+                              context: context,
+                              userName: user!.fullName,
+                              userProfession: user is CelebrityUser
+                                  ? (user as CelebrityUser).occupation
+                                  : '',
+                              userProfileImageUrl: user!.profileImageUrl,
+                              onViewProfile: () {
+                                // Optionally handle view profile action
+                              },
+                            );
+                          }
                         },
                         child: ProfileAvatar(
                           radius: 30,
@@ -801,7 +859,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 ),
               ),
               const SizedBox(height: 20),
-      
+
               // Education Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -815,19 +873,29 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                    icon: const Icon(Icons.add_circle_outline,
+                        color: Colors.orange),
                     tooltip: 'Add Education',
                     onPressed: () async {
                       await showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
                         backgroundColor: Colors.transparent,
-                        builder: (context) => WillPopScope(
-                          onWillPop: () async => true,
-                          child: AddEducationModal(// Pass the section title
-                            onAdd: (education) {
-                            // TODO: Add logic to update dummy data
+                        isDismissible: true,
+                        enableDrag: true,
+                        useSafeArea: true,
+                        builder: (context) => PopScope(
+                          canPop: true,
+                          onPopInvoked: (didPop) {
+                            if (!didPop) {
+                              Navigator.pop(context);
+                            }
                           },
+                          child: AddEducationModal(
+                            onAdd: (education) {
+                              // TODO: Add logic to update dummy data
+                              Navigator.pop(context);
+                            },
                           ),
                         ),
                       );
@@ -837,106 +905,86 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
               ),
               const SizedBox(height: 10),
               ...celeb.educationEntries.map((entry) {
-                // entry: {'university': 'Princeton University', 'degrees': [ {title, year}, ... ] }
                 final university = entry['university'] ?? '';
-                final degrees = (entry['degrees'] as List?) ?? [];
+                final degrees = (entry['degrees'] as List?)
+                    ?.cast<Map<String, String>>() ??
+                    [];
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row( // This is the main Row for the icon and text content
+                    crossAxisAlignment: CrossAxisAlignment.start, // Align content to the top
                     children: [
-                      GestureDetector(
-                        onTapDown: (details) {
-                          showProfileActionPopup(
-                            context: context,
-                            globalPosition: details.globalPosition,
-                            onReview: () {
-                              // Use empty list and dummy postId if not available
-                              _showCommentsModal(context, [], postId: 'profile');
-                            },
-                            onPreview: () {},
-                            onSalute: () {},
-                            onRate: (rating) {},
-                            currentRating: 0,
-                          );
-                        },
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(Icons.school_outlined, size: 35, color: Colors.orange,),
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(8),
                         ),
+                        child: const Icon(Icons.school_outlined,
+                            size: 35,
+                            color: Colors.orange),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
+                      const SizedBox(width: 12), // Add spacing between icon and text
+                      Expanded( // This Expanded widget ensures the text content takes up remaining space
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
+                          children: [
+                            Text(
                               university,
-                    style: TextStyle(
+                              style: TextStyle(
                                 fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
-                  ),
+                                fontWeight: FontWeight.bold,
+                                color: defaultTextColor,
+                              ),
+                            ),
                             ...degrees.map<Widget>((deg) {
-                              return Padding(
-                                padding: const EdgeInsets.only(top: 4.0, left: 2.0),
-                                child: GestureDetector(
-                                  onTapDown: (details) {
-                                    showProfileActionPopup(
-                                      context: context,
-                                      globalPosition: details.globalPosition,
-                                      onReview: () {
-                                        // Use empty list and dummy postId if not available
-                                        _showCommentsModal(context, [], postId: 'profile');
-                                      },
-                                      onPreview: () {},
-                                      onSalute: () {},
-                                      onRate: (rating) {},
-                                      currentRating: 0,
-                                    );
-                                  },
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        deg['title'] ?? '',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400,
-                                          color: defaultTextColor.withOpacity(0.85),
-                                        ),
-                                      ),
-                                      if (deg['year'] != null)
-                                        Padding(
-                                          padding: const EdgeInsets.only(top: 2.0),
-                                          child: Text(
-                                            deg['year'],
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              color: secondaryTextColor.withOpacity(0.7),
-                                            ),
+                              return Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 4.0, left: 2.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          deg['title'] ?? '',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                            color: defaultTextColor
+                                                .withOpacity(0.85),
                                           ),
                                         ),
-                                    ],
+                                        if (deg['year'] != null)
+                                          Padding(
+                                            padding:
+                                            const EdgeInsets.only(top: 2.0),
+                                            child: Text(
+                                              deg['year']!,
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: secondaryTextColor
+                                                    .withOpacity(0.7),
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
                                   ),
-                                ),
+                                ],
                               );
                             }).toList(),
                           ],
                         ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
                 );
               }).toList(),
               const SizedBox(height: 20),
-      
+
               // Hobbies Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -950,20 +998,30 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                    icon: const Icon(Icons.add_circle_outline,
+                        color: Colors.orange),
                     tooltip: 'Add Hobby',
                     onPressed: () async {
                       await showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
                         backgroundColor: Colors.transparent,
-                        builder: (context) => WillPopScope(
-                          onWillPop: () async => true,
-                          child: AddPersonaModal(
-                          sectionTitle: AppLocalizations.of(context)!.hobbies,
-                          onAdd: (hobby) {
-                            // TODO: Add logic to update dummy data
+                        isDismissible: true,
+                        enableDrag: true,
+                        useSafeArea: true,
+                        builder: (context) => PopScope(
+                          canPop: true,
+                          onPopInvoked: (didPop) {
+                            if (!didPop) {
+                              Navigator.pop(context);
+                            }
                           },
+                          child: AddPersonaModal(
+                            sectionTitle: AppLocalizations.of(context)!.hobbies,
+                            onAdd: (hobby) {
+                              // TODO: Add logic to update dummy data
+                              Navigator.pop(context);
+                            },
                           ),
                         ),
                       );
@@ -981,25 +1039,12 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     return Padding(
                       padding: const EdgeInsets.only(right: 12.0),
                       child: GestureDetector(
-                        onTapDown: (details) {
-                          showProfileActionPopup(
-                            context: context,
-                            globalPosition: details.globalPosition,
-                            onReview: () {
-                              // Use empty list and dummy postId if not available
-                              _showCommentsModal(context, [], postId: 'profile');
-                            },
-                            onPreview: () {},
-                            onSalute: () {},
-                            onRate: (rating) {},
-                            currentRating: 0,
-                          );
-                        },
-                      child: ImageWithOptionalText(
-                        width: 100,
-                        height: 150,
-                        imageUrl: celeb.hobbies[index]['imageUrl'],
-                        bottomText: celeb.hobbies[index]['name'],
+                        onTapDown: (details) {},
+                        child: ImageWithOptionalText(
+                          width: 100,
+                          height: 150,
+                          imageUrl: celeb.hobbies[index]['imageUrl'],
+                          bottomText: celeb.hobbies[index]['name'],
                         ),
                       ),
                     );
@@ -1007,7 +1052,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 ),
               ),
               const SizedBox(height: 20),
-      
+
               // Lifestyle Section
               Text(
                 AppLocalizations.of(context)!.lifestyle,
@@ -1027,15 +1072,52 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 style: TextStyle(fontSize: 14, color: defaultTextColor),
               ),
               const SizedBox(height: 20),
-      
+
               // Involved Causes Section
-              Text(
-                AppLocalizations.of(context)!.involvedCauses,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: defaultTextColor,
-                ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.involvedCauses,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: defaultTextColor,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add_circle_outline,
+                        color: Colors.orange),
+                    tooltip: 'Add Involved Causes',
+                    onPressed: () async {
+                      await showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        isDismissible: true,
+                        enableDrag: true,
+                        useSafeArea: true,
+                        builder: (context) => PopScope(
+                          canPop: true,
+                          onPopInvoked: (didPop) {
+                            if (!didPop) {
+                              Navigator.pop(context);
+                            }
+                          },
+                          child: AddPersonaModal(
+                            sectionTitle:
+                            AppLocalizations.of(context)!.involvedCauses,
+                            onAdd: (cause) {
+                              // TODO: Add logic to update dummy data
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
               ...celeb.involvedCauses.map((cause) {
@@ -1078,7 +1160,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 );
               }).toList(),
               const SizedBox(height: 20),
-      
+
               // Pets Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1092,20 +1174,30 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                    icon: const Icon(Icons.add_circle_outline,
+                        color: Colors.orange),
                     tooltip: 'Add Pet',
                     onPressed: () async {
                       await showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
                         backgroundColor: Colors.transparent,
-                        builder: (context) => WillPopScope(
-                          onWillPop: () async => true,
-                          child: AddRelationshipModal(
-                            sectionTitle: AppLocalizations.of(context)!.pets, // Ensure this modal takes a section title if needed
-                          onAdd: (pet) {
-                            // TODO: Add logic to update dummy data
+                        isDismissible: true,
+                        enableDrag: true,
+                        useSafeArea: true,
+                        builder: (context) => PopScope(
+                          canPop: true,
+                          onPopInvoked: (didPop) {
+                            if (!didPop) {
+                              Navigator.pop(context);
+                            }
                           },
+                          child: AddRelationshipModal(
+                            sectionTitle: AppLocalizations.of(context)!.pets,
+                            onAdd: (pet) {
+                              // TODO: Add logic to update dummy data
+                              Navigator.pop(context);
+                            },
                           ),
                         ),
                       );
@@ -1123,20 +1215,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     return Padding(
                       padding: const EdgeInsets.only(right: 12.0),
                       child: GestureDetector(
-                        onTapDown: (details) {
-                          showProfileActionPopup(
-                            context: context,
-                            globalPosition: details.globalPosition,
-                            onReview: () {
-                              // Use empty list and dummy postId if not available
-                              _showCommentsModal(context, [], postId: 'profile');
-                            },
-                            onPreview: () {},
-                            onSalute: () {},
-                            onRate: (rating) {},
-                            currentRating: 0,
-                          );
-                        },
+                        onTapDown: (details) {},
                         child: ProfileAvatar(
                           radius: 30,
                           imageUrl: celeb.pets[index],
@@ -1147,7 +1226,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 ),
               ),
               const SizedBox(height: 20),
-      
+
               // Tattoos Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1161,20 +1240,30 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                    icon: const Icon(Icons.add_circle_outline,
+                        color: Colors.orange),
                     tooltip: 'Add Tattoo',
                     onPressed: () async {
                       await showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
                         backgroundColor: Colors.transparent,
-                        builder: (context) => WillPopScope(
-                          onWillPop: () async => true,
-                          child: AddPersonaModal(
-                          sectionTitle: AppLocalizations.of(context)!.tattoos,
-                          onAdd: (tattoo) {
-                            // TODO: Add logic to update dummy data
+                        isDismissible: true,
+                        enableDrag: true,
+                        useSafeArea: true,
+                        builder: (context) => PopScope(
+                          canPop: true,
+                          onPopInvoked: (didPop) {
+                            if (!didPop) {
+                              Navigator.pop(context);
+                            }
                           },
+                          child: AddPersonaModal(
+                            sectionTitle: AppLocalizations.of(context)!.tattoos,
+                            onAdd: (tattoo) {
+                              // TODO: Add logic to update dummy data
+                              Navigator.pop(context);
+                            },
                           ),
                         ),
                       );
@@ -1192,25 +1281,12 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     return Padding(
                       padding: const EdgeInsets.only(right: 12.0),
                       child: GestureDetector(
-                        onTapDown: (details) {
-                          showProfileActionPopup(
-                            context: context,
-                            globalPosition: details.globalPosition,
-                            onReview: () {
-                              // Use empty list and dummy postId if not available
-                              _showCommentsModal(context, [], postId: 'profile');
-                            },
-                            onSalute: () {},
-                            onPreview: () {},
-                            onRate: (rating) {},
-                            currentRating: 0,
-                          );
-                        },
-                      child: ImageWithOptionalText(
-                        width: 100,
-                        height: 150,
-                        imageUrl: celeb.tattoos[index],
-                        bottomText: null,
+                        onTapDown: (details) {},
+                        child: ImageWithOptionalText(
+                          width: 100,
+                          height: 150,
+                          imageUrl: celeb.tattoos[index],
+                          bottomText: null,
                         ),
                       ),
                     );
@@ -1218,7 +1294,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 ),
               ),
               const SizedBox(height: 20),
-      
+
               // Favourites Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1232,20 +1308,31 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                    icon: const Icon(Icons.add_circle_outline,
+                        color: Colors.orange),
                     tooltip: 'Add Favourite Place',
                     onPressed: () async {
                       await showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
                         backgroundColor: Colors.transparent,
-                        builder: (context) => WillPopScope(
-                          onWillPop: () async => true,
-                          child: AddPersonaModal(
-                          sectionTitle: AppLocalizations.of(context)!.favourites,
-                          onAdd: (place) {
-                            // TODO: Add logic to update dummy data
+                        isDismissible: true,
+                        enableDrag: true,
+                        useSafeArea: true,
+                        builder: (context) => PopScope(
+                          canPop: true,
+                          onPopInvoked: (didPop) {
+                            if (!didPop) {
+                              Navigator.pop(context);
+                            }
                           },
+                          child: AddPersonaModal(
+                            sectionTitle:
+                            AppLocalizations.of(context)!.favourites,
+                            onAdd: (place) {
+                              // TODO: Add logic to update dummy data
+                              Navigator.pop(context);
+                            },
                           ),
                         ),
                       );
@@ -1263,25 +1350,12 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     return Padding(
                       padding: const EdgeInsets.only(right: 12.0),
                       child: GestureDetector(
-                        onTapDown: (details) {
-                          showProfileActionPopup(
-                            context: context,
-                            globalPosition: details.globalPosition,
-                            onReview: () {
-                              // Use empty list and dummy postId if not available
-                              _showCommentsModal(context, [], postId: 'profile');
-                            },
-                            onSalute: () {},
-                            onPreview: () {},
-                            onRate: (rating) {},
-                            currentRating: 0,
-                          );
-                        },
-                      child: ImageWithOptionalText(
-                        width: 100,
-                        height: 150,
-                        imageUrl: celeb.favouritePlaces[index]['imageUrl'],
-                        bottomText: celeb.favouritePlaces[index]['name'],
+                        onTapDown: (details) {},
+                        child: ImageWithOptionalText(
+                          width: 100,
+                          height: 150,
+                          imageUrl: celeb.favouritePlaces[index]['imageUrl'],
+                          bottomText: celeb.favouritePlaces[index]['name'],
                         ),
                       ),
                     );
@@ -1289,7 +1363,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 ),
               ),
               const SizedBox(height: 20),
-      
+
               // Talents Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1303,20 +1377,30 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                    icon: const Icon(Icons.add_circle_outline,
+                        color: Colors.orange),
                     tooltip: 'Add Talent',
                     onPressed: () async {
                       await showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
                         backgroundColor: Colors.transparent,
-                        builder: (context) => WillPopScope(
-                          onWillPop: () async => true,
-                          child: AddPersonaModal(
-                          sectionTitle: AppLocalizations.of(context)!.talents,
-                          onAdd: (talent) {
-                            // TODO: Add logic to update dummy data
+                        isDismissible: true,
+                        enableDrag: true,
+                        useSafeArea: true,
+                        builder: (context) => PopScope(
+                          canPop: true,
+                          onPopInvoked: (didPop) {
+                            if (!didPop) {
+                              Navigator.pop(context);
+                            }
                           },
+                          child: AddPersonaModal(
+                            sectionTitle: AppLocalizations.of(context)!.talents,
+                            onAdd: (talent) {
+                              // TODO: Add logic to update dummy data
+                              Navigator.pop(context);
+                            },
                           ),
                         ),
                       );
@@ -1334,25 +1418,12 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     return Padding(
                       padding: const EdgeInsets.only(right: 12.0),
                       child: GestureDetector(
-                        onTapDown: (details) {
-                          showProfileActionPopup(
-                            context: context,
-                            globalPosition: details.globalPosition,
-                            onReview: () {
-                              // Use empty list and dummy postId if not available
-                              _showCommentsModal(context, [], postId: 'profile');
-                            },
-                            onSalute: () {},
-                            onPreview: () {},
-                            onRate: (rating) {},
-                            currentRating: 0,
-                          );
-                        },
-                      child: ImageWithOptionalText(
-                        width: 100,
-                        height: 150,
-                        imageUrl: celeb.talents[index]['imageUrl'],
-                        bottomText: celeb.talents[index]['name'],
+                        onTapDown: (details) {},
+                        child: ImageWithOptionalText(
+                          width: 100,
+                          height: 150,
+                          imageUrl: celeb.talents[index]['imageUrl'],
+                          bottomText: celeb.talents[index]['name'],
                         ),
                       ),
                     );
@@ -1413,7 +1484,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                  icon: const Icon(Icons.add_circle_outline,
+                      color: Colors.orange),
                   tooltip: 'Add Social',
                   onPressed: () async {
                     await showModalBottomSheet(
@@ -1423,10 +1495,10 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                       builder: (context) => WillPopScope(
                         onWillPop: () async => true,
                         child: AddPersonaModal(
-                        sectionTitle: AppLocalizations.of(context)!.socials,
-                        onAdd: (social) {
-                          // TODO: Add logic to update dummy data
-                        },
+                          sectionTitle: AppLocalizations.of(context)!.socials,
+                          onAdd: (social) {
+                            // TODO: Add logic to update dummy data
+                          },
                         ),
                       ),
                     );
@@ -1514,7 +1586,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.add_circle_outline, color: Colors.orange),
+                  icon: const Icon(Icons.add_circle_outline,
+                      color: Colors.orange),
                   tooltip: 'Add Fashion Style',
                   onPressed: () async {
                     await showModalBottomSheet(
@@ -1524,10 +1597,11 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                       builder: (context) => WillPopScope(
                         onWillPop: () async => true,
                         child: AddPersonaModal(
-                        sectionTitle: AppLocalizations.of(context)!.fashionStyle,
-                        onAdd: (fashion) {
-                          // TODO: Add logic to update dummy data
-                        },
+                          sectionTitle:
+                          AppLocalizations.of(context)!.fashionStyle,
+                          onAdd: (fashion) {
+                            // TODO: Add logic to update dummy data
+                          },
                         ),
                       ),
                     );
@@ -1583,7 +1657,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: appPrimaryColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25),
                   ),
@@ -1628,9 +1703,16 @@ class ProfilePreviewModalContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color _defaultTextColor = defaultTextColor ?? (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black);
-    final Color _secondaryTextColor = secondaryTextColor ?? (Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600);
-    final Color _appPrimaryColor = appPrimaryColor ?? Theme.of(context).primaryColor;
+    final Color _defaultTextColor = defaultTextColor ??
+        (Theme.of(context).brightness == Brightness.dark
+            ? Colors.white
+            : Colors.black);
+    final Color _secondaryTextColor = secondaryTextColor ??
+        (Theme.of(context).brightness == Brightness.dark
+            ? Colors.grey.shade400
+            : Colors.grey.shade600);
+    final Color _appPrimaryColor =
+        appPrimaryColor ?? Theme.of(context).primaryColor;
     final localizations = AppLocalizations.of(context)!;
 
     return Column(
@@ -1639,7 +1721,9 @@ class ProfilePreviewModalContent extends StatelessWidget {
       children: [
         Row(
           children: [
-            ProfileAvatar(radius: 30, imageUrl: userProfileImageUrl ?? 'https://via.placeholder.com/150'),
+            ProfileAvatar(
+                radius: 30,
+                imageUrl: userProfileImageUrl ?? 'https://via.placeholder.com/150'),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -1656,7 +1740,7 @@ class ProfilePreviewModalContent extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 4),
-                      Icon(Icons.verified, color: Colors.orange, size: 18),
+                      const Icon(Icons.verified, color: Colors.orange, size: 18),
                     ],
                   ),
                   Text(
@@ -1673,7 +1757,8 @@ class ProfilePreviewModalContent extends StatelessWidget {
               onPressed: onViewProfile ?? () {},
               style: ElevatedButton.styleFrom(
                 backgroundColor: _appPrimaryColor,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -1733,7 +1818,8 @@ class _ControversyCarouselState extends State<_ControversyCarousel> {
 
   void _goLeft() {
     setState(() {
-      _currentIndex = (_currentIndex - 1 + widget.controversyMedia.length) % widget.controversyMedia.length;
+      _currentIndex = (_currentIndex - 1 + widget.controversyMedia.length) %
+          widget.controversyMedia.length;
     });
   }
 
@@ -1752,9 +1838,9 @@ class _ControversyCarouselState extends State<_ControversyCarousel> {
     final cont = widget.controversyMedia[_currentIndex];
     final List media = cont['media'] ?? [];
     final String controversy = cont['controversy'] ?? '';
-    final double cardWidth = 120;
-    final double cardHeight = 100;
-    final double spacing = 8;
+    const double cardWidth = 120;
+    const double cardHeight = 100;
+    const double spacing = 8;
 
     Widget buildMediaBox(String url, {bool isVideo = false}) {
       return Container(
@@ -1766,13 +1852,16 @@ class _ControversyCarouselState extends State<_ControversyCarousel> {
           border: Border.all(color: widget.defaultTextColor.withOpacity(0.2)),
         ),
         child: isVideo
-            ? Center(child: Icon(Icons.play_circle_fill, size: 50, color: Colors.grey[400])) // Adjusted icon color
+            ? Center(
+            child: Icon(Icons.play_circle_fill,
+                size: 50, color: Colors.grey[400])) // Adjusted icon color
             : ClipRRect(
           borderRadius: BorderRadius.circular(12),
           child: Image.network(
             url,
             fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 50, color: Colors.grey),
+            errorBuilder: (context, error, stackTrace) =>
+            const Icon(Icons.broken_image, size: 50, color: Colors.grey),
           ),
         ),
       );
@@ -1795,9 +1884,11 @@ class _ControversyCarouselState extends State<_ControversyCarousel> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              buildMediaBox(media[0].toString(), isVideo: media[0].toString().endsWith('.mp4')),
-              SizedBox(width: spacing),
-              buildMediaBox(media[1].toString(), isVideo: media[1].toString().endsWith('.mp4')),
+              buildMediaBox(media[0].toString(),
+                  isVideo: media[0].toString().endsWith('.mp4')),
+              const SizedBox(width: spacing),
+              buildMediaBox(media[1].toString(),
+                  isVideo: media[1].toString().endsWith('.mp4')),
             ],
           ),
         ];
@@ -1812,18 +1903,21 @@ class _ControversyCarouselState extends State<_ControversyCarousel> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  buildMediaBox(media[0].toString(), isVideo: media[0].toString().endsWith('.mp4')),
-                  SizedBox(height: spacing),
-                  buildMediaBox(media[1].toString(), isVideo: media[1].toString().endsWith('.mp4')),
+                  buildMediaBox(media[0].toString(),
+                      isVideo: media[0].toString().endsWith('.mp4')),
+                  const SizedBox(height: spacing),
+                  buildMediaBox(media[1].toString(),
+                      isVideo: media[1].toString().endsWith('.mp4')),
                 ],
               ),
-              SizedBox(width: spacing),
+              const SizedBox(width: spacing),
               // Right column (one media, full height)
               // Ensure this Container correctly wraps the media box and fits its content
-              Container(
+              SizedBox(
                 width: cardWidth,
                 height: cardHeight * 2 + spacing,
-                child: buildMediaBox(media[2].toString(), isVideo: media[2].toString().endsWith('.mp4')),
+                child: buildMediaBox(media[2].toString(),
+                    isVideo: media[2].toString().endsWith('.mp4')),
               ),
             ],
           ),
@@ -1837,7 +1931,10 @@ class _ControversyCarouselState extends State<_ControversyCarousel> {
       children: [
         Text(
           controversy,
-          style: TextStyle(fontSize: 14, color: widget.defaultTextColor, fontWeight: FontWeight.w600),
+          style: TextStyle(
+              fontSize: 14,
+              color: widget.defaultTextColor,
+              fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Row(

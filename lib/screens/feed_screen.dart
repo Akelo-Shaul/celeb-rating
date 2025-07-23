@@ -7,7 +7,6 @@ import '../services/feed_service.dart';
 import '../widgets/app_buttons.dart';
 import '../widgets/app_dropdown.dart';
 import '../widgets/post_card.dart';
-import '../utils/route.dart';
 import '../widgets/profile_avatar.dart';
 import '../widgets/video_player_widget.dart';
 
@@ -107,7 +106,8 @@ class _FeedScreenState extends State<FeedScreen> {
                 fontSize: 20,
                 onPressed: () {
                   print('Hall of Fame tapped');
-                  context.goToHallOfFame();
+                  context.pushNamed('hallOfFame');
+                  Navigator.pop(context);
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
@@ -119,7 +119,8 @@ class _FeedScreenState extends State<FeedScreen> {
                 fontSize: 20,
                 onPressed: () {
                   print('Uhondo Kona tapped');
-                  context.goToUhondoKona();
+                  context.pushNamed('uhondoKona'); // Pushes onto /feed stack
+                  Navigator.pop(context);
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
@@ -131,7 +132,8 @@ class _FeedScreenState extends State<FeedScreen> {
                 fontSize: 20,
                 onPressed: () {
                   print('Ranks tapped');
-                  context.goToAward();
+                  context.pushNamed('award'); // Pushes onto /feed stack
+                  Navigator.pop(context);
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
@@ -143,7 +145,8 @@ class _FeedScreenState extends State<FeedScreen> {
                 fontSize: 20,
                 onPressed: () {
                   print('Versus tapped');
-                  context.goToVersus();
+                  context.pushNamed('versus'); // Pushes onto /feed stack
+                  Navigator.pop(context);
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
@@ -155,7 +158,8 @@ class _FeedScreenState extends State<FeedScreen> {
                 fontSize: 20,
                 onPressed: () {
                   print('Awards tapped');
-                  context.goToAward();
+                  context.pushNamed('award');
+                  Navigator.pop(context);
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
@@ -167,7 +171,8 @@ class _FeedScreenState extends State<FeedScreen> {
                 fontSize: 20,
                 onPressed: () {
                   print('Profile button tapped');
-                  context.goToProfile();
+                  context.goNamed('profile'); // Switches to the Profile tab
+                  Navigator.pop(context);
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
@@ -203,7 +208,8 @@ class _FeedScreenState extends State<FeedScreen> {
                 fontSize: 20,
                 onPressed: () {
                   print('Settings tapped');
-                  //TODO: Add navigation logic
+                  context.pushNamed('settings');
+                  Navigator.pop(context);
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners

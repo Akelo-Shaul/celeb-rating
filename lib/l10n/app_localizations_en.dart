@@ -185,6 +185,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get year => 'Year';
 
   @override
+  String get yearOfAchievement => 'Year of Achievement';
+
+  @override
+  String get collaborators => 'Collaborators';
+
+  @override
+  String get awardsRecognition => 'Awards & Recognition';
+
+  @override
+  String get enterYourRole => 'Enter Your Role';
+
+  @override
+  String get yourRole => 'Your Role';
+
+  @override
+  String get enterHighlightTitle => 'Enter Highlight Title';
+
+  @override
+  String get highlightTitle => 'Highlight Title';
+
+  @override
+  String get addCareerHighlight => 'Add Career Highlight';
+
+  @override
   String get req => 'Req.';
 
   @override

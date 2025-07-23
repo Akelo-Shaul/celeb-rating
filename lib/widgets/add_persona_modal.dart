@@ -27,12 +27,14 @@ class _AddPersonaModalState extends State<AddPersonaModal> {
   final TextEditingController _locationController = TextEditingController(); // favourite places
   final TextEditingController _reasonController = TextEditingController(); // favourite places
   final TextEditingController _startYearController = TextEditingController(); // talents, hobbies
-  final TextEditingController _inspirationController = TextEditingController(); // fashion style
+  final TextEditingController _inspirationController = TextEditingController(); // fashion style // fashion style
+  final TextEditingController _socialPlatformController = TextEditingController(); // New: Socials platform
+  final TextEditingController _socialLinkController = TextEditingController();
   XFile? _pickedImage;
   DateTime? _selectStartDate;
 
   final List<String> _personaTypes = [
-    'Tattoos', 'Favourite Places', 'Talents', 'Hobbies', 'Fashion Style'
+    'Tattoos', 'Favourite Places', 'Talents', 'Hobbies', 'Fashion Style', 'Socials'
   ];
   String? _selectedPersonaType;
 
@@ -46,6 +48,8 @@ class _AddPersonaModalState extends State<AddPersonaModal> {
     _reasonController.dispose();
     _startYearController.dispose();
     _inspirationController.dispose();
+    _socialPlatformController.dispose();
+    _socialLinkController.dispose();
     super.dispose();
   }
 
@@ -83,10 +87,17 @@ class _AddPersonaModalState extends State<AddPersonaModal> {
         break;
       case 'Fashion Style':
         data.addAll({
-      'name': _nameController.text.trim(),
-      'description': _descController.text.trim(),
-          'inspiration': _inspirationController.text.trim(),
-    });
+        'name': _nameController.text.trim(),
+        'description': _descController.text.trim(),
+        'inspiration': _inspirationController.text.trim(),
+      });
+        break;
+      case 'Socials':
+        data.addAll({
+          'platform': _socialPlatformController.text.trim(),
+          'link': _socialLinkController.text.trim(),
+          'description': _descController.text.trim(),
+        });
         break;
     }
     widget.onAdd(data);
@@ -271,6 +282,35 @@ class _AddPersonaModalState extends State<AddPersonaModal> {
               prefixIcon: Icon(Icons.lightbulb_outline),
             ),
             validator: (v) => v == null || v.trim().isEmpty ? 'Enter inspiration' : null,
+          ),
+        ];
+      case 'Socials':
+        return [
+          TextFormField(
+            controller: _socialPlatformController,
+            decoration: const InputDecoration(
+              labelText: 'Platform Name',
+              prefixIcon: Icon(Icons.public),
+            ),
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter platform name' : null,
+          ),
+          const SizedBox(height: 14),
+          TextFormField(
+            controller: _socialLinkController,
+            decoration: const InputDecoration(
+              labelText: 'Social Link',
+              prefixIcon: Icon(Icons.link),
+            ),
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter social link' : null,
+          ),
+          const SizedBox(height: 14),
+          TextFormField(
+            controller: _descController,
+            decoration: InputDecoration(
+              labelText: loc.description,
+              prefixIcon: const Icon(Icons.description),
+            ),
+            validator: (v) => v == null || v.trim().isEmpty ? loc.enterDescription : null,
           ),
         ];
       default:

@@ -8,8 +8,6 @@ import '../services/uhondo_service.dart'; // Assuming this exists
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../widgets/uhondo_list.dart';
 
-import '../utils/route.dart'; // Ensure this is the correct import for the new version
-
 class UhondoKona extends StatefulWidget {
   const UhondoKona({super.key});
 
@@ -48,7 +46,10 @@ class _UhondoKonaState extends State<UhondoKona> {
           : UhondoList(
               uhondos: _posts ?? [],
               onTap: (post) {
-                context.pushWebView(url: post.blogLink);
+                context.pushNamed(
+                  'webview',
+                  queryParameters: {'url': post.blogLink},
+                );
               },
             ),
     );

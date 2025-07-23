@@ -1,6 +1,5 @@
 import 'package:celebrating/models/flick.dart';
 import 'package:celebrating/screens/post_detail_screen.dart';
-import 'package:celebrating/utils/route.dart';
 import 'package:celebrating/widgets/stream_category_card.dart';
 
 import 'package:celebrating/l10n/app_localizations.dart';
@@ -64,7 +63,6 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
   void _performSearch(String query) async {
     setState(() {
       _isLoading = true;
-      _isSearchResults = true;
     });
     dynamic results;
 
@@ -119,7 +117,15 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
 
   void onFlickTap(Flick flick){
     final index = _searchFlickResults.indexOf(flick);
-    context.pushFlick(flicks: _searchFlickResults, initialIndex: 2);
+    // context.pushFlick(flicks: _searchFlickResults, initialIndex: 2);
+    context.pushNamed(
+      'flickScreen', // The name defined in AppRouter
+      extra: {
+        'flicks': _searchFlickResults, // Pass the entire list of flicks
+        //TODO: Functionality for actual flix index
+        'initialIndex': 2, // Pass the starting index
+      },
+    );
   }
 
   void _onScroll() {
@@ -143,19 +149,31 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
     _streamScrollController.addListener(_onScroll);
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) return;
-      // Only perform search if the tab changed
-      _performSearch(_searchController.text);
-      if (_tabController.index == 6) {
-        if (_liveStreams.isEmpty) {
-          _loadLiveStreams();
-        } else if (_liveStreams.isNotEmpty) {
-          setState(() {
-            _activeStreamId = _liveStreams[0].id;
-          });
+      if (_isSearchResults) {
+        _performSearch(_searchController.text);
+        if (_tabController.index == 6) {
+          if (_liveStreams.isEmpty) {
+            _loadLiveStreams();
+          } else if (_liveStreams.isNotEmpty) {
+            setState(() {
+              _activeStreamId = _liveStreams[0].id;
+            });
+          }
         }
       }
     });
+
+    // Initial load without tabs
     _performSearch('');
+    
+    // Show tabs after 4 seconds
+    Future.delayed(const Duration(seconds: 4), () {
+      if (mounted) {
+        setState(() {
+          _isSearchResults = true;
+        });
+      }
+    });
   }
 
   Future<void> _loadLiveStreams() async {
@@ -210,11 +228,15 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                   controller: _searchController,
                   hintText: AppLocalizations.of(context)!.searchHint,
                   onChanged: (value) {
-                    _performSearch(value);
+                    if (_isSearchResults) {  // Only respond to search after showing tabs
+                      _performSearch(value);
+                    }
                   },
                   onSearchPressed: () {
-                    _performSearch(_searchController.text);
-                    FocusScope.of(context).unfocus();
+                    if (_isSearchResults) {  // Only respond to search after showing tabs
+                      _performSearch(_searchController.text);
+                      FocusScope.of(context).unfocus();
+                    }
                   },
                   onFilterPressed: () {
                     print('Filter button pressed');
@@ -563,7 +585,10 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
     return UhondoList(
       uhondos: _searchUhondoResults,
       onTap: (post) {
-        context.pushWebView(url: post.blogLink);
+        context.goNamed(
+          'webview',
+          queryParameters: {'url': post.blogLink},
+        );
       },
     );
   }

@@ -1,7 +1,6 @@
 import 'package:celebrating/l10n/app_localizations.dart';
 import 'package:celebrating/services/feed_service.dart';
 import 'package:celebrating/models/user.dart';
-import 'package:celebrating/utils/route.dart';
 import 'package:celebrating/widgets/app_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -640,7 +639,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
             secondaryButton: AppTextButton(
               text: AppLocalizations.of(context)!.finish,
               onPressed: () {
-                context.goToFeed();
+                context.goNamed('feed');
               },
             ), mainButton: null,
           ),

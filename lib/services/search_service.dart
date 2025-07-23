@@ -9,7 +9,7 @@ import 'audio_service.dart';
 class SearchService {
   // Dummy user data for search
   static final List<User> dummyUsers = [
-    User(
+    CelebrityUser(
       id: 1,
       username: 'hamcurd',
       password: '',
@@ -18,6 +18,38 @@ class SearchService {
       fullName: 'Bruam Halaberry',
       profileImageUrl: 'https://randomuser.me/api/portraits/men/1.jpg',
       createdAt: DateTime.now(),
+      occupation: 'Singer',
+      nationality: 'American',
+      followers: 1000000,
+      publicImageDescription: 'Pop Singer',
+      bio: 'Award-winning pop artist',
+      website: 'https://bruam.com',
+      posts: 150,
+      postsList: [],
+      netWorth: '50M',
+      careerEntries: {
+        'music': [{'year': '2020', 'achievement': 'Grammy Award'}]
+      },
+      wealthEntries: {
+        'income': [{'source': 'Music', 'amount': '10M'}]
+      },
+      zodiacSign: 'Leo',
+      familyMembers: [{'name': 'Jane Halaberry', 'relation': 'Sister'}],
+      relationships: ['Single'],
+      educationEntries: [{'school': 'Juilliard', 'year': '2015'}],
+      hobbies: [{'name': 'Piano', 'description': 'Classical training'}],
+      diet: 'Vegan',
+      spirituality: 'Buddhist',
+      involvedCauses: [{'cause': 'Climate Change', 'role': 'Activist'}],
+      pets: ['Golden Retriever'],
+      tattoos: ['Phoenix on arm'],
+      favouritePlaces: [{'name': 'Paris', 'reason': 'First concert'}],
+      talents: [{'talent': 'Singing', 'details': 'Five octave range'}],
+      socials: [{'platform': 'Instagram', 'followers': '5M'}],
+      controversyMedia: [{'title': 'None', 'year': '2025'}],
+      fashionStyle: {
+        'casual': [{'style': 'Bohemian', 'description': 'Earth tones'}]
+      },
     ),
     User(
       id: 2,
@@ -29,7 +61,7 @@ class SearchService {
       profileImageUrl: 'https://randomuser.me/api/portraits/women/2.jpg',
       createdAt: DateTime.now(),
     ),
-    User(
+    CelebrityUser(
       id: 3,
       username: 'jazzcat',
       password: '',
@@ -38,8 +70,40 @@ class SearchService {
       fullName: 'Jazz Cat',
       profileImageUrl: 'https://randomuser.me/api/portraits/men/3.jpg',
       createdAt: DateTime.now(),
+      occupation: 'Jazz Musician',
+      nationality: 'French',
+      followers: 500000,
+      publicImageDescription: 'Jazz Artist',
+      bio: 'Legendary jazz performer',
+      website: 'https://jazzcat.com',
+      posts: 75,
+      postsList: [],
+      netWorth: '10M',
+      careerEntries: {
+        'music': [{'year': '2019', 'achievement': 'Jazz Hall of Fame'}]
+      },
+      wealthEntries: {
+        'income': [{'source': 'Tours', 'amount': '2M'}]
+      },
+      zodiacSign: 'Pisces',
+      familyMembers: [{'name': 'Marie Cat', 'relation': 'Wife'}],
+      relationships: ['Married'],
+      educationEntries: [{'school': 'Paris Conservatory', 'year': '2010'}],
+      hobbies: [{'name': 'Wine Tasting', 'description': 'Sommelier'}],
+      diet: 'Mediterranean',
+      spirituality: 'Atheist',
+      involvedCauses: [{'cause': 'Music Education', 'role': 'Patron'}],
+      pets: ['Siamese Cat'],
+      tattoos: ['Music Notes'],
+      favouritePlaces: [{'name': 'New Orleans', 'reason': 'Jazz roots'}],
+      talents: [{'talent': 'Saxophone', 'details': 'Jazz improvisation'}],
+      socials: [{'platform': 'Twitter', 'followers': '1M'}],
+      controversyMedia: [{'title': 'None', 'year': '2025'}],
+      fashionStyle: {
+        'formal': [{'style': 'Classic', 'description': 'Suits and fedoras'}]
+      },
     ),
-    User(
+    CelebrityUser(
       id: 4,
       username: 'rockstar',
       password: '',
@@ -47,6 +111,38 @@ class SearchService {
       role: 'Celebrity',
       fullName: 'Rock Star',
       profileImageUrl: 'https://randomuser.me/api/portraits/men/4.jpg',
+      occupation: 'Rock Musician',
+      nationality: 'British',
+      followers: 750000,
+      publicImageDescription: 'Rock Star',
+      bio: 'Rock legend with multiple platinum albums',
+      website: 'https://rockstar.com',
+      posts: 200,
+      postsList: [],
+      netWorth: '25M',
+      careerEntries: {
+        'music': [{'year': '2022', 'achievement': 'Platinum Album'}]
+      },
+      wealthEntries: {
+        'income': [{'source': 'Album Sales', 'amount': '5M'}]
+      },
+      zodiacSign: 'Scorpio',
+      familyMembers: [{'name': 'Jack Star Jr', 'relation': 'Son'}],
+      relationships: ['Divorced'],
+      educationEntries: [{'school': 'London Music School', 'year': '2005'}],
+      hobbies: [{'name': 'Guitar Collection', 'description': 'Vintage pieces'}],
+      diet: 'Balanced',
+      spirituality: 'Agnostic',
+      involvedCauses: [{'cause': 'Mental Health', 'role': 'Advocate'}],
+      pets: ['British Bulldog'],
+      tattoos: ['Dragon Sleeve'],
+      favouritePlaces: [{'name': 'London', 'reason': 'First gig'}],
+      talents: [{'talent': 'Guitar', 'details': 'Lead guitarist'}],
+      socials: [{'platform': 'Facebook', 'followers': '2M'}],
+      controversyMedia: [{'title': 'Hotel incident', 'year': '2020'}],
+      fashionStyle: {
+        'stage': [{'style': 'Rock', 'description': 'Leather and studs'}]
+      },
       createdAt: DateTime.now(),
     ),
     User(

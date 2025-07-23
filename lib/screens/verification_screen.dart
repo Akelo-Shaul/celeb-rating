@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:io';
 
-import '../utils/route.dart';
 import '../widgets/app_buttons.dart';
 
 class VerificationScreen extends StatefulWidget {
@@ -191,7 +190,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
               isEnabled: (_frontImage != null && _backImage != null),
               onPressed: () {
                 // TODO: Implement upload/submit logic
-                context.go('/celebrity-profile-create');
+                context.goNamed('createCelebrityProfile');
               },
             ),
             const SizedBox(height: 16),

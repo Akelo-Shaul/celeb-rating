@@ -185,6 +185,30 @@ class AppLocalizationsSw extends AppLocalizations {
   String get year => 'Mwaka';
 
   @override
+  String get yearOfAchievement => 'Mwaka wa Mafanikio';
+
+  @override
+  String get collaborators => 'Washirika';
+
+  @override
+  String get awardsRecognition => 'Tuzo na Kutambuliwa';
+
+  @override
+  String get enterYourRole => 'Ingiza Nafasi Yako';
+
+  @override
+  String get yourRole => 'Nafasi Yako';
+
+  @override
+  String get enterHighlightTitle => 'Ingiza Kichwa cha Mafanikio';
+
+  @override
+  String get highlightTitle => 'Kichwa cha Mafanikio';
+
+  @override
+  String get addCareerHighlight => 'Ongeza Mafanikio ya Kazi';
+
+  @override
   String get req => 'Hit.';
 
   @override

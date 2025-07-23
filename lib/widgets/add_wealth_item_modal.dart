@@ -6,7 +6,6 @@ import '../l10n/app_localizations.dart';
 import 'app_buttons.dart';
 import 'app_text_fields.dart';
 import 'app_dropdown.dart';
-import '../utils/route.dart';
 
 class AddWealthItemModal extends StatefulWidget {
   final void Function(Map<String, dynamic> wealthItem) onAdd;

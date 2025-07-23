@@ -1,9 +1,23 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import '../models/uhondo.dart';
-import '../utils/route.dart';
+
+class TimelinePathPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFFFFA726).withOpacity(0.5)
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+    final path = Path()
+      ..moveTo(10, 0)
+      ..lineTo(10, size.height);
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
 
 class UhondoList extends StatelessWidget {
   final List<Uhondo> uhondos;
@@ -14,119 +28,149 @@ class UhondoList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0), // Add padding to the Grid itself
-        child: StaggeredGrid.count(
-          crossAxisCount: 2,
-          mainAxisSpacing: 8.0,
-          crossAxisSpacing: 8.0,
-          children: (uhondos ?? []).map((post) {
-            return StaggeredGridTile.fit(
-              crossAxisCellCount: 1, // Each tile takes 1 column width
-              child: GestureDetector(
-                onTap: () async {
-                  // Optionally open blog link if url_launcher is imported
-                  context.go('${AppRoutes.webView}/${Uri.encodeComponent(post.blogLink)}');
-                },
-                child: Card(
-                  elevation: 4.0,
-                  clipBehavior: Clip.antiAlias, // Ensures content is clipped to card shape
-                  child: Stack(
-                    children: [
-                      // Image (as the base layer)
-                      Image.network(
-                        post.imageUrl,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                  : null,
-                            ),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Center(child: Icon(Icons.broken_image, size: 50, color: Colors.red));
-                        },
-                      ),
-                      // Menu icon at top right
-                      Positioned(
-                        top: 3,
-                        right: 3,
-                        child: PopupMenuButton<String>(
-                          icon: const Icon(Icons.more_vert, color: Color(0xFFFFA726)),
-                          itemBuilder: (context) => [
-                            const PopupMenuItem<String>(
-                              value: 'why',
-                              child: Text('Why am I seeing this?'),
-                            ),
-                            const PopupMenuItem<String>(
-                              value: 'not_interested',
-                              child: Text('Not interested'),
-                            ),
-                          ],
-                          onSelected: (value) {
-                            if (value == 'why') {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('This post is shown based on your interests.')),
-                              );
-                            } else if (value == 'not_interested') {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('We will show you fewer posts like this.')),
-                              );
-                            }
-                          },
-                          padding: EdgeInsets.zero,
-                        ),
-                      ),
-                      // Title with blurred background (positioned at the bottom)
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(12),
-                            bottomRight: Radius.circular(12),
-                          ),
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                            child: Container(
-                              color: Colors.black.withOpacity(0.45),
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                              child: Text(
-                                post.title,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  shadows: [
-                                    Shadow(
-                                      blurRadius: 2,
-                                      color: Colors.black,
-                                      offset: Offset(0, 1),
-                                    ),
-                                  ],
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        children: [
+          CustomPaint(
+            painter: TimelinePathPainter(),
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: uhondos.length,
+              itemBuilder: (context, index) {
+                final post = uhondos[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 24.0),
+                  child: IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Timeline dot
+                        SizedBox(
+                          width: 20,
+                          child: Column(
+                            children: [
+                              Container(
+                                width: 12,
+                                height: 12,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Color(0xFFFFA726),
                                 ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Content
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              context.goNamed(
+                                'webview',
+                                queryParameters: {'url': post.blogLink},
+                              );
+                              if (onTap != null) onTap!(post);
+                            },
+                            child: Card(
+                              elevation: 2.0,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Title and menu
+                                  Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            post.title,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        PopupMenuButton<String>(
+                                          icon: const Icon(Icons.more_vert, color: Color(0xFFFFA726)),
+                                          itemBuilder: (context) => [
+                                            const PopupMenuItem<String>(
+                                              value: 'why',
+                                              child: Text('Why am I seeing this?'),
+                                            ),
+                                            const PopupMenuItem<String>(
+                                              value: 'not_interested',
+                                              child: Text('Not interested'),
+                                            ),
+                                          ],
+                                          onSelected: (value) {
+                                            if (value == 'why') {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(content: Text('This post is shown based on your interests.')),
+                                              );
+                                            } else if (value == 'not_interested') {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(content: Text('We will show you fewer posts like this.')),
+                                              );
+                                            }
+                                          },
+                                          padding: EdgeInsets.zero,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Image
+                                  _UhondoImage(imageUrl: post.imageUrl),
+                                ],
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
+}
 
+class _UhondoImage extends StatelessWidget {
+  final String imageUrl;
+  const _UhondoImage({Key? key, required this.imageUrl}) : super(key: key);
 
+  @override
+  Widget build(BuildContext context) {
+    return Image.network(
+      imageUrl,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      height: 200,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return SizedBox(
+          height: 200,
+          child: Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                  : null,
+            ),
+          ),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) {
+        return const SizedBox(
+          height: 200,
+          child: Center(
+            child: Icon(Icons.broken_image, size: 50, color: Colors.red),
+          ),
+        );
+      },
+    );
+  }
 }

@@ -1,229 +1,440 @@
+import 'package:celebrating/screens/auth_screen.dart';
+import 'package:celebrating/screens/award_screen.dart';
+import 'package:celebrating/screens/camera_screen.dart';
+import 'package:celebrating/screens/celebrate_page.dart';
+import 'package:celebrating/screens/celebrity_profile_create.dart';
+import 'package:celebrating/screens/feed_screen.dart';
+import 'package:celebrating/screens/flicks_page.dart';
+import 'package:celebrating/screens/hall_of_fame.dart';
+import 'package:celebrating/screens/head_to_head_screen.dart';
+import 'package:celebrating/screens/live_stream_detail_page.dart';
+import 'package:celebrating/screens/onboarding_screen.dart';
+import 'package:celebrating/screens/post_detail_screen.dart';
+import 'package:celebrating/screens/profile_page.dart';
+import 'package:celebrating/screens/search_page.dart';
+import 'package:celebrating/screens/settings_screen.dart';
+import 'package:celebrating/screens/splash_screen.dart';
+import 'package:celebrating/screens/stream_page.dart';
+import 'package:celebrating/screens/uhondo_kona.dart';
+import 'package:celebrating/screens/verification_screen.dart';
+import 'package:celebrating/screens/versus_screen.dart';
+import 'package:celebrating/screens/view_profile_screen.dart';
+import 'package:celebrating/screens/web_view_screen.dart';
+import 'package:celebrating/services/auth_service.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../models/user.dart';
+import '../models/post.dart';
+import 'package:flutter/services.dart';
+import 'dart:async';
+import 'package:celebrating/services/user_service.dart'; // Assuming you have a PostService
 
-class CameraCapturePage extends StatefulWidget {
-  @override
-  State<CameraCapturePage> createState() => _CameraCapturePageState();
+// Dummy PostService for demonstration. Replace with your actual PostService.
+class PostService {
+  static Future<Post> fetchPost(String postId) async {
+    // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 500));
+    // Return a dummy post. In a real app, you'd fetch from an API.
+    return Post(
+      id: postId,
+      caption: 'This is a dummy post for ID: $postId',
+      mediaUrl: 'https://via.placeholder.com/300',
+      likes: 100,
+      commentsCount: 20,
+      createdAt: DateTime.now().subtract(const Duration(days: 1)),
+      user: User(id: 'u1', username: 'dummy_user', fullName: 'Dummy User', email: 'dummy@example.com', profileImageUrl: 'https://via.placeholder.com/50', role: 'Member'),
+    );
+  }
 }
 
-class _CameraCapturePageState extends State<CameraCapturePage> {
-  Future<void> _pickFromGallery() async {
-    final result = await showModalBottomSheet<String>(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text('Pick Image'),
-              onTap: () => Navigator.pop(context, 'image'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.video_library),
-              title: const Text('Pick Video'),
-              onTap: () => Navigator.pop(context, 'video'),
-            ),
-          ],
-        ),
+class AppRouter {
+  final AuthService _authService;
+
+  AppRouter(this._authService);
+
+  static final GlobalKey<NavigatorState> _rootNavigatorKey =
+  GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> _shellNavigatorKey =
+  GlobalKey<NavigatorState>();
+
+  late final router = GoRouter(
+    navigatorKey: _rootNavigatorKey,
+    initialLocation: '/splash',
+    refreshListenable: RouteRefreshStream(_authService.authStateChanges),
+    redirect: _guardRoutes,
+    routes: [
+      GoRoute(
+        path: '/splash',
+        name: 'splash',
+        builder: (context, state) => const SplashScreen(),
       ),
-    );
-    if (result == 'image') {
-      final picker = ImagePicker();
-      final image = await picker.pickImage(source: ImageSource.gallery);
-      if (image != null && mounted) {
-        Navigator.pop(context, {'file': image, 'isVideo': false});
-      }
-    } else if (result == 'video') {
-      final picker = ImagePicker();
-      final video = await picker.pickVideo(source: ImageSource.gallery);
-      if (video != null && mounted) {
-        Navigator.pop(context, {'file': video, 'isVideo': true});
-      }
+      GoRoute(
+        path: '/auth',
+        name: 'auth',
+        builder: (context, state) => const AuthScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        name: 'onboarding',
+        builder: (context, state) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: '/verification',
+        name: 'verification',
+        builder: (context, state) => const VerificationScreen(),
+      ),
+      GoRoute(
+        path: '/create-celebrity-profile',
+        name: 'createCelebrityProfile',
+        builder: (context, state) => const CelebrityProfileCreate(),
+      ),
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/camera',
+        name: 'camera',
+        builder: (context, state) => const CameraScreen(
+            returnRoute: '/feed'),
+      ),
+      GoRoute(
+        path: '/webview',
+        name: 'webview',
+        builder: (context, state) {
+          final url = state.queryParameters['url'] ?? '';
+          final title = state.queryParameters['title'] ?? '';
+          return WebViewScreen(url: url, title: title);
+        },
+      ),
+      ShellRoute(
+        navigatorKey: _shellNavigatorKey,
+        builder: (context, state, child) =>
+            ScaffoldWithBottomNav(child: child),
+        routes: [
+          GoRoute(
+            path: '/feed',
+            name: 'feed',
+            builder: (context, state) => const FeedScreen(),
+            routes: [
+              // FIXED: Post Detail Screen with robust Post fetching
+              GoRoute(
+                path: 'post/:postId',
+                name: 'postDetail',
+                builder: (context, state) {
+                  final postId = state.pathParameters['postId']!;
+                  final Post? postFromExtra = state.extra as Post?;
+
+                  // If post object is passed via extra, use it.
+                  if (postFromExtra != null) {
+                    return PostDetailScreen(
+                        post: postFromExtra, suggestedPosts: []);
+                  }
+
+                  // Otherwise, fetch the post using postId.
+                  return FutureBuilder<Post>(
+                    future: PostService.fetchPost(postId), // Use your actual PostService
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Scaffold(
+                            body: Center(child: CircularProgressIndicator()));
+                      } else if (snapshot.hasError) {
+                        return Scaffold(
+                            appBar: AppBar(title: const Text('Error')),
+                            body: Center(
+                                child: Text('Error loading post: ${snapshot.error}')));
+                      } else if (snapshot.hasData) {
+                        return PostDetailScreen(
+                            post: snapshot.data!, suggestedPosts: []);
+                      }
+                      return const Scaffold(
+                          body: Center(child: Text('Post not found')));
+                    },
+                  );
+                },
+              ),
+              GoRoute(
+                path: 'versus',
+                name: 'versus',
+                builder: (context, state) => const VersusScreen(),
+              ),
+              // FIXED: HeadToHead route with dummy data for now
+              GoRoute(
+                path: 'head-to-head',
+                name: 'headToHead',
+                builder: (context, state) {
+                  // Since user1 and user2 are required, we must provide them.
+                  // For demonstration, using dummy data. In a real app, you'd fetch them
+                  // based on IDs passed via pathParameters or queryParameters.
+                  final VersusUser dummyUser1 = VersusUser(
+                      name: 'User One',
+                      imageUrl: 'https://via.placeholder.com/150/FF0000/FFFFFF?text=U1',
+                      extraAttributes: {'age': '30', 'profession': 'Artist'});
+                  final VersusUser dummyUser2 = VersusUser(
+                      name: 'User Two',
+                      imageUrl: 'https://via.placeholder.com/150/0000FF/FFFFFF?text=U2',
+                      extraAttributes: {'age': '32', 'profession': 'Musician'});
+
+                  return HeadToHead(user1: dummyUser1, user2: dummyUser2);
+                },
+              ),
+              GoRoute(
+                path: 'hall-of-fame',
+                name: 'hallOfFame',
+                builder: (context, state) => const HallOfFame(),
+              ),
+              GoRoute(
+                path: 'uhondo-kona',
+                name: 'uhondoKona',
+                builder: (context, state) => const UhondoKona(),
+              ),
+              GoRoute(
+                path: 'award',
+                name: 'award',
+                builder: (context, state) => const AwardScreen(),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/search',
+            name: 'search',
+            builder: (context, state) => const SearchPage(),
+            routes: [
+              GoRoute(
+                path: 'view-profile/:userId',
+                name: 'viewProfile',
+                builder: (context, state) {
+                  final userId = state.pathParameters['userId']!;
+                  final User? user = state.extra as User?;
+
+                  if (user != null) {
+                    return ViewProfileScreen(user: user);
+                  }
+                  return FutureBuilder<User>(
+                    future: UserService.fetchUser(userId, isCelebrity: false),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+                      } else if (snapshot.hasError) {
+                        return Scaffold(
+                            appBar: AppBar(title: const Text('Error')),
+                            body: Center(child: Text('Error loading user: ${snapshot.error}')));
+                      } else if (snapshot.hasData) {
+                        return ViewProfileScreen(user: snapshot.data!);
+                      }
+                      return const Scaffold(body: Center(child: Text('User not found')));
+                    },
+                  );
+                },
+              ),
+              GoRoute(
+                path: 'search-results',
+                name: 'searchResults',
+                builder: (context, state) => const Text('Search Results Page'),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/celebrate',
+            name: 'celebrate',
+            builder: (context, state) => const CelebratePage(),
+            routes: [],
+          ),
+          GoRoute(
+            path: '/flicks',
+            name: 'flicks',
+            builder: (context, state) => const FlicksPage(),
+            routes: [],
+          ),
+          GoRoute(
+            path: '/stream',
+            name: 'stream',
+            builder: (context, state) => const StreamPage(),
+            routes: [
+              GoRoute(
+                path: ':streamId',
+                name: 'streamDetail',
+                builder: (context, state) {
+                  final streamId = state.pathParameters['streamId']!;
+                  return LiveStreamDetailPage(streamId: streamId);
+                },
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/profile',
+            name: 'profile',
+            builder: (context, state) => const ProfilePage(),
+            routes: [],
+          ),
+        ],
+      ),
+    ],
+  );
+
+  String? _guardRoutes(BuildContext context, GoRouterState state) {
+    final isAuth = _authService.currentState.status == AuthStatus.authenticated;
+    final isSplash = state.matchedLocation == '/splash';
+    final isAuthScreen = state.matchedLocation == '/auth';
+    final isOnboarding = state.matchedLocation == '/onboarding';
+    final isVerification = state.matchedLocation == '/verification';
+    final isCreateCelebrityProfile =
+        state.matchedLocation == '/create-celebrity-profile';
+
+    final publicRoutes = [
+      '/splash',
+      '/auth',
+      '/onboarding',
+      '/verification',
+      '/create-celebrity-profile',
+    ];
+    final isGoingToPublicRoute = publicRoutes.contains(state.matchedLocation);
+
+    if (isSplash) return null;
+
+    if (!isAuth) {
+      return isGoingToPublicRoute ? null : '/auth';
+    }
+
+    if (isAuth &&
+        (isAuthScreen || isOnboarding || isVerification || isCreateCelebrityProfile)) {
+      return '/feed';
+    }
+
+    return null;
+  }
+}
+
+class ScaffoldWithBottomNav extends StatelessWidget {
+  final Widget child;
+
+  const ScaffoldWithBottomNav({super.key, required this.child});
+
+  int _calculateSelectedIndex(BuildContext context) {
+    final String location = GoRouterState.of(context).matchedLocation;
+    if (location.startsWith('/feed')) return 0;
+    if (location.startsWith('/search')) return 1;
+    if (location.startsWith('/celebrate')) return 2;
+    if (location.startsWith('/flicks')) return 3;
+    if (location.startsWith('/stream')) return 4;
+    if (location.startsWith('/profile')) return 5;
+    return 0;
+  }
+
+  void _onItemTapped(int index, BuildContext context) {
+    switch (index) {
+      case 0:
+        context.go('/feed');
+        break;
+      case 1:
+        context.go('/search');
+        break;
+      case 2:
+        context.go('/celebrate');
+        break;
+      case 3:
+        context.go('/flicks');
+        break;
+      case 4:
+        context.go('/stream');
+        break;
+      case 5:
+        context.go('/profile');
+        break;
     }
   }
-  CameraController? _controller;
-  List<CameraDescription>? _cameras;
-  bool _isRecording = false;
-  bool _isCameraReady = false;
-  int _selectedCameraIndex = 0; // New: To keep track of the selected camera index
 
-  @override
-  void initState() {
-    super.initState();
-    _initCamera();
-  }
-
-  Future<void> _initCamera() async {
-    try {
-      _cameras = await availableCameras();
-      if (_cameras != null && _cameras!.isNotEmpty) {
-        // Initialize with the selected camera
-        _controller = CameraController(_cameras![_selectedCameraIndex], ResolutionPreset.high);
-        await _controller!.initialize();
-        setState(() {
-          _isCameraReady = true;
-        });
-      }
-    } catch (e) {
-      print("Error initializing camera: $e");
-      // Handle camera error (e.g., show a message to the user)
-    }
-  }
-
-  // New: Function to toggle between front and back cameras
-  Future<void> _toggleCamera() async {
-    // Cannot toggle if no cameras, only one camera, or currently recording
-    if (_cameras == null || _cameras!.length <= 1 || _isRecording) {
-      return;
-    }
-
-    setState(() {
-      _isCameraReady = false; // Set to false while camera is re-initializing
-    });
-
-    // Dispose the current controller
-    await _controller?.dispose();
-
-    // Toggle camera index
-    _selectedCameraIndex = (_selectedCameraIndex + 1) % _cameras!.length;
-
-    // Re-initialize camera with the new index
-    await _initCamera();
-  }
-
-  Future<void> _takePhoto() async {
-    if (!_isRecording && _controller != null && _controller!.value.isInitialized) {
-      try {
-        final file = await _controller!.takePicture();
-        if (mounted) {
-          Navigator.pop(context, {'file': file, 'isVideo': false});
-        }
-      } catch (e) {
-        print("Error taking photo: $e");
-      }
-    }
-  }
-
-  Future<void> _startVideoRecording() async {
-    if (_controller != null && !_isRecording && _controller!.value.isInitialized) {
-      try {
-        await _controller!.startVideoRecording();
-        setState(() {
-          _isRecording = true;
-        });
-      } catch (e) {
-        print("Error starting video recording: $e");
-      }
-    }
-  }
-
-  Future<void> _stopVideoRecording() async {
-    if (_controller != null && _isRecording) {
-      try {
-        final file = await _controller!.stopVideoRecording();
-        setState(() {
-          _isRecording = false;
-        });
-        if (mounted) {
-          Navigator.pop(context, {'file': file, 'isVideo': true});
-        }
-      } catch (e) {
-        print("Error stopping video recording: $e");
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
+  bool _isMainTabRoot(String location) {
+    return location == '/feed' ||
+        location == '/search' ||
+        location == '/celebrate' ||
+        location == '/flicks' ||
+        location == '/stream' ||
+        location == '/profile';
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: _isCameraReady && _controller != null
-          ? Stack(
-              children: [
-                Positioned.fill(
-                  child: CameraPreview(_controller!),
-                ),
-                // Single gallery pick button
-                Positioned(
-                  bottom: 40,
-                  left: 30,
-                  child: FloatingActionButton(
-                    heroTag: 'gallery_pick',
-                    backgroundColor: Colors.white,
-                    // Not mini, so it's larger
-                    onPressed: _pickFromGallery,
-                    tooltip: 'Pick from Gallery',
-                    child: const Icon(Icons.photo_library, size: 38, color: Color(0xFFD6AF0C)),
-                  ),
-                ),
-                // Camera capture button
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 40),
-                    child: GestureDetector(
-                      onTap: () {
-                        if (_isRecording) {
-                          _stopVideoRecording();
-                        } else {
-                          _takePhoto();
-                        }
-                      },
-                      onLongPress: () {
-                        if (!_isRecording) {
-                          _startVideoRecording();
-                        }
-                      },
-                      child: Container(
-                        width: 72,
-                        height: 72,
-                        decoration: BoxDecoration(
-                          color: _isRecording ? Colors.red : Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 4),
-                        ),
-                        child: Icon(
-                          _isRecording ? Icons.stop : Icons.camera_alt,
-                          color: _isRecording ? Colors.white : Colors.black,
-                          size: 40,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                // Close button
-                Positioned(
-                  top: 40,
-                  left: 20,
-                  child: IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white, size: 32),
-                    onPressed: () {
-                      if (_isRecording) {
-                        _stopVideoRecording();
-                      } else {
-                        Navigator.pop(context);
-                      }
-                    },
-                  ),
-                ),
-                // Camera toggle button
-                if (_cameras != null && _cameras!.length > 1)
-                  Positioned(
-                    top: 40,
-                    right: 20,
-                    child: IconButton(
-                      icon: const Icon(Icons.flip_camera_ios, color: Colors.white, size: 32),
-                      onPressed: _isRecording ? null : _toggleCamera,
-                      tooltip: 'Toggle Camera',
-                    ),
-                  ),
-              ],
-            )
-          : const Center(child: CircularProgressIndicator()),
+    final currentRoutePath = GoRouterState.of(context).matchedLocation;
+    final bool showBottomNav =
+        !['/camera', '/webview'].contains(currentRoutePath);
+
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+
+        final GoRouter router = GoRouter.of(context);
+        final String currentLocation =
+            router.routerDelegate.currentConfiguration.uri.path;
+
+        if (router.canPop()) {
+          router.pop();
+        } else if (_isMainTabRoot(currentLocation) && currentLocation != '/feed') {
+          router.go('/feed');
+        } else if (currentLocation == '/feed') {
+          bool shouldExit = await _showExitDialog(context);
+          if (shouldExit && context.mounted) {
+            SystemNavigator.pop();
+          }
+        }
+      },
+      child: Scaffold(
+        body: child,
+        bottomNavigationBar: showBottomNav
+            ? NavigationBar(
+                onDestinationSelected: (index) => _onItemTapped(index, context),
+                selectedIndex: _calculateSelectedIndex(context),
+                destinations: const [
+                  NavigationDestination(icon: Icon(Icons.home), label: 'Feed'),
+                  NavigationDestination(icon: Icon(Icons.search), label: 'Search'),
+                  NavigationDestination(icon: Icon(Icons.celebration), label: 'Celebrate'),
+                  NavigationDestination(icon: Icon(Icons.movie), label: 'Flicks'),
+                  NavigationDestination(icon: Icon(Icons.live_tv), label: 'Stream'),
+                  NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
+                ],
+              )
+            : null,
+      ),
     );
+  }
+
+  Future<bool> _showExitDialog(BuildContext context) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Exit App?'),
+            content: const Text('Are you sure you want to exit the app?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Exit'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+}
+
+class RouteRefreshStream extends ChangeNotifier {
+  late final StreamSubscription<AuthState> _subscription;
+
+  RouteRefreshStream(Stream<AuthState> stream) {
+    notifyListeners();
+    _subscription = stream.listen(
+      (state) => notifyListeners(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 }

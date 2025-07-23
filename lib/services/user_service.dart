@@ -5,16 +5,36 @@ import '../models/comment.dart';
 
 class UserService {
   static Future<String> login(String username, String password) async {
-    final response = await ApiService.post('auth/login', {
-      'username': username,
-      'password': password,
-    }, (json) => json['token'] as String);
-    return response;
+    // DEMO PATCH: Commented out real API call for offline/demo use
+    // final response = await ApiService.post('auth/login', {
+    //   'username': username,
+    //   'password': password,
+    // }, (json) => json['token'] as String);
+    // return response;
+
+    // Return a dummy token for any login
+    await Future.delayed(const Duration(milliseconds: 500));
+    return 'demo_token_123';
   }
 
   static Future<User> register(User user) async {
-    final response = await ApiService.post('auth/register', user.toJson(), (json) => User.fromJson(json));
-    return response;
+    // DEMO PATCH: Commented out real API call for offline/demo use
+    // final response = await ApiService.post('auth/register', user.toJson(), (json) => User.fromJson(json));
+    // return response;
+
+    // Return the user object with a fake id for demo
+    await Future.delayed(const Duration(milliseconds: 500));
+    return User(
+      id: 999,
+      username: user.username,
+      password: user.password,
+      email: user.email,
+      role: user.role,
+      fullName: user.fullName,
+      profileImage: user.profileImage,
+      createdAt: DateTime.now(),
+      postsList: [],
+    );
   }
 
   static Future<User> fetchUser(String userId, {bool isCelebrity = false}) async {

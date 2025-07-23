@@ -1,4 +1,4 @@
-import 'package:celebrating/utils/route.dart';
+import 'package:celebrating/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,19 +12,25 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    _navigateToAuth();
+    _checkAuthAndNavigate();
   }
+
+  Future<void> _checkAuthAndNavigate() async {
+    await Future.delayed(const Duration(seconds: 2));
+    if (!mounted) return;
+
+    final authState = AuthService.instance.currentState;
+    if (authState.status == AuthStatus.authenticated) {
+      context.go('/feed');
+    } else {
+      context.go('/auth');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return const SplashScreenWidget();
-  }
-
-  _navigateToAuth() async{
-    await Future.delayed(const Duration(seconds: 2), (){
-      context.go('/auth');
-    });
   }
 }
 
@@ -34,14 +40,22 @@ class SplashScreenWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    // Use gray for light mode and dark gray for dark mode for best contrast with white text logo
     final bgColor = isDark ? const Color(0xFF222222) : const Color(0xFF686666);
     return Scaffold(
       backgroundColor: bgColor,
       body: Center(
-        child: Image.asset(
-          'assets/images/celebratinglogo.png',
-          width: MediaQuery.of(context).size.width * 0.8
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/images/celebratinglogo.png',
+              width: MediaQuery.of(context).size.width * 0.8,
+            ),
+            const SizedBox(height: 32),
+            const CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            ),
+          ],
         ),
       ),
     );

@@ -1,6 +1,5 @@
 // onboarding_screen.dart
 
-import 'package:celebrating/utils/route.dart';
 import 'package:flutter/material.dart';
 import 'package:celebrating/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -700,7 +699,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 textColor: Color(0xFFD6AF0C),
                 onPressed: () {
                   //TODO: Navigate to profile
-                  context.goToFeed();
+                  context.goNamed('feed');;
                   setState(() {
                   });
                 },
@@ -709,7 +708,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               PartedButton(
                 onPressed: () {
                   // Switch to country/state selection tab
-                  context.goToVerification();
+                  context.goNamed('verification');;
                   setState(() {
                   });
                 },

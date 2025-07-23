@@ -1,18 +1,16 @@
-import 'package:celebrating/l10n/app_localizations.dart';
-// auth_screen.dart
-
 import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:celebrating/utils/route.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:celebrating/services/user_service.dart';
 import 'package:celebrating/app_state.dart';
+import '../l10n/app_localizations.dart';
 import '../models/user.dart';
 import '../l10n/supported_languages.dart';
 
+import '../services/auth_service.dart';
 import '../widgets/app_buttons.dart';
 import '../widgets/app_dropdown.dart';
 import '../widgets/app_text_fields.dart';
@@ -56,7 +54,6 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void _submitLogin() async {
-    context.go('/onboarding');
     if (!_formKeyLogin.currentState!.validate()) {
       setState(() {
         isSubmitting = false;
@@ -70,11 +67,9 @@ class _AuthScreenState extends State<AuthScreen> {
       errorMessage = null;
     });
     try {
-      final token = await UserService.login(_loginUsername, _loginPassword);
-      setState(() {
-        isSubmitting = false;
-        errorMessage = null;
-      });
+      await AuthService.instance.login(_loginUsername, _loginPassword);
+      if (!mounted) return;
+      context.goNamed('feed'); // Replaces the current stack with feed // Redirect to feed after successful login
     } catch (e) {
       setState(() {
         isSubmitting = false;
@@ -91,7 +86,6 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void _submitRegister() async {
-    context.go('/onboarding');
     setState(() {
       errorMessage = null;
       isSubmitting = false;
@@ -179,6 +173,7 @@ class _AuthScreenState extends State<AuthScreen> {
       });
       Future.delayed(const Duration(seconds: 3), () {
         if (mounted) {
+          context.goNamed('onboarding'); // Replaces the current stack with onboarding
           setState(() {
             errorMessage = null;
           });
@@ -188,7 +183,15 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> _openCamera() async {
-    context.go('/camera?returnRoute=/auth');
+    final result = await context.pushNamed<XFile>(
+      'camera',
+      queryParameters: {'returnRoute': '/auth'},
+    );
+    if (result != null && mounted) {
+      setState(() {
+        _selectedImage = result;
+      });
+    }
   }
 
   Widget _buildLoginForm() {
@@ -352,14 +355,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final extra = GoRouterState.of(context).extra as Map<String, dynamic>?;
-      if (extra != null && extra['selectedImage'] != null) {
-        setState(() {
-          _selectedImage = extra['selectedImage'] as XFile;
-        });
-      }
-    });
+    // No need to check GoRouterState.of(context).extra; image is set via _openCamera result.
   }
 
   @override

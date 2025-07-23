@@ -6,8 +6,6 @@ import 'package:image_picker/image_picker.dart';
 
 import '../l10n/app_localizations.dart';
 import 'app_buttons.dart';
-import 'app_text_fields.dart';
-import '../utils/route.dart';
 import 'app_date_picker.dart';
 
 class AddRelationshipModal extends StatefulWidget {
