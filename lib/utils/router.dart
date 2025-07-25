@@ -531,7 +531,7 @@ class ScaffoldWithBottomNav extends StatelessWidget {
               label: 'Search',
             ),
             NavigationDestination(
-              icon: Icon(Icons.add_box_outlined, color: unselectedIconColor),
+              icon: Icon(Icons.celebration_outlined, color: unselectedIconColor),
               selectedIcon: Icon(Icons.celebration, color: selectedIconColor),
               label: 'Celebrate',
             ),

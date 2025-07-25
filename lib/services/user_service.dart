@@ -4,6 +4,8 @@ import '../models/post.dart';
 import '../models/comment.dart';
 
 class UserService {
+  static int currentUserId = 999; // Demo user ID
+
   static Future<String> login(String username, String password) async {
     // DEMO PATCH: Commented out real API call for offline/demo use
     // final response = await ApiService.post('auth/login', {
@@ -342,11 +344,11 @@ class UserService {
 
       // Dummy data for Socials
       final List<Map<String, dynamic>> socials = [
-        {'title': 'TikTok', 'icon': 'tiktok', 'link': 'https://www.tiktok.com/@celeb'},
-        {'title': 'Reddit', 'icon': 'reddit', 'link': 'https://www.reddit.com/user/celeb'},
-        {'title': 'Spotify', 'icon': 'spotify', 'link': 'https://open.spotify.com/artist/celeb'},
-        {'title': 'YouTube', 'icon': 'youtube', 'link': 'https://www.youtube.com/c/celeb'},
-        {'title': 'Snapchat', 'icon': 'snapchat', 'link': 'https://www.snapchat.com/add/celeb'},
+        {'title': 'tiktok', 'link': 'https://www.tiktok.com/@celeb'},
+        {'title': 'reddit', 'link': 'https://www.reddit.com/user/celeb'},
+        {'title': 'spotify', 'link': 'https://open.spotify.com/artist/celeb'},
+        {'title': 'youtube', 'link': 'https://www.youtube.com/c/celeb'},
+        {'title': 'snapchat', 'link': 'https://www.snapchat.com/add/celeb'},
       ];
 
       final String publicImageDescription = 'Known for philanthropy and well spoken. A public Icon with a great following and fans';

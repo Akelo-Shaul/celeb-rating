@@ -5,6 +5,7 @@ import 'package:flutter/scheduler.dart';
 
 import '../models/user.dart';
 import '../services/comment_service.dart';
+import '../services/user_service.dart';
 
 class CommentsModal extends StatefulWidget {
   final List<Comment> comments;
@@ -25,12 +26,22 @@ class _CommentsModalState extends State<CommentsModal> {
   final FocusNode _commentFocusNode = FocusNode();
   bool _hasText = false; // To control the 'Reply' button color and enabled state
   Comment? _replyingTo;
+  User? currentUser;
+
+  Future<void> _loadCurrentUser() async {
+    final user = await UserService.fetchUser(UserService.currentUserId.toString());
+    if (mounted) {
+      setState(() {
+        currentUser = user;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _commentController.addListener(_updateHasText);
-    // Removed _commentFocusNode.addListener(_handleFocusChange); as _isCommenting is unused for UI toggle.
+    _loadCurrentUser(); // Load current user when modal is opened
   }
 
   void _updateHasText() {
@@ -48,26 +59,15 @@ class _CommentsModalState extends State<CommentsModal> {
   }
 
   void _postComment() async {
-    if (!_hasText) {
+    if (!_hasText || currentUser == null) {
       return;
     }
     print('Posting comment to post ${widget.postId}: ${_commentController.text}');
 
-    final User currentUser = User(
-      id: 999,
-      username: 'CurrentUser',
-      fullName: 'You',
-      profileImageUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&h=200&fit=crop&auto=format&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      password: 'dummy_password',
-      email: 'current@example.com',
-      role: 'User',
-      createdAt: DateTime.now(),
-    );
-
     final newComment = await CommentService.postComment(
       postId: widget.postId,
       content: _commentController.text,
-      user: currentUser,
+      user: currentUser!, // Now we can safely use ! because we checked for null above
       replyingTo: _replyingTo,
     );
 
@@ -190,7 +190,7 @@ class _CommentsModalState extends State<CommentsModal> {
                 children: [
                   ProfileAvatar(
                     radius: 20,
-                    imageUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&h=200&fit=crop&auto=format&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    imageUrl: currentUser?.profileImageUrl,
                   ),
                   const SizedBox(width: 10),
                   Expanded(

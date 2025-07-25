@@ -2,6 +2,7 @@ import 'package:celebrating/l10n/app_localizations.dart';
 import 'package:celebrating/widgets/shimmer_box.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../services/auth_service.dart';
 import '../models/post.dart';
 import '../services/feed_service.dart';
 import '../widgets/app_buttons.dart';
@@ -170,8 +171,6 @@ class _FeedScreenState extends State<FeedScreen> {
                 // iconColor: Colors.blueAccent, // Custom icon color
                 fontSize: 20,
                 onPressed: () {
-                  print('Profile button tapped');
-                  context.goNamed('profile'); // Switches to the Profile tab
                   Navigator.pop(context);
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
@@ -217,14 +216,15 @@ class _FeedScreenState extends State<FeedScreen> {
               AppTransparentButton(
                 text: 'Logout',
                 icon: Icons.logout,
-                iconColor: Colors.red, // Custom icon color
+                iconColor: Colors.red,
                 fontSize: 20,
-                onPressed: () {
-                  print('Logout tapped');
-                  //TODO: Add navigation logic
+                onPressed: () async {
+                  await AuthService.instance.logout();
+                  if (!mounted) return;
+                  context.goNamed('auth');
                 },
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
-                borderRadius: BorderRadius.circular(25), // More rounded corners
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                borderRadius: BorderRadius.circular(25),
               ),
             ],
           ),

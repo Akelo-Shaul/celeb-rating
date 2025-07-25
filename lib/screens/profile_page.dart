@@ -2,6 +2,7 @@ import 'package:celebrating/widgets/add_career_higlights_modal.dart';
 import 'package:celebrating/widgets/add_wealth_item_modal.dart';
 import 'package:celebrating/widgets/slideup_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../l10n/app_localizations.dart';
@@ -196,6 +197,7 @@ class _ProfilePageState extends State<ProfilePage>
           children: [
             _buildProfileHeader(defaultTextColor, secondaryTextColor),
             _buildActionButtons(),
+            const SizedBox(height: 8,),
             _buildStatsRow(defaultTextColor, secondaryTextColor),
             _buildTabBar(isDark),
             Expanded(child: _buildTabs()),
@@ -209,7 +211,7 @@ class _ProfilePageState extends State<ProfilePage>
     final isCelebrity = user is CelebrityUser;
     final celeb = isCelebrity ? user as CelebrityUser : null;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -340,11 +342,14 @@ class _ProfilePageState extends State<ProfilePage>
                   width: 100,
                   height: 35,
                 ),
-              PostActionButton(
-                icon: Icons.chat_bubble_outline,
-                onPressed: () {
-                  print("Routing to messaging");
-                },
+              GestureDetector(
+                onTap: (){},
+                child: SvgPicture.asset(
+                  'assets/icons/message.svg', // Replace with your icon's path
+                  height: 32,
+                  width: 35,
+                  colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
+                ),
               ),
             ],
           ),
@@ -752,6 +757,106 @@ class _ProfilePageState extends State<ProfilePage>
           ],
         ),
       ),
+    );
+  }
+
+  String _getSocialIconPath(String title) {
+    // All social media icons are PNGs
+    return 'assets/icons/socials/${title.toLowerCase()}.png';
+  }
+
+  Future<void> _launchSocialLink(String url) async {
+    try {
+      // await launchUrl(Uri.parse(url));
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open $url')),
+        );
+      }
+    }
+  }
+
+  Widget _buildSocialIcons() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultTextColor = isDark ? Colors.white : Colors.black;
+    final appPrimaryColor = Theme.of(context).primaryColor;
+    if (user == null || user is! CelebrityUser) return const SizedBox.shrink();
+    final celeb = user as CelebrityUser;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+
+        // Socials Section
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              AppLocalizations.of(context)!.socials,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: defaultTextColor,
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.add_circle_outline,
+                  color: Colors.orange),
+              tooltip: 'Add Social',
+              onPressed: () async {
+                await showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => WillPopScope(
+                    onWillPop: () async => true,
+                    child: AddPersonaModal(
+                      sectionTitle: AppLocalizations.of(context)!.socials,
+                      onAdd: (social) {
+                        // TODO: Add logic to update dummy data
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 50,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: celeb.socials.length,
+            itemBuilder: (context, index) {
+              final social = celeb.socials[index];
+              final iconPath = _getSocialIconPath(social['title']);
+              if (iconPath.isEmpty) return const SizedBox.shrink();
+
+              return Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: GestureDetector(
+                  onTap: () {
+                    if (social['link'] != null) {
+                      _launchSocialLink(social['link']);
+                    }
+                  },
+                  child: Image.asset(
+                    iconPath,
+                    height: 40,
+                    width: 40,
+                    errorBuilder: (context, error, stackTrace) {
+                      // Return a fallback icon if the image fails to load
+                      return Icon(Icons.error_outline, size: 24, color: Colors.grey);
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -1447,103 +1552,15 @@ class _ProfilePageState extends State<ProfilePage>
     }
     final celeb = user as CelebrityUser;
 
-    // Social icon mapping (for demo, you can expand this)
-    final Map<String, IconData> socialIcons = {
-      'TikTok': Icons.music_note,
-      'Reddit': Icons.reddit,
-      'Spotify': Icons.music_video,
-      'YouTube': Icons.ondemand_video,
-      'Snapchat': Icons.chat_bubble_outline,
-      // Add more as needed
-    };
-    final Map<String, Color> socialColors = {
-      'TikTok': Colors.black,
-      'Reddit': Colors.orange,
-      'Spotify': Colors.green,
-      'YouTube': Colors.red,
-      'Snapchat': Colors.yellow,
-      // Add more as needed
-    };
-
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Socials Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  AppLocalizations.of(context)!.socials,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: defaultTextColor,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add_circle_outline,
-                      color: Colors.orange),
-                  tooltip: 'Add Social',
-                  onPressed: () async {
-                    await showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (context) => WillPopScope(
-                        onWillPop: () async => true,
-                        child: AddPersonaModal(
-                          sectionTitle: AppLocalizations.of(context)!.socials,
-                          onAdd: (social) {
-                            // TODO: Add logic to update dummy data
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 60, // Height for horizontal ListView of social icons
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: celeb.socials.length,
-                itemBuilder: (context, index) {
-                  final social = celeb.socials[index];
-                  final icon = socialIcons[social['title']] ?? Icons.link;
-                  final color = socialColors[social['title']] ?? appPrimaryColor;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        // Open social['link'] - assuming 'link' field exists
-                        if (social['link'] != null) {
-                          print('Opening social link: ${social['link']}');
-                          // You might use a package like url_launcher here
-                        }
-                      },
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: color.withOpacity(0.15),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          icon,
-                          color: color,
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 10), // Spacing after social icons
+            // Social Media Icons
+            _buildSocialIcons(),
+            const SizedBox(height: 20),
             Text(
               celeb.publicImageDescription,
               style: TextStyle(

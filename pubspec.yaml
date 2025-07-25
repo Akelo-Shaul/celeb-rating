@@ -50,6 +50,7 @@ dependencies:
   webview_flutter: ^4.13.0
   go_router: ^13.2.0
   flutter_secure_storage: ^9.0.0
+  flutter_svg: ^2.2.0
 
 
 
@@ -81,6 +82,8 @@ flutter:
     - lib/l10n/
     - assets/images/
     - assets/animations/
+    - assets/icons/
+    - assets/icons/socials/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

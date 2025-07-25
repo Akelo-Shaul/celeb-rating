@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../app_state.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/supported_languages.dart';
+import '../services/auth_service.dart';
 import 'package:go_router/go_router.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -107,7 +108,12 @@ class SettingsScreen extends StatelessWidget {
           SettingsButton(
             icon: Icons.logout,
             label: 'Logout',
-            onTap: () {},
+            onTap: () async {
+              await AuthService.instance.logout();
+              if (context.mounted) {
+                context.goNamed('auth');
+              }
+            },
           ),
         ],
       ),

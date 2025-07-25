@@ -503,7 +503,7 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                     ),
-                    child: Text(localizations.post, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: Text(localizations.celebrate, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
@@ -1202,7 +1202,7 @@ class _FlicksPostScreenState extends State<FlicksPostScreen> {
               print('Selected Categories: $_selectedCategories');
               print('Tagged Users: ${_taggedUsers.map((u) => u.username).toList()}');
             },
-            child: Text(localizations.post, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            child: Text(localizations.celebrate, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           ),
         ],
       ),

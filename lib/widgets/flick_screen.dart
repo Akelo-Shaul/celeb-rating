@@ -1,8 +1,11 @@
 import 'package:celebrating/models/flick.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:video_player/video_player.dart';
 
 import '../models/comment.dart';
+import '../models/like.dart';
+import '../services/user_service.dart';
 import 'comments_modal.dart';
 
 // --- FlickControllerManager: Only one controller active at a time ---
@@ -85,12 +88,15 @@ class _FlickPlayerState extends State<_FlickPlayer> {
   final GlobalKey _starKey = GlobalKey();
   final GlobalKey _ratingKey = GlobalKey();
   bool _isRatingSectionActive = false;
+  late bool _isLiked;
+  bool _isBookmarked = false; // Add bookmark state
 
   @override
   void initState() {
     super.initState();
     _initFuture = _initController();
     _currentRating = 0;
+    _initLikeState();
   }
 
   Future<void> _initController() async {
@@ -188,6 +194,11 @@ class _FlickPlayerState extends State<_FlickPlayer> {
     );
   }
 
+  void _initLikeState() {
+    final String userId = UserService.currentUserId.toString();
+    _isLiked = widget.flick.likes.any((like) => like.userId == userId);
+  }
+
   @override
   void dispose() {
     _controller?.dispose();
@@ -196,6 +207,7 @@ class _FlickPlayerState extends State<_FlickPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -236,42 +248,136 @@ class _FlickPlayerState extends State<_FlickPlayer> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center, // Aligns content of this Column horizontally
               children: [
-                // Removed rating section from here, only show thumb up icon
-                _buildActionItem(
-                  icon:  Icons.thumb_up_alt_outlined,
-                  count: widget.flick.likes.length,
-                ),
-                const SizedBox(height: 24),
-                _buildActionItem(
-                  icon: Icons.chat_bubble_outline,
-                  count: widget.flick.comments.length,
-                  onTap: (){
-                    _showCommentsModal(context, widget.flick.comments);
+                // Like/Salute Button
+                GestureDetector(
+                  onTap: () async {
+                    final String userId = UserService.currentUserId.toString();
+                    setState(() {
+                      if (_isLiked) {
+                        widget.flick.likes.removeWhere((like) => like.userId == userId);
+                      } else {
+                        widget.flick.likes.add(Like(
+                          userId: userId,
+                          likedAt: DateTime.now(),
+                        ));
+                      }
+                      _isLiked = !_isLiked;
+                    });
+                    // Here you would typically update the like in your backend
+                    print('Like toggled for Flick ${widget.flick.id}. New likes count: ${widget.flick.likes.length}');
                   },
+                  child: Column( // This Column aligns the icon and text vertically
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(
+                        _isLiked ? 'assets/icons/saluted.png' : 'assets/icons/salute.png',
+                        width: 30,
+                        height: 30,
+                        errorBuilder: (context, error, stackTrace) {
+                          // Fallback icon if image assets are missing
+                          return Icon(
+                            _isLiked ? Icons.favorite : Icons.favorite_border,
+                            color: _isLiked ? Colors.red : Colors.white,
+                            size: 24,
+                          );
+                        },
+                      ),
+                      // Conditionally show text based on count
+                      if (widget.flick.likes.isNotEmpty) ...[
+                        const SizedBox(height: 6), // Vertical spacing between icon and text
+                        Text(
+                          widget.flick.likes.length.toString(),
+                          style: const TextStyle(
+                            color: Color(0xFFBDBCBA),
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 24),
-                _buildActionItem(
-                  icon: Icons.send_outlined,
-                  count: 0, // Replace with actual share count if available
-                  onTap: (){},
-                ),
-                const SizedBox(height: 24),
-                _buildActionItem(
-                  icon: Icons.bookmark_border_outlined,
-                  count: 0, // Replace with actual save count if available
+                const SizedBox(height: 20), // Space between button sections
+
+                // Comments Button
+                GestureDetector(
                   onTap: () {
-                    print('Save');
+                    //TODO: Implement add comment functionality
                   },
+                  child: Column( // This Column aligns the icon and text vertically
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/icons/message.svg', // Replace with your icon's path
+                        height: 28,
+                        width: 28,
+                        colorFilter: const ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
+                      ),
+                      // Conditionally show text based on count
+                      if (widget.flick.comments.isNotEmpty) ...[
+                        const SizedBox(height: 6), // Vertical spacing between icon and text
+                        Text(
+                          widget.flick.comments.length.toString(),
+                          style: TextStyle(
+                              color: Color(0xFFBDBCBA), // Assuming `isDark` is defined in the parent scope
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 24),
-                _buildActionItem(
-                  icon: _muted ? Icons.volume_off : Icons.volume_up,
-                  count: null,
-                  onTap: _toggleMute,
+                const SizedBox(height: 20), // Space between button sections
+
+                // Share Button
+                GestureDetector(
+                  onTap: (){
+                    //TODO: Show share functionality and modal
+                  },
+                  child: SvgPicture.asset(
+                    'assets/icons/share.svg', // Replace with your icon's path
+                    height: 28,
+                    width: 28,
+                    colorFilter: const ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
+                  ),
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: 24), // Space between button sections
+
+                // Bookmark Button
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isBookmarked = !_isBookmarked;
+                      // TODO: Add backend integration for bookmark
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(_isBookmarked ? 'Added to bookmarks' : 'Removed from bookmarks'),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    });
+                  },
+                  child: SvgPicture.asset(
+                    _isBookmarked ? 'assets/icons/bookmark.svg' : 'assets/icons/bookmark_outlined.svg',
+                    height: 28,
+                    width: 28,
+                    colorFilter: const ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn),
+                  ),
+                ),
+                const SizedBox(height: 24), // Space between button sections
+
+                // Mute Button
+                GestureDetector(
+                  onTap: _toggleMute,  // Fixed: Now properly calls the method
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                    child: Icon(_muted ? Icons.volume_off : Icons.volume_up, color: Color(0xFFBDBCBA), size: 30,)
+                  ),
+                ),
+                const SizedBox(height: 48), // Bottom padding
               ],
             ),
           ),

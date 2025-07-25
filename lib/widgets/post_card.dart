@@ -3,9 +3,12 @@ import 'dart:ui';
 import 'package:celebrating/models/post.dart';
 import 'package:celebrating/widgets/app_buttons.dart';
 import 'package:celebrating/widgets/profile_avatar.dart';
+import 'package:flutter_svg/svg.dart';
+import '../models/like.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import '../l10n/app_localizations.dart';
+import '../services/user_service.dart';
 
 import '../models/comment.dart';
 import 'comments_modal.dart';
@@ -21,13 +24,18 @@ class PostCard extends StatefulWidget {
   State<PostCard> createState() => _PostCardState();
 }
 
-class _PostCardState extends State<PostCard> {
+class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin {
   late int _currentRating;
   late int _currentPage;
   late PageController _pageController;
   late bool _isContentExpanded;  //For text expansion in view more
   late bool _isRatingSectionActive;
   ValueNotifier<bool>? _muteNotifier;
+  bool _isSaluted = false;
+  
+  // Animation controllers
+  late AnimationController _saluteAnimationController;
+  late Animation<double> _saluteAnimation;
 
   @override
   void initState() {
@@ -39,6 +47,19 @@ class _PostCardState extends State<PostCard> {
     _isRatingSectionActive = false;
     _muteNotifier = widget.feedMuteNotifier;
     _muteNotifier?.addListener(_onMuteChanged);
+    _isSaluted = widget.post.likes.any((like) => like.userId == UserService.currentUserId.toString());
+    
+    // Initialize animation controller
+    _saluteAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 700),
+      vsync: this,
+    );
+    _saluteAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _saluteAnimationController,
+        curve: Curves.elasticOut,
+      ),
+    );
   }
 
   void _onMuteChanged() {
@@ -70,6 +91,7 @@ class _PostCardState extends State<PostCard> {
       _currentPage = 0;
       _pageController = PageController(); // Re-initialize page controller for new post
       _isContentExpanded = false; // Reset expansion for new post
+      _isSaluted = widget.post.likes.any((like) => like.userId == UserService.currentUserId.toString());
     }
   }
 
@@ -77,6 +99,7 @@ class _PostCardState extends State<PostCard> {
   void dispose() {
     _pageController.dispose();
     _muteNotifier?.removeListener(_onMuteChanged);
+    _saluteAnimationController.dispose();
     // Only pause (do not dispose) the current video when this post card is disposed
     PostCardVideoPlaybackManager().pauseCurrent();
     super.dispose();
@@ -233,19 +256,36 @@ class _PostCardState extends State<PostCard> {
 
   Widget _buildMediaSection() {
     if (widget.post.media.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
-    
+
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       elevation: 2.0,
       clipBehavior: Clip.antiAlias,
-      margin: EdgeInsets.all(0.0),
+      margin: EdgeInsets.zero,
       child: AspectRatio(
-        aspectRatio: 16/12,
-        child: Stack(
-          children: [
-            PageView.builder(
+        aspectRatio: 16 / 12,
+        child: GestureDetector(
+          onDoubleTap: () {
+            if (!_isSaluted) {
+              final String userId = UserService.currentUserId.toString();
+              setState(() {
+                widget.post.likes.add(Like(
+                  userId: userId,
+                  likedAt: DateTime.now(),
+                ));
+                _isSaluted = true;
+              });
+              // Show heart animation
+              _saluteAnimationController.forward(from: 0.0).then((_) {
+                _saluteAnimationController.reverse();
+              });
+            }
+          },
+          child: Stack(
+            children: [
+              PageView.builder(
                 controller: _pageController,
                 itemCount: widget.post.media.length, // Prevent scrolling past media count
                 onPageChanged: (index) {
@@ -253,14 +293,14 @@ class _PostCardState extends State<PostCard> {
                     _currentPage = index;
                   });
                 },
-                itemBuilder: (context, i){
+                itemBuilder: (context, i) {
                   final mediaItem = widget.post.media[i];
-                  if(mediaItem.type == 'image'){
+                  if (mediaItem.type == 'image') {
                     return Image.network(
                       mediaItem.url,
                       fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress){
-                        if(loadingProgress == null) return child;
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
                         return Center(
                           child: CircularProgressIndicator(
                             value: loadingProgress.expectedTotalBytes != null
@@ -274,7 +314,7 @@ class _PostCardState extends State<PostCard> {
                         child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
                       ),
                     );
-                  } else if (mediaItem.type == 'video'){
+                  } else if (mediaItem.type == 'video') {
                     return AppVideoPlayerWidget(
                       videoUrl: mediaItem.url,
                       autoplay: true,
@@ -291,26 +331,56 @@ class _PostCardState extends State<PostCard> {
                     );
                   }
                   return const SizedBox.shrink();
-                }
-            ),
-            if(widget.post.media.isNotEmpty && widget.post.media.length > 1)
-              Positioned(
+                },
+              ),
+              if (widget.post.media.isNotEmpty && widget.post.media.length > 1)
+                Positioned(
                   top: 10,
                   right: 10,
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                        color: Colors.black54,
-                        borderRadius: BorderRadius.circular(12)
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       '${_currentPage + 1}/${widget.post.media.length}',
-                      style: TextStyle(color: Colors.white, fontSize: 13,fontWeight: FontWeight.bold),),)),
-            Positioned(bottom: 10, left: 10, child: _buildRatingSection(),)
-
-          ],
+                      style: const TextStyle(
+                          color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              Positioned(bottom: 10, left: 10, child: _buildRatingSection()),
+              _buildLikeAnimation(),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildLikeAnimation() {
+    return AnimatedBuilder(
+      animation: _saluteAnimationController,
+      builder: (context, child) {
+        return _saluteAnimationController.value > 0
+            ? Positioned.fill(
+                child: Container(
+                  color: Colors.black26,
+                  child: Center(
+                    child: SizedBox(
+                      width: 80, // Reduced size
+                      height: 80, // Reduced size
+                      child: Transform.scale(
+                        scale: _saluteAnimation.value,
+                        child: Image.asset('assets/icons/saluted.png'),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : const SizedBox.shrink();
+      },
     );
   }
 
@@ -380,47 +450,112 @@ class _PostCardState extends State<PostCard> {
   }
 
   Widget _buildBottomActions() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Row(
           children: [
-            PostActionButton(
-              icon: Icons.thumb_up_alt_outlined, // Outlined icon for non-selected state
-              text: '${widget.post.likes.length}',
-              onPressed: () {
-                //TODO: Add liking functionality
-                print('Like toggled for Post ${widget.post.id}. Current likes: ${widget.post.likes.length}');
+            GestureDetector(
+              onTap: () {
+                final String userId = UserService.currentUserId.toString();
+                setState(() {
+                  if (_isSaluted) {
+                    widget.post.likes.removeWhere((like) => like.userId == userId);
+                  } else {
+                    widget.post.likes.add(Like(
+                      userId: userId,
+                      likedAt: DateTime.now(),
+                    ));
+                  }
+                  _isSaluted = !_isSaluted;
+                });
+                print('Like toggled for Post ${widget.post.id}. New likes count: ${widget.post.likes.length}');
               },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                child: Row(
+                  children: [
+                    Image.asset(
+                      _isSaluted ? 'assets/icons/saluted.png' : 'assets/icons/salute.png',
+                      width: 24,
+                      height: 24,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      widget.post.likes.length.toString(),
+                      style: TextStyle(
+                        color: isDark ? Colors.white : Colors.black,
+                        fontSize: 19,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            // Comment Button
-            PostActionButton(
-              icon: Icons.comment_outlined,
-              text: '${widget.post.comments.length}',
-              onPressed: () {
-                _showCommentsModal(context, widget.post.comments);
+            GestureDetector(
+              onTap: () {
+                //TODO: Implement add comment functionality
               },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: (){
+                        _showCommentsModal(context, widget.post.comments);
+                      },
+                      child: SvgPicture.asset(
+                        'assets/icons/message.svg', // Replace with your icon's path
+                        height: 22,
+                        width: 22,
+                        colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      widget.post.comments.length.toString(),
+                      style: TextStyle(
+                        color: isDark ? Colors.white : Colors.black,
+                        fontSize: 19,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
         // Repost Button
         Row(
           children: [
-            PostActionButton(
-              icon: Icons.repeat_outlined,
-              onPressed: () {
-                print('Repost Post ${widget.post.id}');
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Post Reposted!')));
+            GestureDetector(
+              onTap: (){
+                //TODO: Implement recelebrating
               },
+              child: SvgPicture.asset(
+                'assets/icons/recelebrate.svg', // Replace with your icon's path
+                height: 20,
+                width: 22,
+                colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
+              ),
             ),
             // Send Button
-            PostActionButton(
-              icon: Icons.send_outlined,
-              onPressed: () {
-                print('Send Post ${widget.post.id}');
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Post Sent!')));
+            const SizedBox(width: 15,),
+            GestureDetector(
+              onTap: (){
+                //TODO: Show share functionality and modal
               },
+              child: SvgPicture.asset(
+                'assets/icons/share.svg', // Replace with your icon's path
+                height: 20,
+                width: 22,
+                colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
+              ),
             ),
+            const SizedBox(width: 8,),
           ],
         ),
       ],

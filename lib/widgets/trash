@@ -1,440 +1,101 @@
-import 'package:celebrating/screens/auth_screen.dart';
-import 'package:celebrating/screens/award_screen.dart';
-import 'package:celebrating/screens/camera_screen.dart';
-import 'package:celebrating/screens/celebrate_page.dart';
-import 'package:celebrating/screens/celebrity_profile_create.dart';
-import 'package:celebrating/screens/feed_screen.dart';
-import 'package:celebrating/screens/flicks_page.dart';
-import 'package:celebrating/screens/hall_of_fame.dart';
-import 'package:celebrating/screens/head_to_head_screen.dart';
-import 'package:celebrating/screens/live_stream_detail_page.dart';
-import 'package:celebrating/screens/onboarding_screen.dart';
-import 'package:celebrating/screens/post_detail_screen.dart';
-import 'package:celebrating/screens/profile_page.dart';
-import 'package:celebrating/screens/search_page.dart';
-import 'package:celebrating/screens/settings_screen.dart';
-import 'package:celebrating/screens/splash_screen.dart';
-import 'package:celebrating/screens/stream_page.dart';
-import 'package:celebrating/screens/uhondo_kona.dart';
-import 'package:celebrating/screens/verification_screen.dart';
-import 'package:celebrating/screens/versus_screen.dart';
-import 'package:celebrating/screens/view_profile_screen.dart';
-import 'package:celebrating/screens/web_view_screen.dart';
-import 'package:celebrating/services/auth_service.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import '../models/user.dart';
-import '../models/post.dart';
-import 'package:flutter/services.dart';
-import 'dart:async';
-import 'package:celebrating/services/user_service.dart'; // Assuming you have a PostService
 
-// Dummy PostService for demonstration. Replace with your actual PostService.
-class PostService {
-  static Future<Post> fetchPost(String postId) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 500));
-    // Return a dummy post. In a real app, you'd fetch from an API.
-    return Post(
-      id: postId,
-      caption: 'This is a dummy post for ID: $postId',
-      mediaUrl: 'https://via.placeholder.com/300',
-      likes: 100,
-      commentsCount: 20,
-      createdAt: DateTime.now().subtract(const Duration(days: 1)),
-      user: User(id: 'u1', username: 'dummy_user', fullName: 'Dummy User', email: 'dummy@example.com', profileImageUrl: 'https://via.placeholder.com/50', role: 'Member'),
-    );
-  }
+  late bool _isLiked;
+
+    _initLikeState();
+void _initLikeState() {
+    final String userId = UserService.currentUserId.toString();
+    _isLiked = widget.flick.likes.any((like) => like.userId == userId);
 }
 
-class AppRouter {
-  final AuthService _authService;
-
-  AppRouter(this._authService);
-
-  static final GlobalKey<NavigatorState> _rootNavigatorKey =
-  GlobalKey<NavigatorState>();
-  static final GlobalKey<NavigatorState> _shellNavigatorKey =
-  GlobalKey<NavigatorState>();
-
-  late final router = GoRouter(
-    navigatorKey: _rootNavigatorKey,
-    initialLocation: '/splash',
-    refreshListenable: RouteRefreshStream(_authService.authStateChanges),
-    redirect: _guardRoutes,
-    routes: [
-      GoRoute(
-        path: '/splash',
-        name: 'splash',
-        builder: (context, state) => const SplashScreen(),
-      ),
-      GoRoute(
-        path: '/auth',
-        name: 'auth',
-        builder: (context, state) => const AuthScreen(),
-      ),
-      GoRoute(
-        path: '/onboarding',
-        name: 'onboarding',
-        builder: (context, state) => const OnboardingScreen(),
-      ),
-      GoRoute(
-        path: '/verification',
-        name: 'verification',
-        builder: (context, state) => const VerificationScreen(),
-      ),
-      GoRoute(
-        path: '/create-celebrity-profile',
-        name: 'createCelebrityProfile',
-        builder: (context, state) => const CelebrityProfileCreate(),
-      ),
-      GoRoute(
-        path: '/settings',
-        name: 'settings',
-        builder: (context, state) => const SettingsScreen(),
-      ),
-      GoRoute(
-        path: '/camera',
-        name: 'camera',
-        builder: (context, state) => const CameraScreen(
-            returnRoute: '/feed'),
-      ),
-      GoRoute(
-        path: '/webview',
-        name: 'webview',
-        builder: (context, state) {
-          final url = state.queryParameters['url'] ?? '';
-          final title = state.queryParameters['title'] ?? '';
-          return WebViewScreen(url: url, title: title);
-        },
-      ),
-      ShellRoute(
-        navigatorKey: _shellNavigatorKey,
-        builder: (context, state, child) =>
-            ScaffoldWithBottomNav(child: child),
-        routes: [
-          GoRoute(
-            path: '/feed',
-            name: 'feed',
-            builder: (context, state) => const FeedScreen(),
-            routes: [
-              // FIXED: Post Detail Screen with robust Post fetching
-              GoRoute(
-                path: 'post/:postId',
-                name: 'postDetail',
-                builder: (context, state) {
-                  final postId = state.pathParameters['postId']!;
-                  final Post? postFromExtra = state.extra as Post?;
-
-                  // If post object is passed via extra, use it.
-                  if (postFromExtra != null) {
-                    return PostDetailScreen(
-                        post: postFromExtra, suggestedPosts: []);
-                  }
-
-                  // Otherwise, fetch the post using postId.
-                  return FutureBuilder<Post>(
-                    future: PostService.fetchPost(postId), // Use your actual PostService
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Scaffold(
-                            body: Center(child: CircularProgressIndicator()));
-                      } else if (snapshot.hasError) {
-                        return Scaffold(
-                            appBar: AppBar(title: const Text('Error')),
-                            body: Center(
-                                child: Text('Error loading post: ${snapshot.error}')));
-                      } else if (snapshot.hasData) {
-                        return PostDetailScreen(
-                            post: snapshot.data!, suggestedPosts: []);
-                      }
-                      return const Scaffold(
-                          body: Center(child: Text('Post not found')));
+  Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      final String userId = UserService.currentUserId.toString();
+                      setState(() {
+                        if (_isLiked) {
+                          widget.flick.likes.removeWhere((like) => like.userId == userId);
+                        } else {
+                          widget.flick.likes.add(Like(
+                            userId: userId,
+                            likedAt: DateTime.now(),
+                          ));
+                        }
+                        _isLiked = !_isLiked;
+                      });
+                      // Here you would typically update the like in your backend
+                      print('Like toggled for Flick ${widget.flick.id}. New likes count: ${widget.flick.likes.length}');
                     },
-                  );
-                },
-              ),
-              GoRoute(
-                path: 'versus',
-                name: 'versus',
-                builder: (context, state) => const VersusScreen(),
-              ),
-              // FIXED: HeadToHead route with dummy data for now
-              GoRoute(
-                path: 'head-to-head',
-                name: 'headToHead',
-                builder: (context, state) {
-                  // Since user1 and user2 are required, we must provide them.
-                  // For demonstration, using dummy data. In a real app, you'd fetch them
-                  // based on IDs passed via pathParameters or queryParameters.
-                  final VersusUser dummyUser1 = VersusUser(
-                      name: 'User One',
-                      imageUrl: 'https://via.placeholder.com/150/FF0000/FFFFFF?text=U1',
-                      extraAttributes: {'age': '30', 'profession': 'Artist'});
-                  final VersusUser dummyUser2 = VersusUser(
-                      name: 'User Two',
-                      imageUrl: 'https://via.placeholder.com/150/0000FF/FFFFFF?text=U2',
-                      extraAttributes: {'age': '32', 'profession': 'Musician'});
-
-                  return HeadToHead(user1: dummyUser1, user2: dummyUser2);
-                },
-              ),
-              GoRoute(
-                path: 'hall-of-fame',
-                name: 'hallOfFame',
-                builder: (context, state) => const HallOfFame(),
-              ),
-              GoRoute(
-                path: 'uhondo-kona',
-                name: 'uhondoKona',
-                builder: (context, state) => const UhondoKona(),
-              ),
-              GoRoute(
-                path: 'award',
-                name: 'award',
-                builder: (context, state) => const AwardScreen(),
-              ),
-            ],
-          ),
-          GoRoute(
-            path: '/search',
-            name: 'search',
-            builder: (context, state) => const SearchPage(),
-            routes: [
-              GoRoute(
-                path: 'view-profile/:userId',
-                name: 'viewProfile',
-                builder: (context, state) {
-                  final userId = state.pathParameters['userId']!;
-                  final User? user = state.extra as User?;
-
-                  if (user != null) {
-                    return ViewProfileScreen(user: user);
-                  }
-                  return FutureBuilder<User>(
-                    future: UserService.fetchUser(userId, isCelebrity: false),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Scaffold(body: Center(child: CircularProgressIndicator()));
-                      } else if (snapshot.hasError) {
-                        return Scaffold(
-                            appBar: AppBar(title: const Text('Error')),
-                            body: Center(child: Text('Error loading user: ${snapshot.error}')));
-                      } else if (snapshot.hasData) {
-                        return ViewProfileScreen(user: snapshot.data!);
-                      }
-                      return const Scaffold(body: Center(child: Text('User not found')));
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            _isLiked ? 'assets/icons/saluted.png' : 'assets/icons/salute.png',
+                            width: 24,
+                            height: 24,
+                            errorBuilder: (context, error, stackTrace) {
+                              // Fallback icon if image assets are missing
+                              return Icon(
+                                _isLiked ? Icons.favorite : Icons.favorite_border,
+                                color: _isLiked ? Colors.red : Colors.white,
+                                size: 24,
+                              );
+                            },
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            widget.flick.likes.length.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 19,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildActionItem(
+                    icon: Icons.chat_bubble_outline,
+                    count: widget.flick.comments.length,
+                    onTap: (){
+                      _showCommentsModal(context, widget.flick.comments);
                     },
-                  );
-                },
-              ),
-              GoRoute(
-                path: 'search-results',
-                name: 'searchResults',
-                builder: (context, state) => const Text('Search Results Page'),
-              ),
-            ],
-          ),
-          GoRoute(
-            path: '/celebrate',
-            name: 'celebrate',
-            builder: (context, state) => const CelebratePage(),
-            routes: [],
-          ),
-          GoRoute(
-            path: '/flicks',
-            name: 'flicks',
-            builder: (context, state) => const FlicksPage(),
-            routes: [],
-          ),
-          GoRoute(
-            path: '/stream',
-            name: 'stream',
-            builder: (context, state) => const StreamPage(),
-            routes: [
-              GoRoute(
-                path: ':streamId',
-                name: 'streamDetail',
-                builder: (context, state) {
-                  final streamId = state.pathParameters['streamId']!;
-                  return LiveStreamDetailPage(streamId: streamId);
-                },
-              ),
-            ],
-          ),
-          GoRoute(
-            path: '/profile',
-            name: 'profile',
-            builder: (context, state) => const ProfilePage(),
-            routes: [],
-          ),
-        ],
-      ),
-    ],
-  );
-
-  String? _guardRoutes(BuildContext context, GoRouterState state) {
-    final isAuth = _authService.currentState.status == AuthStatus.authenticated;
-    final isSplash = state.matchedLocation == '/splash';
-    final isAuthScreen = state.matchedLocation == '/auth';
-    final isOnboarding = state.matchedLocation == '/onboarding';
-    final isVerification = state.matchedLocation == '/verification';
-    final isCreateCelebrityProfile =
-        state.matchedLocation == '/create-celebrity-profile';
-
-    final publicRoutes = [
-      '/splash',
-      '/auth',
-      '/onboarding',
-      '/verification',
-      '/create-celebrity-profile',
-    ];
-    final isGoingToPublicRoute = publicRoutes.contains(state.matchedLocation);
-
-    if (isSplash) return null;
-
-    if (!isAuth) {
-      return isGoingToPublicRoute ? null : '/auth';
-    }
-
-    if (isAuth &&
-        (isAuthScreen || isOnboarding || isVerification || isCreateCelebrityProfile)) {
-      return '/feed';
-    }
-
-    return null;
-  }
-}
-
-class ScaffoldWithBottomNav extends StatelessWidget {
-  final Widget child;
-
-  const ScaffoldWithBottomNav({super.key, required this.child});
-
-  int _calculateSelectedIndex(BuildContext context) {
-    final String location = GoRouterState.of(context).matchedLocation;
-    if (location.startsWith('/feed')) return 0;
-    if (location.startsWith('/search')) return 1;
-    if (location.startsWith('/celebrate')) return 2;
-    if (location.startsWith('/flicks')) return 3;
-    if (location.startsWith('/stream')) return 4;
-    if (location.startsWith('/profile')) return 5;
-    return 0;
-  }
-
-  void _onItemTapped(int index, BuildContext context) {
-    switch (index) {
-      case 0:
-        context.go('/feed');
-        break;
-      case 1:
-        context.go('/search');
-        break;
-      case 2:
-        context.go('/celebrate');
-        break;
-      case 3:
-        context.go('/flicks');
-        break;
-      case 4:
-        context.go('/stream');
-        break;
-      case 5:
-        context.go('/profile');
-        break;
-    }
-  }
-
-  bool _isMainTabRoot(String location) {
-    return location == '/feed' ||
-        location == '/search' ||
-        location == '/celebrate' ||
-        location == '/flicks' ||
-        location == '/stream' ||
-        location == '/profile';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final currentRoutePath = GoRouterState.of(context).matchedLocation;
-    final bool showBottomNav =
-        !['/camera', '/webview'].contains(currentRoutePath);
-
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) async {
-        if (didPop) return;
-
-        final GoRouter router = GoRouter.of(context);
-        final String currentLocation =
-            router.routerDelegate.currentConfiguration.uri.path;
-
-        if (router.canPop()) {
-          router.pop();
-        } else if (_isMainTabRoot(currentLocation) && currentLocation != '/feed') {
-          router.go('/feed');
-        } else if (currentLocation == '/feed') {
-          bool shouldExit = await _showExitDialog(context);
-          if (shouldExit && context.mounted) {
-            SystemNavigator.pop();
-          }
-        }
-      },
-      child: Scaffold(
-        body: child,
-        bottomNavigationBar: showBottomNav
-            ? NavigationBar(
-                onDestinationSelected: (index) => _onItemTapped(index, context),
-                selectedIndex: _calculateSelectedIndex(context),
-                destinations: const [
-                  NavigationDestination(icon: Icon(Icons.home), label: 'Feed'),
-                  NavigationDestination(icon: Icon(Icons.search), label: 'Search'),
-                  NavigationDestination(icon: Icon(Icons.celebration), label: 'Celebrate'),
-                  NavigationDestination(icon: Icon(Icons.movie), label: 'Flicks'),
-                  NavigationDestination(icon: Icon(Icons.live_tv), label: 'Stream'),
-                  NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
+                  ),
+                  const SizedBox(height: 24),
+                  GestureDetector(
+                    onTap: (){
+                      //TODO: Show share functionality and modal
+                    },
+                    child: SvgPicture.asset(
+                      'assets/icons/share.svg', // Replace with your icon's path
+                      height: 28,
+                      width: 28,
+                      colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  GestureDetector(
+                    onTap: (){
+                      //TODO: Show share functionality and modal
+                    },
+                    child: SvgPicture.asset(
+                      'assets/icons/bookmark_outlined.svg', // TODO: Add functionality for bookmark
+                      height: 28,
+                      width: 28,
+                      colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildActionItem(
+                    icon: _muted ? Icons.volume_off : Icons.volume_up,
+                    count: null,
+                    onTap: _toggleMute,
+                  ),
+                  const SizedBox(height: 48),
                 ],
-              )
-            : null,
-      ),
-    );
-  }
-
-  Future<bool> _showExitDialog(BuildContext context) async {
-    return await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Exit App?'),
-            content: const Text('Are you sure you want to exit the app?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
               ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Exit'),
-              ),
-            ],
-          ),
-        ) ??
-        false;
-  }
-}
-
-class RouteRefreshStream extends ChangeNotifier {
-  late final StreamSubscription<AuthState> _subscription;
-
-  RouteRefreshStream(Stream<AuthState> stream) {
-    notifyListeners();
-    _subscription = stream.listen(
-      (state) => notifyListeners(),
-    );
-  }
-
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
-  }
-}

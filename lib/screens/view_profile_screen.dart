@@ -1,6 +1,7 @@
 import 'package:celebrating/widgets/add_wealth_item_modal.dart';
 import 'package:celebrating/widgets/slideup_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/comment.dart';
@@ -276,11 +277,15 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                 width: 100,
                 height: 35,
               ),
-              PostActionButton(
-                icon: Icons.chat_bubble_outline,
-                onPressed: () {
-                  print("Routing to messaging");
-                },
+              const SizedBox(width: 16,),
+              GestureDetector(
+                onTap: (){},
+                child: SvgPicture.asset(
+                  'assets/icons/message.svg', // Replace with your icon's path
+                  height: 32,
+                  width: 35,
+                  colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
+                ),
               ),
             ],
           ),
@@ -1229,20 +1234,21 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
     final appPrimaryColor = Theme.of(context).primaryColor;
-    if (widget.user is! CelebrityUser) { // Simplified null check
+
+    if (widget.user is! CelebrityUser) {
       return const Center(child: Text("No public persona data available"));
     }
     final celeb = widget.user as CelebrityUser;
 
-    // Check if there's any public persona information to display with actual content
+    // Check if there's any public persona information to display
     bool hasAnyContent =
-        (celeb.socials.any((social) =>
+        celeb.socials.any((social) =>
         (social['title']?.isNotEmpty ?? false) ||
-            (social['link']?.isNotEmpty ?? false))) ||
+            (social['link']?.isNotEmpty ?? false)) ||
             celeb.publicImageDescription.isNotEmpty ||
-            (celeb.controversyMedia.any((controversy) =>
+            celeb.controversyMedia.any((controversy) =>
             (controversy['controversy']?.isNotEmpty ?? false) ||
-                ((controversy['media'] as List?)?.isNotEmpty == true))) ||
+                ((controversy['media'] as List?)?.isNotEmpty == true)) ||
             celeb.fashionStyle.entries.any((entry) =>
                 entry.value.any((item) =>
                 (item['imageUrl']?.isNotEmpty ?? false)));
@@ -1251,24 +1257,6 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
       return const Center(child: Text("No persona entries"));
     }
 
-    // Social icon mapping (for demo, you can expand this)
-    final Map<String, IconData> socialIcons = {
-      'TikTok': Icons.music_note,
-      'Reddit': Icons.reddit,
-      'Spotify': Icons.music_video,
-      'YouTube': Icons.ondemand_video,
-      'Snapchat': Icons.chat_bubble_outline,
-      // Add more as needed
-    };
-    final Map<String, Color> socialColors = {
-      'TikTok': Colors.black,
-      'Reddit': Colors.orange,
-      'Spotify': Colors.green,
-      'YouTube': Colors.red,
-      'Snapchat': Colors.yellow,
-      // Add more as needed
-    };
-
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -1276,9 +1264,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Socials Section
-            if (celeb.socials.any((social) =>
-            (social['title']?.isNotEmpty ?? false) ||
-                (social['link']?.isNotEmpty ?? false))) ...[
+            if (celeb.socials.isNotEmpty) ...[
               Text(
                 AppLocalizations.of(context)!.socials,
                 style: TextStyle(
@@ -1295,53 +1281,37 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                   itemCount: celeb.socials.length,
                   itemBuilder: (context, index) {
                     final social = celeb.socials[index];
-                    final icon = socialIcons[social['title']] ?? Icons.link;
-                    final color = socialColors[social['title']] ?? appPrimaryColor;
+                    final iconPath = 'assets/icons/socials/${social['title']?.toLowerCase()}.png';
+
                     return Padding(
-                      padding: const EdgeInsets.only(right: 12.0),
+                      padding: const EdgeInsets.only(right: 16.0),
                       child: GestureDetector(
                         onTap: () {
-                          // Open social['link'] - assuming 'link' field exists
                           if (social['link'] != null) {
-                            print('Opening social link: ${social['link']}');
-                            // You might use a package like url_launcher here
+                            // Add url_launcher implementation here
+                            print('Opening: ${social['link']}');
                           }
                         },
-                        child: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: color.withOpacity(0.15),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            icon,
-                            color: color,
-                          ),
+                        child: Image.asset(
+                          iconPath,
+                          height: 40,
+                          width: 40,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(Icons.error_outline, size: 24, color: Colors.grey);
+                          },
                         ),
                       ),
                     );
                   },
                 ),
               ),
-              const SizedBox(height: 10), // Spacing after social icons
-            ], // Corrected: Missing ']' added here for the socials if block
-            if (celeb.publicImageDescription.isNotEmpty) // Added an if condition for publicImageDescription for conditional rendering
-              Text(
-                celeb.publicImageDescription,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: defaultTextColor,
-                ),
-              ),
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
+            ],
 
-            // Controversies Section
-            if (celeb.controversyMedia.any((controversy) =>
-            (controversy['controversy']?.isNotEmpty ?? false) ||
-                ((controversy['media'] as List?)?.isNotEmpty == true))) ...[
+            // Public Image Description
+            if (celeb.publicImageDescription.isNotEmpty) ...[
               Text(
-                AppLocalizations.of(context)!.controversies,
+                'Public Image',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -1349,71 +1319,70 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                 ),
               ),
               const SizedBox(height: 10),
-              _ControversyCarousel(
-                controversyMedia: celeb.controversyMedia.where((controversy) =>
-                (controversy['controversy']?.isNotEmpty ?? false) ||
-                    ((controversy['media'] as List?)?.isNotEmpty == true)).toList(),
-                defaultTextColor: defaultTextColor,
-                cardColor: Theme.of(context).cardColor,
+              Text(
+                celeb.publicImageDescription,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: defaultTextColor,
+                ),
               ),
               const SizedBox(height: 20),
-            ], // Corrected: Missing ']' added here for the controversyMedia if block
+            ],
 
             // Fashion Style Section
-            Text(
-              AppLocalizations.of(context)!.fashionStyle,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: defaultTextColor,
+            if (celeb.fashionStyle.isNotEmpty) ...[
+              Text(
+                AppLocalizations.of(context)!.fashionStyle,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: defaultTextColor,
+                ),
               ),
-            ),
-            const SizedBox(height: 10), // Spacing after Fashion Style title/button
-            // Fashion Style Images
-            ...celeb.fashionStyle.entries.map((entry) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    entry.key[0].toUpperCase() + entry.key.substring(1),
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
+              const SizedBox(height: 10),
+              ...celeb.fashionStyle.entries.map((entry) {
+                if (entry.value.isEmpty) return const SizedBox.shrink();
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      entry.key[0].toUpperCase() + entry.key.substring(1),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: defaultTextColor,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    height: 150,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: entry.value.length,
-                      itemBuilder: (context, idx) {
-                        final img = entry.value[idx]['imageUrl'];
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 12.0),
-                          child: ImageWithOptionalText(
-                            width: 100,
-                            height: 150,
-                            imageUrl: img,
-                            bottomText: null, // No bottom text for fashion images
-                          ),
-                        );
-                      },
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      height: 150,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: entry.value.length,
+                        itemBuilder: (context, idx) {
+                          final img = entry.value[idx]['imageUrl'];
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 12.0),
+                            child: ImageWithOptionalText(
+                              width: 100,
+                              height: 150,
+                              imageUrl: img,
+                              bottomText: null,
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              );
-            }).toList(),
+                    const SizedBox(height: 20),
+                  ],
+                );
+              }).toList(),
+            ],
 
             // Fan Theories & Interactions Button
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  // Handle button tap
-                  print('Fan Theories & Interactions tapped');
-                },
+                onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: appPrimaryColor,
                   padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
@@ -1431,7 +1400,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                 ),
               ),
             ),
-            const SizedBox(height: 10), // Add some padding at the bottom
+            const SizedBox(height: 20),
           ],
         ),
       ),
