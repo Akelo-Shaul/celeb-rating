@@ -29,7 +29,7 @@ class _CommentsModalState extends State<CommentsModal> {
   User? currentUser;
 
   Future<void> _loadCurrentUser() async {
-    final user = await UserService.fetchUser(UserService.currentUserId.toString());
+    final user = await UserService.fetchUser(UserService.currentUserId.toString(), isCelebrity: true);
     if (mounted) {
       setState(() {
         currentUser = user;

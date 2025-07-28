@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../services/auth_service.dart';
 import '../models/post.dart';
+import '../models/user.dart';
 import '../services/feed_service.dart';
+import '../services/user_service.dart';
 import '../widgets/app_buttons.dart';
 import '../widgets/app_dropdown.dart';
 import '../widgets/post_card.dart';
@@ -22,9 +24,19 @@ class _FeedScreenState extends State<FeedScreen> {
   List<Post> posts = [];
   bool isLoading = false;
   int _selectedIndex = 0;
+  User? currentUser;
 
   // Global mute state for feed videos
   static final ValueNotifier<bool> feedMuteNotifier = ValueNotifier<bool>(true); // true = muted by default
+
+  Future<void> _loadCurrentUser() async {
+    final user = await UserService.fetchUser(UserService.currentUserId.toString(), isCelebrity: true);
+    if (mounted) {
+      setState(() {
+        currentUser = user;
+      });
+    }
+  }
 
   // Fetch feed from FeedService and update posts
   Future<void> fetchFeed() async {
@@ -50,6 +62,7 @@ class _FeedScreenState extends State<FeedScreen> {
     super.initState();
     posts = FeedService.generateDummyPosts();
     isLoading = false;
+    _loadCurrentUser(); // Load current user when screen is initialized
   }
 
   //TODO: Video sound is still playing when I navigate to another page. Use widget lifecycle to fix this
@@ -72,7 +85,7 @@ class _FeedScreenState extends State<FeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MyAppBar(),
+      appBar: MyAppBar(currentUser: currentUser),
       endDrawer: SafeArea(
         child: Drawer(
           child: ListView(
@@ -91,14 +104,26 @@ class _FeedScreenState extends State<FeedScreen> {
                       print('Profile picture tapped');
                       // Example: Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfilePage()));
                     },
-                    child: const ProfileAvatar(
-                      //TODO: Replace with real user profile photo
-                      imageUrl: null,
+                    child: ProfileAvatar(
+                      imageUrl: currentUser?.profileImageUrl,
                       radius: 60,
                       backgroundColor: const Color(0xFF9E9E9E), // Custom background color
                     ),
                   ),
                 ),
+              ),
+              AppTransparentButton(
+                 text: 'Chats',
+                 icon: Icons.messenger,
+                 // iconColor: Colors.blueAccent, // Custom icon color
+                 fontSize: 20,
+                 onPressed: () {
+                   print('Go to chat');
+                   Navigator.pop(context);
+                   context.pushNamed('chat');
+                 },
+                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                 borderRadius: BorderRadius.circular(25), // More rounded corners
               ),
               AppTransparentButton(
                 text: 'Hall of Fame',
@@ -171,6 +196,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 // iconColor: Colors.blueAccent, // Custom icon color
                 fontSize: 20,
                 onPressed: () {
+                  context.go('/profile');
                   Navigator.pop(context);
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
@@ -244,7 +270,8 @@ class _FeedScreenState extends State<FeedScreen> {
 }
 
 class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
-  const MyAppBar({super.key});
+  final User? currentUser;
+  const MyAppBar({super.key, this.currentUser});
 
   @override
   State<MyAppBar> createState() => _MyAppBarState();
@@ -254,7 +281,7 @@ class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _MyAppBarState extends State<MyAppBar> {
-  String _currentFeedType = 'FEED'; // State for the selected feed type
+  String _currentFeedType = 'feed'; // State for the selected feed type
 
   @override
   Widget build(BuildContext context) {
@@ -276,9 +303,9 @@ class _MyAppBarState extends State<MyAppBar> {
             // DropdownMenuItem(value: 'FEED', child: Text(AppLocalizations.of(context)!.feed)),
             // DropdownMenuItem(value: 'POPULAR', child: Text(AppLocalizations.of(context)!.popular)),
             // DropdownMenuItem(value: 'TRENDING', child: Text(AppLocalizations.of(context)!.trending)),
-            DropdownMenuItem(value: 'FEED', child: Text('FEED')),
-            DropdownMenuItem(value: 'POPULAR', child: Text('POPULAR')),
-            DropdownMenuItem(value: 'TRENDING', child: Text('TRENDING')),
+            DropdownMenuItem(value: 'feed', child: Text('Feed')),
+            DropdownMenuItem(value: 'popular', child: Text('Popular')),
+            DropdownMenuItem(value: 'trending', child: Text('Trending')),
           ],
           onChanged: (String? newValue) {
             setState(() {
@@ -306,9 +333,8 @@ class _MyAppBarState extends State<MyAppBar> {
               print('Profile picture tapped');
               Scaffold.of(context).openEndDrawer();
             },
-            child:const ProfileAvatar(
-              //TODO: Replace with real user profile photo
-              imageUrl: null,
+            child: ProfileAvatar(
+              imageUrl: widget.currentUser?.profileImageUrl,
               radius: 20,
               backgroundColor: const Color(0xFF9E9E9E), // Custom background color
             )

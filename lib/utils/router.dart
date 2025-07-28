@@ -4,6 +4,8 @@ import 'package:celebrating/screens/award_screen.dart';
 import 'package:celebrating/screens/camera_screen.dart';
 import 'package:celebrating/screens/celebrate_page.dart';
 import 'package:celebrating/screens/celebrity_profile_create.dart';
+import 'package:celebrating/screens/chat_screen.dart';
+import 'package:celebrating/screens/chat_message_screen.dart';
 import 'package:celebrating/screens/feed_screen.dart';
 import 'package:celebrating/screens/flicks_page.dart';
 import 'package:celebrating/screens/hall_of_fame.dart';
@@ -105,6 +107,20 @@ class AppRouter {
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/chat',
+        name: 'chat',
+        builder: (context, state) => const ChatScreen(),
+      ),
+      GoRoute(
+        path: '/chat/:chatId',
+        name: 'chatMessage',
+        builder: (context, state) {
+          final chatId = state.pathParameters['chatId']!;
+          final otherUser = state.extra as User;
+          return ChatMessageScreen(chatId: chatId, otherUser: otherUser);
+        },
       ),
       GoRoute(
         path: '/webview',

@@ -166,11 +166,6 @@ class _AuthScreenState extends State<AuthScreen> {
         isSubmitting = false;
         errorMessage = null;
       });
-    } catch (e) {
-      setState(() {
-        isSubmitting = false;
-        errorMessage = e.toString().replaceFirst('Exception: ', '');
-      });
       Future.delayed(const Duration(seconds: 3), () {
         if (mounted) {
           context.goNamed('onboarding'); // Replaces the current stack with onboarding
@@ -178,6 +173,11 @@ class _AuthScreenState extends State<AuthScreen> {
             errorMessage = null;
           });
         }
+      });
+    } catch (e) {
+      setState(() {
+        isSubmitting = false;
+        errorMessage = e.toString().replaceFirst('Exception: ', '');
       });
     }
   }

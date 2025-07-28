@@ -155,6 +155,12 @@ class AppLocalizationsSw extends AppLocalizations {
   String get completeYourProfile => 'Kamilisha wasifu wako';
 
   @override
+  String get enterDOB => 'Tafadhali weka tarehe ya kuzaliwa';
+
+  @override
+  String get dob => 'Tarehe ya Kuzaliwa';
+
+  @override
   String get firstName => 'Jina la kwanza';
 
   @override

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../l10n/app_localizations.dart';
 import 'app_buttons.dart';
+import 'app_date_picker.dart';
 import 'app_text_fields.dart';
 import 'app_dropdown.dart';
 
@@ -148,7 +149,15 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
               labelText: 'Year',
               prefixIcon: Icon(Icons.calendar_today),
             ),
-            keyboardType: TextInputType.number,
+            readOnly: true,
+            onTap: () async {
+              final picked = await CustomDatePicker.show(context);
+              if (picked != null) {
+                setState(() {
+                  _yearController.text = picked.year.toString();
+                });
+              }
+            },
             validator: (v) => v == null || v.trim().isEmpty ? 'Enter year' : null,
           ),
           const SizedBox(height: 14),
@@ -266,7 +275,15 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
               labelText: 'Year',
               prefixIcon: Icon(Icons.calendar_today),
             ),
-            keyboardType: TextInputType.number,
+            readOnly: true,
+            onTap: () async {
+              final picked = await CustomDatePicker.show(context);
+              if (picked != null) {
+                setState(() {
+                  _yearController.text = picked.year.toString();
+                });
+              }
+            },
             validator: (v) => v == null || v.trim().isEmpty ? 'Enter year' : null,
           ),
           const SizedBox(height: 14),

@@ -10,6 +10,7 @@ import '../widgets/app_text_fields.dart';
 import '../widgets/error_message.dart';
 import '../services/onboarding_service.dart';
 import '../models/onboarding_data.dart';
+import '../widgets/golden_ticket_button.dart';
 import '../widgets/parted_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -705,20 +706,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
               ),
               const SizedBox(height: 14),
-              PartedButton(
+              GoldenTicketButton(
+                text: "CONTINUE AS A CELEBRITY",
                 onPressed: () {
-                  // Switch to country/state selection tab
-                  context.goNamed('verification');;
-                  setState(() {
-                  });
+                  context.goNamed('verification');
                 },
-                leftText: AppLocalizations.of(context)!.continueAs,
-                rightText: AppLocalizations.of(context)!.celebrity,
-                leftTextColor: Color(0xFFD6AF0C),
-                rightTextColor: Colors.white,
-                leftBackgroundColor: Colors.white,
-                rightBackgroundColor: Color(0xFFD6AF0C),
               ),
+
+
+              // PartedButton(
+              //   onPressed: () {
+              //     // Switch to country/state selection tab
+              //     context.goNamed('verification');;
+              //     setState(() {
+              //     });
+              //   },
+              //   leftText: AppLocalizations.of(context)!.continueAs,
+              //   rightText: AppLocalizations.of(context)!.celebrity,
+              // ),
             ],
           ),
         ),

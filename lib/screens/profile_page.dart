@@ -414,7 +414,7 @@ class _ProfilePageState extends State<ProfilePage>
       controller: _tabController,
       isScrollable: true,
       tabAlignment: TabAlignment.start,
-      labelColor: isDark ? const Color(0xFFFFA726) : const Color(0xFFFF6F00),
+      labelColor: const Color(0xFFD6AF0C),
       unselectedLabelColor:
       isDark ? Colors.grey.shade500 : Colors.grey.shade600,
       labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -423,7 +423,7 @@ class _ProfilePageState extends State<ProfilePage>
       indicator: UnderlineTabIndicator(
         borderSide: BorderSide(
           width: 3.0,
-          color: isDark ? const Color(0xFFFFA726) : const Color(0xFFFF6F00),
+          color: const Color(0xFFD6AF0C),
         ),
         insets: EdgeInsets.zero,
       ),
@@ -802,7 +802,7 @@ class _ProfilePageState extends State<ProfilePage>
             ),
             IconButton(
               icon: const Icon(Icons.add_circle_outline,
-                  color: Colors.orange),
+                  color: const Color(0xFFD6AF0C)),
               tooltip: 'Add Social',
               onPressed: () async {
                 await showModalBottomSheet(
@@ -900,7 +900,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline,
-                        color: Colors.orange),
+                        color: const Color(0xFFD6AF0C)),
                     tooltip: 'Add Relationship',
                     onPressed: () async {
                       await showModalBottomSheet(
@@ -979,7 +979,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline,
-                        color: Colors.orange),
+                        color: const Color(0xFFD6AF0C)),
                     tooltip: 'Add Education',
                     onPressed: () async {
                       await showModalBottomSheet(
@@ -1028,7 +1028,7 @@ class _ProfilePageState extends State<ProfilePage>
                         ),
                         child: const Icon(Icons.school_outlined,
                             size: 35,
-                            color: Colors.orange),
+                            color: const Color(0xFFD6AF0C)),
                       ),
                       const SizedBox(width: 12), // Add spacing between icon and text
                       Expanded( // This Expanded widget ensures the text content takes up remaining space
@@ -1104,7 +1104,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline,
-                        color: Colors.orange),
+                        color: const Color(0xFFD6AF0C)),
                     tooltip: 'Add Hobby',
                     onPressed: () async {
                       await showModalBottomSheet(
@@ -1193,7 +1193,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline,
-                        color: Colors.orange),
+                        color: const Color(0xFFD6AF0C)),
                     tooltip: 'Add Involved Causes',
                     onPressed: () async {
                       await showModalBottomSheet(
@@ -1280,7 +1280,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline,
-                        color: Colors.orange),
+                        color: const Color(0xFFD6AF0C)),
                     tooltip: 'Add Pet',
                     onPressed: () async {
                       await showModalBottomSheet(
@@ -1346,7 +1346,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline,
-                        color: Colors.orange),
+                        color: const Color(0xFFD6AF0C)),
                     tooltip: 'Add Tattoo',
                     onPressed: () async {
                       await showModalBottomSheet(
@@ -1414,7 +1414,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline,
-                        color: Colors.orange),
+                        color: const Color(0xFFD6AF0C)),
                     tooltip: 'Add Favourite Place',
                     onPressed: () async {
                       await showModalBottomSheet(
@@ -1483,7 +1483,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline,
-                        color: Colors.orange),
+                        color: const Color(0xFFD6AF0C)),
                     tooltip: 'Add Talent',
                     onPressed: () async {
                       await showModalBottomSheet(
@@ -1604,7 +1604,7 @@ class _ProfilePageState extends State<ProfilePage>
                 ),
                 IconButton(
                   icon: const Icon(Icons.add_circle_outline,
-                      color: Colors.orange),
+                      color: const Color(0xFFD6AF0C)),
                   tooltip: 'Add Fashion Style',
                   onPressed: () async {
                     await showModalBottomSheet(

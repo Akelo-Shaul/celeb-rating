@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ProfileActionPopup extends StatelessWidget {
+class ProfileActionPopup extends StatefulWidget {
   // final VoidCallback onFavorite;
   final VoidCallback onReview;
   // final VoidCallback onFollow;
@@ -21,6 +21,20 @@ class ProfileActionPopup extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<ProfileActionPopup> createState() => _ProfileActionPopupState();
+}
+
+class _ProfileActionPopupState extends State<ProfileActionPopup> {
+  bool _isSaluted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize salute state - you can add logic here to check if user has already saluted
+    _isSaluted = false;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
@@ -36,7 +50,19 @@ class ProfileActionPopup extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.thumb_up, color: Colors.white),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isSaluted = !_isSaluted;
+                    });
+                    widget.onSalute();
+                  },
+                  child: Image.asset(
+                    _isSaluted ? 'assets/icons/saluted.png' : 'assets/icons/salute.png',
+                    width: 24,
+                    height: 24,
+                  ),
+                ),
                 SizedBox(width: 8),
                 Icon(Icons.bookmark, color: Colors.white),
                 SizedBox(width: 8),
@@ -69,27 +95,36 @@ class ProfileActionPopup extends StatelessWidget {
                 color: Colors.grey[900],
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(5, (i) => IconButton(
-                  icon: Icon(
-                    Icons.star,
-                    color: i < currentRating ? Color(0xFFD6AF0C) : Colors.grey,
-                  ),
-                  onPressed: () => onRate(i + 1),
-                  iconSize: 28,
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
-                )),
-              ),
+                             child: Row(
+                 mainAxisAlignment: MainAxisAlignment.center,
+                 children: List.generate(5, (i) => IconButton(
+                   icon: Icon(
+                     Icons.star,
+                     color: i < widget.currentRating ? Color(0xFFD6AF0C) : Colors.grey,
+                   ),
+                   onPressed: () => widget.onRate(i + 1),
+                   iconSize: 28,
+                   padding: EdgeInsets.zero,
+                   constraints: BoxConstraints(),
+                 )),
+               ),
             ),
             SizedBox(height: 6),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _ActionButton(icon: Icons.rate_review, label: 'Review', onTap: onReview),
-                _ActionButton(icon: Icons.preview, label: 'Preview', onTap: onPreview),
-                _ActionButton(icon: Icons.thumb_up, label: 'Salute', onTap: onSalute),
+                _ActionButton(icon: Icons.rate_review, label: 'Review', onTap: widget.onReview),
+                _ActionButton(icon: Icons.preview, label: 'Preview', onTap: widget.onPreview),
+                _ActionButton(
+                  imageAsset: _isSaluted ? 'assets/icons/saluted.png' : 'assets/icons/salute.png', 
+                  label: 'Salute', 
+                  onTap: () {
+                    setState(() {
+                      _isSaluted = !_isSaluted;
+                    });
+                    widget.onSalute();
+                  }
+                ),
               ],
             ),
           ],
@@ -100,17 +135,32 @@ class ProfileActionPopup extends StatelessWidget {
 }
 
 class _ActionButton extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
+  final String? imageAsset;
   final String label;
   final VoidCallback onTap;
-  const _ActionButton({required this.icon, required this.label, required this.onTap});
+  
+  const _ActionButton({
+    this.icon,
+    this.imageAsset,
+    required this.label,
+    required this.onTap,
+  }) : assert(icon != null || imageAsset != null, 'Either icon or imageAsset must be provided');
+  
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
       child: Column(
         children: [
-          Icon(icon, color: Colors.white),
+          if (icon != null)
+            Icon(icon, color: Colors.white)
+          else if (imageAsset != null)
+            Image.asset(
+              imageAsset!,
+              width: 24,
+              height: 24,
+            ),
           SizedBox(height: 4),
           Text(label, style: TextStyle(color: Colors.white)),
         ],

@@ -20,7 +20,7 @@ class AddRelationshipModal extends StatefulWidget {
 class _AddFamilyMemberModalState extends State<AddRelationshipModal> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _fullNameController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _dobController = TextEditingController();
   DateTime? _selectedBirthDate;
   final Map<String, TextEditingController> _socialControllers = {
     'Instagram': TextEditingController(),
@@ -50,7 +50,7 @@ class _AddFamilyMemberModalState extends State<AddRelationshipModal> {
     if (!_formKey.currentState!.validate()) return;
     widget.onAdd({
       'fullName': _fullNameController.text.trim(),
-      'age': _ageController.text.trim(),
+      'dateOfBirth': _dobController.text.trim(),
       'photo': _pickedImage,
       'socials': _socialControllers.map((k, v) => MapEntry(k, v.text.trim())),
     });
@@ -60,7 +60,7 @@ class _AddFamilyMemberModalState extends State<AddRelationshipModal> {
   @override
   void dispose() {
     _fullNameController.dispose();
-    _ageController.dispose();
+    _dobController.dispose();
     for (final c in _socialControllers.values) {
       c.dispose();
     }
@@ -236,9 +236,9 @@ class _AddFamilyMemberModalState extends State<AddRelationshipModal> {
                 ),
                 const SizedBox(height: 14),
                 TextFormField(
-                  controller: _ageController,
+                  controller: _dobController,
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.age,
+                    labelText: AppLocalizations.of(context)!.dob,
                     prefixIcon: Icon(Icons.cake),
                   ),
                   readOnly: true,
@@ -247,12 +247,12 @@ class _AddFamilyMemberModalState extends State<AddRelationshipModal> {
                     if (picked != null) {
                       setState(() {
                         _selectedBirthDate = picked;
-                        _ageController.text = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+                        _dobController.text = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
                       });
                     }
                   },
                   validator: (v) {
-                    if (v == null || v.trim().isEmpty) return AppLocalizations.of(context)!.enterAge;
+                    if (v == null || v.trim().isEmpty) return AppLocalizations.of(context)!.enterDOB;
                     return null;
                   },
                 ),

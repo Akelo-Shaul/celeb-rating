@@ -155,6 +155,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get completeYourProfile => 'Complete Your Profile';
 
   @override
+  String get enterDOB => 'Please enter date of birth';
+
+  @override
+  String get dob => 'Date of Birth';
+
+  @override
   String get firstName => 'First name';
 
   @override

@@ -348,14 +348,14 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
       controller: _tabController,
       isScrollable: true,
       tabAlignment: TabAlignment.start,
-      labelColor: isDark ? const Color(0xFFFFA726) : const Color(0xFFFF6F00),
+      labelColor: const Color(0xFFD6AF0C),
       unselectedLabelColor: isDark ? Colors.grey.shade500 : Colors.grey.shade600,
       labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
       unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
       indicator: UnderlineTabIndicator(
         borderSide: BorderSide(
           width: 3.0,
-          color: isDark ? const Color(0xFFFFA726) : const Color(0xFFFF6F00),
+          color: const Color(0xFFD6AF0C),
         ),
         insets: EdgeInsets.zero,
       ),
@@ -403,7 +403,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
   Widget _buildCareerTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final iconColor = isDark ? Colors.orange[300] : Colors.brown[300];
+    final iconColor = isDark ? const Color(0xFFD6AF0C): Colors.brown[300];
     if (widget.user is! CelebrityUser) { // Simplified null check
       return const Center(child: Text("No career data available."));
     }
@@ -805,7 +805,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                                         color: Theme.of(context).cardColor,
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: const Icon(Icons.school_outlined, size: 35, color: Colors.orange), // Added const
+                                      child: const Icon(Icons.school_outlined, size: 35, color: const Color(0xFFD6AF0C)), // Added const
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.only(top: 4.0, left: 2.0),
@@ -958,7 +958,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                             color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(Icons.volunteer_activism, size: 30, color: Colors.orange), // Added a placeholder icon
+                          child: const Icon(Icons.volunteer_activism, size: 30, color: const Color(0xFFD6AF0C)), // Added a placeholder icon
                         ),
                         const SizedBox(width: 12),
                         Column(
@@ -1083,38 +1083,13 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
               ], // Closing bracket for Tattoos Section if
 
               // Favourites Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.favourites,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle_outline, color: Colors.orange), // Added const
-                    tooltip: 'Add Favourite Place',
-                    onPressed: () async {
-                      await showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => WillPopScope(
-                          onWillPop: () async => true,
-                          child: AddPersonaModal(
-                            sectionTitle: AppLocalizations.of(context)!.favourites,
-                            onAdd: (place) {
-                              // TODO: Add logic to update dummy data
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+              Text(
+                AppLocalizations.of(context)!.favourites,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: defaultTextColor,
+                ),
               ),
               const SizedBox(height: 10),
               SizedBox(
@@ -1154,39 +1129,15 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
               const SizedBox(height: 20),
 
               // Talents Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.talents,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle_outline, color: Colors.orange), // Added const
-                    tooltip: 'Add Talent',
-                    onPressed: () async {
-                      await showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => WillPopScope(
-                          onWillPop: () async => true,
-                          child: AddPersonaModal(
-                            sectionTitle: AppLocalizations.of(context)!.talents,
-                            onAdd: (talent) {
-                              // TODO: Add logic to update dummy data
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+              Text(
+                AppLocalizations.of(context)!.talents,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: defaultTextColor,
+                ),
               ),
+
               const SizedBox(height: 10),
               SizedBox(
                 height: 180,

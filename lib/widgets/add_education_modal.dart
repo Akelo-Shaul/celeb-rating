@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import 'app_buttons.dart'; // Keeping these imports as they might be used elsewhere, though not directly in the provided snippet's UI for this modal.
 import 'app_text_fields.dart'; // Keeping these imports
 import 'app_dropdown.dart'; // Keeping these imports
+import 'app_date_picker.dart';
 
 class AddEducationModal extends StatefulWidget {
   final void Function(Map<String, dynamic> educationItem) onAdd;
@@ -120,14 +121,18 @@ class _AddEducationModalState extends State<AddEducationModal> {
                     labelText: AppLocalizations.of(context)!.yearOfCompletion,
                     prefixIcon: Icon(Icons.calendar_today),
                   ),
-                  keyboardType: TextInputType.number,
-                  // Added validator for year of completion, ensuring it's a valid number.
+                  readOnly: true,
+                  onTap: () async {
+                    final picked = await CustomDatePicker.show(context);
+                    if (picked != null) {
+                      setState(() {
+                        _valueController.text = picked.year.toString();
+                      });
+                    }
+                  },
                   validator: (v) {
                     if (v == null || v.trim().isEmpty) {
-                      return AppLocalizations.of(context)!.enterYear; // Assuming you'll add this string
-                    }
-                    if (int.tryParse(v.trim()) == null) {
-                      return AppLocalizations.of(context)!.enterValidYear; // Assuming you'll add this string
+                      return AppLocalizations.of(context)!.enterYear;
                     }
                     return null;
                   },

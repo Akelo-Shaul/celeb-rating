@@ -48,6 +48,8 @@
   "celebrating": "Celebrating",
   "passwordsDoNotMatch": "Passwords do not match",
   "completeYourProfile": "Complete Your Profile",
+  "enterDOB": "Please enter date of birth",
+  "dob": "Date of Birth",
   "firstName": "First name",
   "firstNameRequired": "First name required",
   "lastName": "Last name",

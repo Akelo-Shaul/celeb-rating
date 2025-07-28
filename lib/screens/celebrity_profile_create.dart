@@ -10,6 +10,7 @@ import 'package:celebrating/widgets/add_wealth_item_modal.dart';
 import '../widgets/add_education_modal.dart';
 import '../widgets/add_relationship_modal.dart';
 import '../widgets/app_text_fields.dart';
+import '../widgets/app_date_picker.dart';
 
 class CelebrityProfileCreate extends StatefulWidget {
   const CelebrityProfileCreate({super.key});
@@ -571,7 +572,15 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                     labelText: AppLocalizations.of(context)!.yearOfCompletion,
                     prefixIcon: Icon(Icons.calendar_today),
                   ),
-                  keyboardType: TextInputType.number,
+                  readOnly: true,
+                  onTap: () async {
+                    final picked = await CustomDatePicker.show(context);
+                    if (picked != null) {
+                      setState(() {
+                        _yearController.text = picked.year.toString();
+                      });
+                    }
+                  },
                   validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterYear : null,
                 ),
                 const SizedBox(height: 20),

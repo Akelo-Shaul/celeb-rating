@@ -383,6 +383,18 @@ abstract class AppLocalizations {
   /// **'Complete Your Profile'**
   String get completeYourProfile;
 
+  /// No description provided for @enterDOB.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter date of birth'**
+  String get enterDOB;
+
+  /// No description provided for @dob.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of Birth'**
+  String get dob;
+
   /// No description provided for @firstName.
   ///
   /// In en, this message translates to:
