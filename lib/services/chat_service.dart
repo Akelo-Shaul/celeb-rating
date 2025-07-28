@@ -92,7 +92,6 @@ class ChatService {
 
   // Generate dummy chats with current user
   static Future<List<ChatItem>> getAllChats() async {
-    print('Getting all chats...');
     final chats = [
       ChatItem(
         id: '1',
@@ -131,12 +130,10 @@ class ChatService {
         isVerified: true,
       ),
     ];
-    print('Returning ${chats.length} all chats');
     return chats;
   }
 
   static Future<List<ChatItem>> getArchivedChats() async {
-    print('Getting archived chats...');
     final chats = [
       ChatItem(
         id: '9',
@@ -159,12 +156,10 @@ class ChatService {
         isArchived: true,
       ),
     ];
-    print('Returning ${chats.length} archived chats');
     return chats;
   }
 
   static Future<List<ChatItem>> getRequestChats() async {
-    print('Getting request chats...');
     final chats = [
       ChatItem(
         id: '11',
@@ -185,7 +180,6 @@ class ChatService {
         isVerified: true,
       ),
     ];
-    print('Returning ${chats.length} request chats');
     return chats;
   }
 

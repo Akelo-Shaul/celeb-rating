@@ -23,42 +23,38 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    print('ChatScreen initialized with empty lists - All: ${_allChats.length}, Archived: ${_archivedChats.length}, Requests: ${_requestsChats.length}');
     // Call async method without await since initState can't be async
     _loadChatData();
   }
 
   Future<void> _loadChatData() async {
+    if (!mounted) return;
+    
     setState(() {
       _isLoading = true;
     });
     
     try {
-      print('Loading chat data...');
       final allChats = await ChatService.getAllChats();
       final archivedChats = await ChatService.getArchivedChats();
       final requestsChats = await ChatService.getRequestChats();
       
-      print('Loaded chats - All: ${allChats.length}, Archived: ${archivedChats.length}, Requests: ${requestsChats.length}');
+      if (!mounted) return;
       
-      if (mounted) {
-        setState(() {
-          _allChats = allChats;
-          _archivedChats = archivedChats;
-          _requestsChats = requestsChats;
-          _filteredChats = allChats;
-          _isLoading = false;
-        });
-        print('Chat data loaded successfully');
-        print('Updated state - All: ${_allChats.length}, Archived: ${_archivedChats.length}, Requests: ${_requestsChats.length}, Filtered: ${_filteredChats.length}');
-      }
+      setState(() {
+        _allChats = allChats;
+        _archivedChats = archivedChats;
+        _requestsChats = requestsChats;
+        _filteredChats = allChats;
+        _isLoading = false;
+      });
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-      print('Error loading chat data: $e');
+      if (!mounted) return;
+      
+      setState(() {
+        _isLoading = false;
+      });
+      debugPrint('Error loading chat data: $e');
     }
   }
 
