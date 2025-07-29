@@ -178,374 +178,329 @@ class _InterestsSelectionScreenState extends State<InterestsSelectionScreen> wit
     final tabTitles = ['Interests', 'Celebrities'];
 
     return Scaffold(
-      backgroundColor: Colors.black,
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        centerTitle: true,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: SafeArea(
+        child: Stack(
           children: [
-            for (int i = 0; i < tabTitles.length; i++)
-              GestureDetector(
-                onTap: () => _onTabChanged(i),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: _tabIndex == i ? selectedColor : Colors.transparent,
-                  ),
-                  child: Text(
-                    tabTitles[i],
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: _tabIndex == i ? Colors.black : (isDark ? Colors.white : Colors.black54),
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-        iconTheme: IconThemeData(color: isDark ? Colors.white : Colors.black),
-      ),
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              Expanded(
-                child: IndexedStack(
-                  index: _tabIndex,
-                  children: [
-                    // Interests Tab
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 8,),
-                          Center(
-                            child: Text(
-                              'Choose Your Interests',
-                              style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 28, fontWeight: FontWeight.w900),
+            Column(
+              children: [
+                Expanded(
+                  child: IndexedStack(
+                    index: _tabIndex,
+                    children: [
+                      // Interests Tab
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 8,),
+                            Center(
+                              child: Text(
+                                'Choose Your Interests',
+                                style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 28, fontWeight: FontWeight.w900),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Tell us what interests you for better experience and recommendations',
-                            style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 15),
-                          ),
-                          const SizedBox(height: 18),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              child: Wrap(
-                                spacing: 12,
-                                runSpacing: 12,
-                                children: _filteredCategories.map((cat) {
-                                  final selected = _selectedCategories.contains(cat);
-                                  return GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        if (selected) {
-                                          _selectedCategories.remove(cat);
-                                        } else {
-                                          _selectedCategories.add(cat);
-                                        }
-                                      });
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                      decoration: BoxDecoration(
-                                        color: selected ? selectedColor : unselectedColor,
-                                        borderRadius: BorderRadius.circular(20),
-                                        border: Border.all(
+                            const SizedBox(height: 16),
+                            Text(
+                              'Tell us what interests you for better experience and recommendations',
+                              style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 15),
+                            ),
+                            const SizedBox(height: 18),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Wrap(
+                                  spacing: 12,
+                                  runSpacing: 12,
+                                  children: _filteredCategories.map((cat) {
+                                    final selected = _selectedCategories.contains(cat);
+                                    return GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          if (selected) {
+                                            _selectedCategories.remove(cat);
+                                          } else {
+                                            _selectedCategories.add(cat);
+                                          }
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                        decoration: BoxDecoration(
                                           color: selected ? selectedColor : unselectedColor,
-                                          width: 2,
+                                          borderRadius: BorderRadius.circular(20),
+                                          border: Border.all(
+                                            color: selected ? selectedColor : unselectedColor,
+                                            width: 2,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            if (selected)
+                                              Icon(Icons.check_circle, color: selectedColor == Colors.amber ? Colors.orange : selectedColor, size: 20),
+                                            if (selected) const SizedBox(width: 4),
+                                            Text(
+                                              cat,
+                                              style: TextStyle(
+                                                color: selected ? selectedTextColor : unselectedTextColor,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          if (selected)
-                                            Icon(Icons.check_circle, color: selectedColor == Colors.amber ? Colors.orange : selectedColor, size: 20),
-                                          if (selected) const SizedBox(width: 4),
-                                          Text(
-                                            cat,
-                                            style: TextStyle(
-                                              color: selected ? selectedTextColor : unselectedTextColor,
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 16,
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            if (_showSearch)
+                              AnimatedPadding(
+                                duration: const Duration(milliseconds: 200),
+                                padding: EdgeInsets.only(bottom: _keyboardHeight > 0 ? _keyboardHeight : 140,),
+                                child: AppSearchBar(
+                                  controller: _searchController,
+                                  hintText: 'Search...',
+                                  showFilterButton: false,
+                                  onChanged: (val) {
+                                    setState(() {
+                                      _search = val;
+                                    });
+                                  },
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      // Celebrities Tab
+                      _loadingCelebs
+                          ? const Center(child: CircularProgressIndicator())
+                          : _celebrities.isEmpty
+                          ? Center(child: Text('No celebrities found', style: TextStyle(color: isDark ? Colors.white : Colors.black)))
+                          : Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          children: [
+                            Center(
+                              child: Text(
+                                'Recommended Celebrities',
+                                style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 28, fontWeight: FontWeight.w900),
+                              ),
+                            ),
+                            const SizedBox(height: 8,),
+                            Expanded(
+                              child: CardSwiper(
+                                controller: _cardController,
+                                cardsCount: _celebrities.length,
+                                onSwipe: (index, previousIndex, direction) {
+                                  return _handleSwipe(index, previousIndex, direction);
+                                },
+                                numberOfCardsDisplayed: 3,
+                                backCardOffset: const Offset(10, -50),
+                                isLoop: false,
+                                allowedSwipeDirection: const AllowedSwipeDirection.all(), // Any swipe advances
+                                threshold: 20,
+                                // Removed `swipeNextOnSwipeCurrent` and `undoLastSwipeEnabled`
+                                // as per previous errors and the request to remove undo.
+                                padding: const EdgeInsets.only(top: 10, bottom: 80),
+                                cardBuilder: (context, index, percentThresholdX, percentThresholdY) {
+                                  if (index >= _celebrities.length) {
+                                    return Container();
+                                  }
+
+                                  final user = _celebrities[index];
+                                  if (user is! CelebrityUser) {
+                                    return Center(
+                                      child: Container(
+                                        height: 300,
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade300,
+                                          borderRadius: BorderRadius.circular(24),
+                                        ),
+                                        child: Center(
+                                          child: Text(user.fullName, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  final celeb = user;
+                                  final isFollowing = _following[celeb.id ?? 0] ?? false;
+
+                                  final tags = <Widget>[];
+                                  if (celeb.occupation.isNotEmpty) tags.add(_buildTag(Icons.work, celeb.occupation));
+                                  if (celeb.nationality.isNotEmpty) tags.add(_buildTag(Icons.flag, celeb.nationality));
+                                  if (celeb.involvedCauses.isNotEmpty) {
+                                    for (var cause in celeb.involvedCauses) {
+                                      tags.add(_buildTag(Icons.volunteer_activism, cause['cause'] ?? ''));
+                                    }
+                                  }
+                                  if (celeb.hobbies.isNotEmpty) {
+                                    for (var hobby in celeb.hobbies) {
+                                      tags.add(_buildTag(Icons.sports_esports, hobby['name'] ?? ''));
+                                    }
+                                  }
+
+                                  return ClipRRect(
+                                    borderRadius: BorderRadius.circular(24),
+                                    child: Stack(
+                                      fit: StackFit.expand,
+                                      children: [
+                                        celeb.profileImageUrl != null
+                                            ? Image.network(
+                                          celeb.profileImageUrl!,
+                                          width: double.infinity,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error, stackTrace) => Container(
+                                            color: Colors.grey.shade300,
+                                            child: const Icon(Icons.person, size: 120, color: Colors.black54),
+                                          ),
+                                        )
+                                            : Container(
+                                          color: Colors.grey.shade300,
+                                          child: const Icon(Icons.person, size: 120),
+                                        ),
+                                        Positioned(
+                                          left: 0,
+                                          right: 0,
+                                          bottom: 0,
+                                          height: 220,
+                                          child: Container(
+                                            decoration: const BoxDecoration(
+                                              gradient: LinearGradient(
+                                                begin: Alignment.bottomCenter,
+                                                end: Alignment.topCenter,
+                                                colors: [
+                                                  Colors.black87,
+                                                  Colors.transparent,
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          if (_showSearch)
-                            AnimatedPadding(
-                              duration: const Duration(milliseconds: 200),
-                              padding: EdgeInsets.only(bottom: _keyboardHeight > 0 ? _keyboardHeight : 140,),
-                              child: AppSearchBar(
-                                controller: _searchController,
-                                hintText: 'Search...',
-                                showFilterButton: false,
-                                onChanged: (val) {
-                                  setState(() {
-                                    _search = val;
-                                  });
-                                },
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    // Celebrities Tab
-                    _loadingCelebs
-                        ? const Center(child: CircularProgressIndicator())
-                        : _celebrities.isEmpty
-                        ? Center(child: Text('No celebrities found', style: TextStyle(color: isDark ? Colors.white : Colors.black)))
-                        : Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        children: [
-                          Center(
-                            child: Text(
-                              'Recommended Celebrities',
-                              style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 28, fontWeight: FontWeight.w900),
-                            ),
-                          ),
-                          const SizedBox(height: 8,),
-                          Expanded(
-                            child: CardSwiper(
-                              controller: _cardController,
-                              cardsCount: _celebrities.length,
-                              onSwipe: (index, previousIndex, direction) {
-                                return _handleSwipe(index, previousIndex, direction);
-                              },
-                              numberOfCardsDisplayed: 3,
-                              backCardOffset: const Offset(10, -50),
-                              isLoop: false,
-                              allowedSwipeDirection: const AllowedSwipeDirection.all(), // Any swipe advances
-                              threshold: 20,
-                              // Removed `swipeNextOnSwipeCurrent` and `undoLastSwipeEnabled`
-                              // as per previous errors and the request to remove undo.
-                              padding: const EdgeInsets.only(top: 10, bottom: 80),
-                              cardBuilder: (context, index, percentThresholdX, percentThresholdY) {
-                                if (index >= _celebrities.length) {
-                                  return Container();
-                                }
-                            
-                                final user = _celebrities[index];
-                                if (user is! CelebrityUser) {
-                                  return Center(
-                                    child: Container(
-                                      height: 300,
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade300,
-                                        borderRadius: BorderRadius.circular(24),
-                                      ),
-                                      child: Center(
-                                        child: Text(user.fullName, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                                      ),
-                                    ),
-                                  );
-                                }
-                                final celeb = user;
-                                final isFollowing = _following[celeb.id ?? 0] ?? false;
-                            
-                                final tags = <Widget>[];
-                                if (celeb.occupation.isNotEmpty) tags.add(_buildTag(Icons.work, celeb.occupation));
-                                if (celeb.nationality.isNotEmpty) tags.add(_buildTag(Icons.flag, celeb.nationality));
-                                if (celeb.involvedCauses.isNotEmpty) {
-                                  for (var cause in celeb.involvedCauses) {
-                                    tags.add(_buildTag(Icons.volunteer_activism, cause['cause'] ?? ''));
-                                  }
-                                }
-                                if (celeb.hobbies.isNotEmpty) {
-                                  for (var hobby in celeb.hobbies) {
-                                    tags.add(_buildTag(Icons.sports_esports, hobby['name'] ?? ''));
-                                  }
-                                }
-                            
-                                return ClipRRect(
-                                  borderRadius: BorderRadius.circular(24),
-                                  child: Stack(
-                                    fit: StackFit.expand,
-                                    children: [
-                                      celeb.profileImageUrl != null
-                                          ? Image.network(
-                                        celeb.profileImageUrl!,
-                                        width: double.infinity,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) => Container(
-                                          color: Colors.grey.shade300,
-                                          child: const Icon(Icons.person, size: 120, color: Colors.black54),
                                         ),
-                                      )
-                                          : Container(
-                                        color: Colors.grey.shade300,
-                                        child: const Icon(Icons.person, size: 120),
-                                      ),
-                                      Positioned(
-                                        left: 0,
-                                        right: 0,
-                                        bottom: 0,
-                                        height: 220,
-                                        child: Container(
-                                          decoration: const BoxDecoration(
-                                            gradient: LinearGradient(
-                                              begin: Alignment.bottomCenter,
-                                              end: Alignment.topCenter,
-                                              colors: [
-                                                Colors.black87,
-                                                Colors.transparent,
+                                        Positioned(
+                                          left: 0,
+                                          right: 0,
+                                          bottom: 80,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(24.0),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      celeb.fullName,
+                                                      style: const TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 30,
+                                                        color: Colors.white,
+                                                      ),
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                    const SizedBox(width: 6),
+                                                    Icon(Icons.verified, color: selectedColor, size: 22),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Wrap(
+                                                  spacing: 8,
+                                                  runSpacing: 4,
+                                                  children: tags,
+                                                ),
+                                                const SizedBox(height: 16),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                  children: [
+                                                    IconButton(onPressed: () => _onLike(index), icon: Icon(Icons.thumb_up_alt_rounded), color: Colors.green,),
+                                                    _buildActionButton(
+                                                      icon: Icons.person_add_rounded,
+                                                      label: isFollowing ? 'Following' : 'Follow',
+                                                      color: isFollowing ? Colors.grey : Colors.amber,
+                                                      onTap: () => _onFollow(index),
+                                                    ),
+                                                    IconButton(onPressed:  () => _onDislike(index), icon: Icon(Icons.thumb_down_alt_rounded), color: Colors.pink,),
+                                                  ],
+                                                ),
                                               ],
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      Positioned(
-                                        left: 0,
-                                        right: 0,
-                                        bottom: 80,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(24.0),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Row(
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    celeb.fullName,
-                                                    style: const TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 30,
-                                                      color: Colors.white,
-                                                    ),
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                  ),
-                                                  const SizedBox(width: 6),
-                                                  Icon(Icons.verified, color: selectedColor, size: 22),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Wrap(
-                                                spacing: 8,
-                                                runSpacing: 4,
-                                                children: tags,
-                                              ),
-                                              const SizedBox(height: 16),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                children: [
-                                                  IconButton(onPressed: () => _onLike(index), icon: Icon(Icons.thumb_up_alt_rounded), color: Colors.green,),
-                                                  _buildActionButton(
-                                                    icon: Icons.person_add_rounded,
-                                                    label: isFollowing ? 'Following' : 'Follow',
-                                                    color: isFollowing ? Colors.grey : Colors.amber,
-                                                    onTap: () => _onFollow(index),
-                                                  ),
-                                                  IconButton(onPressed:  () => _onDislike(index), icon: Icon(Icons.thumb_down_alt_rounded), color: Colors.pink,),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (_tabIndex == 0) ...[
+              Positioned(
+                bottom: 80,
+                right: 16,
+                child: FloatingActionButton(
+                  backgroundColor: Colors.orange.shade200,
+                  child: const Icon(Icons.search, color: Colors.black),
+                  onPressed: () {
+                    setState(() {
+                      _showSearch = !_showSearch;
+                      if (!_showSearch) {
+                        _search = '';
+                        _searchController.clear();
+                        FocusScope.of(context).unfocus();
+                      } else {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                      }
+                    });
+                  },
                 ),
               ),
             ],
-          ),
-          if (_tabIndex == 0) ...[
-            // if (_showSearch)
-            //   Positioned(
-            //     left: 16,
-            //     right: 16,
-            //     bottom: _keyboardHeight > 0 ? _keyboardHeight + 80 : 140,
-            //     child: AppSearchBar(
-            //       controller: _searchController,
-            //       hintText: 'Search...',
-            //       showFilterButton: false,
-            //       onChanged: (val) {
-            //         setState(() {
-            //           _search = val;
-            //         });
-            //       },
-            //     ),
-            //   ),
             Positioned(
-              bottom: 80,
+              bottom: 40,
+              right: 10,
+              left: 10,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 0, bottom: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(2, (index) {
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      margin: const EdgeInsets.symmetric(horizontal: 6),
+                      height: 8,
+                      width: _tabIndex == index ? 28 : 14,
+                      decoration: BoxDecoration(
+                        color: _tabIndex == index ? selectedColor : unselectedColor,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 16,
               right: 16,
-              child: FloatingActionButton(
-                backgroundColor: Colors.orange.shade200,
-                child: const Icon(Icons.search, color: Colors.black),
-                onPressed: () {
-                  setState(() {
-                    _showSearch = !_showSearch;
-                    if (!_showSearch) {
-                      _search = '';
-                      _searchController.clear();
-                      FocusScope.of(context).unfocus();
-                    } else {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                    }
-                  });
-                },
+              child: AppTextButton(
+                text: AppLocalizations.of(context)!.skip,
+                onPressed: _tabIndex == 0 ? _onSkipInterestsTab : _onSkipCelebritiesTab,
               ),
             ),
           ],
-          Positioned(
-            bottom: 40,
-            right: 10,
-            left: 10,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 0, bottom: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(2, (index) {
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    margin: const EdgeInsets.symmetric(horizontal: 6),
-                    height: 8,
-                    width: _tabIndex == index ? 28 : 14,
-                    decoration: BoxDecoration(
-                      color: _tabIndex == index ? selectedColor : unselectedColor,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  );
-                }),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 16,
-            right: 16,
-            child: AppTextButton(
-              text: AppLocalizations.of(context)!.skip,
-              onPressed: _tabIndex == 0 ? _onSkipInterestsTab : _onSkipCelebritiesTab,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
