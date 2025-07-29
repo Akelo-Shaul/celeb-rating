@@ -11,6 +11,7 @@ import 'package:celebrating/screens/flicks_page.dart';
 import 'package:celebrating/screens/hall_of_fame.dart';
 import 'package:celebrating/screens/head_to_head_screen.dart';
 import 'package:celebrating/screens/live_stream_detail_page.dart';
+import 'package:celebrating/screens/notification_screen.dart';
 import 'package:celebrating/screens/onboarding_screen.dart';
 import 'package:celebrating/screens/post_detail_screen.dart';
 import 'package:celebrating/screens/profile_page.dart';
@@ -23,6 +24,7 @@ import 'package:celebrating/screens/verification_screen.dart';
 import 'package:celebrating/screens/versus_screen.dart';
 import 'package:celebrating/screens/view_profile_screen.dart';
 import 'package:celebrating/screens/web_view_screen.dart'; // Correct import for WebViewScreen
+import 'package:celebrating/screens/celebrity_rankings_screen.dart';
 import 'package:celebrating/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -107,6 +109,11 @@ class AppRouter {
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        name: 'notifications',
+        builder: (context, state) => const NotificationScreen(),
       ),
       GoRoute(
         path: '/chat',
@@ -219,6 +226,11 @@ class AppRouter {
                 path: 'award', // Updated path to be relative to /feed
                 name: 'award',
                 builder: (context, state) => const AwardScreen(),
+              ),
+              GoRoute(
+                path: 'celebrity-rankings',
+                name: 'celebrityRankings',
+                builder: (context, state) => const CelebrityRankingsScreen(),
               ),
             ],
           ),

@@ -374,7 +374,7 @@ class _AuthScreenState extends State<AuthScreen> {
             child: DropdownButton<SupportedLanguage>(
               icon: const Icon(Icons.language, color: Colors.white),
               value: supportedLanguages.firstWhere(
-                (l) => l.code == currentLocale?.languageCode,
+                    (l) => l.code == currentLocale?.languageCode,
                 orElse: () => supportedLanguages[0],
               ),
               items: supportedLanguages.map((lang) => DropdownMenuItem(
@@ -402,8 +402,8 @@ class _AuthScreenState extends State<AuthScreen> {
             Center(
               child: Text(
                 _pageController.hasClients && _pageController.page == 1
-                  ? AppLocalizations.of(context)!.joinTheCommunitySignUp
-                  : AppLocalizations.of(context)!.joinTheCommunitySignIn,
+                    ? AppLocalizations.of(context)!.joinTheCommunitySignUp
+                    : AppLocalizations.of(context)!.joinTheCommunitySignIn,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),

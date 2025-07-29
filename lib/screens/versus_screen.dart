@@ -27,6 +27,7 @@ class _VersusScreenState extends State<VersusScreen> {
   VersusUser? _selectedUser1;
   VersusUser? _selectedUser2;
   bool _isLoading = false;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -42,27 +43,27 @@ class _VersusScreenState extends State<VersusScreen> {
     super.dispose();
   }
 
+  void _clearSelection() {
+    setState(() {
+      _selectedUser1 = null;
+      _selectedUser2 = null;
+      _searchController.clear();
+      _searchQuery = '';
+      _searchUserResults = List.from(_allUsers);
+    });
+  }
+
   void _performSearch(String query) {
     setState(() {
-      _isLoading = true;
-    });
-    SearchService.searchUsers(query).then((results) {
-      setState(() {
-        final users = results.map(VersusUser.fromUser).toList();
-        if (_selectedUser1 == null) {
-          _searchUserResults = users;
-        } else {
-          // Filter out the first selected user for second selection
-          _searchUserResults = users.where((u) => u.id != _selectedUser1!.id).toList();
-        }
-        _isLoading = false;
-      });
-    }).catchError((error) {
-      setState(() {
-        _isLoading = false;
-        _searchUserResults = [];
-      });
-      print('Error searching users: $error');
+      _searchQuery = query;
+      _isLoading = false; // No async search, just filter locally
+      if (_selectedUser1 == null) {
+        _searchUserResults = _allUsers.where((u) => u.name.toLowerCase().contains(query.toLowerCase())).toList();
+      } else {
+        _searchUserResults = _allUsers
+            .where((u) => u.id != _selectedUser1!.id && u.name.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
     });
   }
 
@@ -97,23 +98,27 @@ class _VersusScreenState extends State<VersusScreen> {
   }
 
   Widget _buildInitialTrendingUsers() {
-    // Show all possible versus pairs from _allUsers
+    // Show all possible versus pairs from _allUsers, filtered by search
     final List<Widget> versusPairs = [];
     for (int i = 0; i < _allUsers.length; i++) {
       for (int j = 0; j < _allUsers.length; j++) {
         if (i != j) {
           final user1 = _allUsers[i];
           final user2 = _allUsers[j];
-          versusPairs.add(
-            _VersusUserPairListItem(
-              user1: user1,
-              user2: user2,
-              onTap: () {
-                _selectUser1(user1);
-                _selectUser2(user2);
-              },
-            ),
-          );
+          if (_searchQuery.isEmpty ||
+              user1.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+              user2.name.toLowerCase().contains(_searchQuery.toLowerCase())) {
+            versusPairs.add(
+              _VersusUserPairListItem(
+                user1: user1,
+                user2: user2,
+                onTap: () {
+                  _selectUser1(user1);
+                  _selectUser2(user2);
+                },
+              ),
+            );
+          }
         }
       }
     }
@@ -129,10 +134,12 @@ class _VersusScreenState extends State<VersusScreen> {
           ),
         ),
         Expanded(
-          child: ListView(
-            padding: const EdgeInsets.symmetric(vertical: 0),
-            children: versusPairs,
-          ),
+          child: versusPairs.isEmpty
+              ? const Center(child: Text('No trending pairs found.'))
+              : ListView(
+                  padding: const EdgeInsets.symmetric(vertical: 0),
+                  children: versusPairs,
+                ),
         ),
       ],
     );
@@ -141,34 +148,31 @@ class _VersusScreenState extends State<VersusScreen> {
   Widget _buildFirstUserSearchResults() {
     return _isLoading
         ? const Center(child: CircularProgressIndicator())
-        : ListView.builder(
-      itemCount: _searchUserResults.length,
-      itemBuilder: (context, i) {
-        final versusUser = _searchUserResults[i];
-        // Assuming SearchService.dummyUsers has the full User object
-        final user = SearchService.dummyUsers.firstWhere(
-              (u) => u.id.toString() == versusUser.id,
-          // You might want to use .firstWhereOrNull or provide a fallback
-          // if there's a chance the user won't be found.
-          // For this example, assuming it will always be found.
-        );
-        return GestureDetector(
-          onTap: () => _selectUser1(versusUser),
-          child: SearchUserCard(user: user),
-        );
-      },
-    );
+        : _searchUserResults.isEmpty
+            ? const Center(child: Text('No users found.'))
+            : ListView.builder(
+                itemCount: _searchUserResults.length,
+                itemBuilder: (context, i) {
+                  final versusUser = _searchUserResults[i];
+                  final user = SearchService.dummyUsers.firstWhere(
+                    (u) => u.id.toString() == versusUser.id,
+                  );
+                  return GestureDetector(
+                    onTap: () => _selectUser1(versusUser),
+                    child: SearchUserCard(user: user),
+                  );
+                },
+              );
   }
 
   Widget _buildSecondUserSelection() {
-    // Use _searchUserResults for second user selection
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(vertical: 8.0),
           child: Text(
-            'Suggested Versus',
+            'Select Opponent',
             textAlign: TextAlign.center,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
@@ -176,18 +180,20 @@ class _VersusScreenState extends State<VersusScreen> {
         Expanded(
           child: _isLoading
               ? const Center(child: CircularProgressIndicator())
-              : ListView.builder(
-            itemCount: _searchUserResults.length,
-            padding: const EdgeInsets.symmetric(vertical: 0),
-            itemBuilder: (context, i) {
-              final user = _searchUserResults[i];
-              return _VersusUserPairListItem(
-                user1: _selectedUser1!,
-                user2: user,
-                onTap: () => _selectUser2(user),
-              );
-            },
-          ),
+              : _searchUserResults.isEmpty
+                  ? const Center(child: Text('No users found.'))
+                  : ListView.builder(
+                      itemCount: _searchUserResults.length,
+                      padding: const EdgeInsets.symmetric(vertical: 0),
+                      itemBuilder: (context, i) {
+                        final user = _searchUserResults[i];
+                        return _VersusUserPairListItem(
+                          user1: _selectedUser1!,
+                          user2: user,
+                          onTap: () => _selectUser2(user),
+                        );
+                      },
+                    ),
         ),
       ],
     );
@@ -443,19 +449,34 @@ class _VersusScreenState extends State<VersusScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
             ),
             const SizedBox(height: 8),
-            // Only show user containers if a user is selected
             if (_selectedUser1 != null) ...[
               _buildSelectedUserContainers(),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: _clearSelection,
+                    icon: const Icon(Icons.clear),
+                    label: const Text('Clear Selection'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey[200],
+                      foregroundColor: Colors.black,
+                      elevation: 0,
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 8),
             ],
             Expanded(
               child: _selectedUser1 == null
                   ? (_searchController.text.isEmpty
-                  ? _buildInitialTrendingUsers()
-                  : _buildFirstUserSearchResults())
+                      ? _buildInitialTrendingUsers()
+                      : _buildFirstUserSearchResults())
                   : (_selectedUser2 == null
-                  ? _buildSecondUserSelection()
-                  : _buildSelectedVersusDisplay()),
+                      ? _buildSecondUserSelection()
+                      : _buildSelectedVersusDisplay()),
             ),
           ],
         ),

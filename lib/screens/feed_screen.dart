@@ -9,6 +9,7 @@ import '../services/feed_service.dart';
 import '../services/user_service.dart';
 import '../widgets/app_buttons.dart';
 import '../widgets/app_dropdown.dart';
+import '../widgets/notification_button.dart';
 import '../widgets/post_card.dart';
 import '../widgets/profile_avatar.dart';
 import '../widgets/video_player_widget.dart';
@@ -158,7 +159,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 fontSize: 20,
                 onPressed: () {
                   print('Ranks tapped');
-                  context.pushNamed('award'); // Pushes onto /feed stack
+                  context.pushNamed('celebrityRankings');
                   Navigator.pop(context);
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
@@ -214,14 +215,14 @@ class _FeedScreenState extends State<FeedScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
               ),
-              AppTransparentButton(
+              NotificationButton(
                 text: 'Notifications',
                 icon: Icons.notifications,
                 // iconColor: Colors.blueAccent, // Custom icon color
                 fontSize: 20,
                 onPressed: () {
                   print('Notifications tapped');
-                  //TODO: Add navigation logic
+                  context.push('/notifications');
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners

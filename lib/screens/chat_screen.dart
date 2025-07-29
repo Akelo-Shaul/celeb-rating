@@ -132,6 +132,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         elevation: 0,
         title: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -144,7 +145,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
               Icon(Icons.search, color: secondaryTextColor, size: 20),
               const SizedBox(width: 8),
               Expanded(
-                                 child: TextField(
+                 child: TextField(
                    decoration: InputDecoration(
                      hintText: 'Search',
                      hintStyle: TextStyle(color: secondaryTextColor),
@@ -160,6 +161,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
         ),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildTabBar(isDark),
           Expanded(

@@ -4,6 +4,7 @@ class HallOfFamer {
   final String nationality;
   final String achievement;
   final String imageUrl;
+  final String category;
 
-  HallOfFamer(this.id, this.username, this.nationality, this.achievement, this.imageUrl);
+  HallOfFamer(this.id, this.username, this.nationality, this.achievement, this.imageUrl, this.category);
 }

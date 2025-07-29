@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/celeb_rank.dart';
+import '../models/leaderboard_entry.dart';
 import '../widgets/app_dropdown.dart';
 import '../widgets/app_search_bar.dart';
 import '../services/award_service.dart';
 import '../widgets/profile_avatar.dart';
 import '../services/celeb_ranks_service.dart';
+import '../services/leaderboard_service.dart';
 
 class AwardScreen extends StatefulWidget {
   const AwardScreen({super.key});
@@ -17,16 +19,163 @@ class AwardScreen extends StatefulWidget {
 
 class _AwardScreenState extends State<AwardScreen> {
   late final List<CelebRank> _ranks;
-  String _selectedCategory = 'General';
-  final List<String> _categories = [
-    'General',
-    'Music',
-    'Sports',
-    'Film',
-    'Fashion',
-    'Business',
-    'Other',
-  ];
+
+  // Filter state for leaderboard
+  String _selectedLocation = 'All Locations';
+  String _selectedCategory = 'All Categories';
+
+  // Get filtered celebrities from service
+  List<LeaderboardEntry> get _filteredCelebrities {
+    return LeaderboardService.getFilteredCelebrities(
+      selectedLocation: _selectedLocation,
+      selectedCategory: _selectedCategory,
+    );
+  }
+
+  void _showFilterDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              backgroundColor: isDark ? Colors.grey[900] : Colors.white,
+              title: Text(
+                'Filter Leaderboard',
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Location Filter
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Location',
+                          style: TextStyle(
+                            color: isDark ? Colors.white : Colors.black,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: DropdownButtonFormField<String>(
+                            value: _selectedLocation,
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            ),
+                            dropdownColor: isDark ? Colors.grey[800] : Colors.white,
+                            style: TextStyle(
+                              color: isDark ? Colors.white : Colors.black,
+                            ),
+                            items: LeaderboardService.getLocationOptions().map((String location) {
+                              return DropdownMenuItem<String>(
+                                value: location,
+                                child: Text(location),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                _selectedLocation = newValue!;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    // Category Filter
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Category',
+                          style: TextStyle(
+                            color: isDark ? Colors.white : Colors.black,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: DropdownButtonFormField<String>(
+                            value: _selectedCategory,
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            ),
+                            dropdownColor: isDark ? Colors.grey[800] : Colors.white,
+                            style: TextStyle(
+                              color: isDark ? Colors.white : Colors.black,
+                            ),
+                            items: LeaderboardService.getCategoryOptions().map((String category) {
+                              return DropdownMenuItem<String>(
+                                value: category,
+                                child: Text(category),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                _selectedCategory = newValue!;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    this.setState(() {
+                      _selectedLocation = _selectedLocation;
+                      _selectedCategory = _selectedCategory;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Apply'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   final TextEditingController _searchController = TextEditingController();
   @override
   void initState() {
@@ -35,276 +184,222 @@ class _AwardScreenState extends State<AwardScreen> {
   }
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Celebrity Rankings"),
-        centerTitle: true,
-      ),
       body: SafeArea(
-        child: Column(
-          children: [
-            AppSearchBar(
-              controller: _searchController,
-              hintText: AppLocalizations.of(context)!.searchHint,
-              onChanged: (value) {
-                // _performSearch(value);
-              },
-              onSearchPressed: () {
-                // _performSearch(_searchController.text);
-                FocusScope.of(context).unfocus();
-              },
-              onFilterPressed: () {
-                print('Filter button pressed');
-              },
-              showSearchButton: true,
-              showFilterButton: true,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            ),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: SizedBox(
-                  width: 130,
-                  child: AppDropdown<String>(
-                    labelText: 'Category',
-                    value: _selectedCategory,
-                    items: _categories
-                        .map((cat) => DropdownMenuItem(
-                              value: cat,
-                              child: Text(cat),
-                            ))
-                        .toList(),
-                    onChanged: (String? newValue) {
-                      if (newValue != null) {
-                        setState(() {
-                          _selectedCategory = newValue;
-                        });
-                        // TODO: Filter your data by category
-                      }
-                    },
-                    isFormField: false,
-                  ),
-                ),
-              ),
-            ),
-
-            // Podium and ranking table
-            const SizedBox(height: 12),
-            // Podium for top 3
-            SizedBox(
-              height: 150,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (_ranks.length > 1)
-                    _PodiumPlace(
-                      place: 2,
-                      name: _ranks[1].name,
-                      icon: Icons.emoji_events,
-                      iconColor: Color(0xFFB0B0B0),
-                      iconSize: 28,
-                      offsetY: 32,
-                      imageUrl: _ranks[1].imageUrl,
-                      fadedCircleSize: 70,
-                      iconAbove: false,
-                    ),
-                  if (_ranks.isNotEmpty)
-                    _PodiumPlace(
-                      place: 1,
-                      name: _ranks[0].name,
-                      icon: Icons.emoji_events,
-                      iconColor: Color(0xFFFFC107),
-                      iconSize: 36,
-                      offsetY: 0,
-                      imageUrl: _ranks[0].imageUrl,
-                      fadedCircleSize: 100,
-                      iconAbove: true,
-                    ),
-                  if (_ranks.length > 2)
-                    _PodiumPlace(
-                      place: 3,
-                      name: _ranks[2].name,
-                      icon: Icons.emoji_events,
-                      iconColor: Color(0xFFCD7F32),
-                      iconSize: 28,
-                      offsetY: 48,
-                      imageUrl: _ranks[2].imageUrl,
-                      fadedCircleSize: 60,
-                      iconAbove: false,
-                    ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Table header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                children: const [
-                  SizedBox(width: 40, child: Text('')), // For rank
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      'Celeb Profile',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      'Ranking',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.right,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Table rows
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
-                itemCount: _ranks.length - 3,
-                itemBuilder: (context, i) {
-                  final rank = _ranks[i + 3];
-                  return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    decoration: BoxDecoration(
-                      color: i % 2 == 0 ? Colors.grey.withOpacity(0.08) : Colors.grey.withOpacity(0.18),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 36,
-                          height: 36,
-                          margin: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.deepOrange,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            '${rank.rank}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                        CircleAvatar(
-                          radius: 16,
-                          backgroundColor: Colors.white,
-                          backgroundImage: rank.imageUrl != null ? NetworkImage(rank.imageUrl!) : null,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          flex: 2,
-                          child: Text(
-                            rank.name,
-                            style: const TextStyle(fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Text(
-                            rank.score.toStringAsFixed(1),
-                            textAlign: TextAlign.right,
-                            style: const TextStyle(fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                        const SizedBox(width: 8,),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-
-  }
-}
-
-
-class _PodiumPlace extends StatelessWidget {
-  final int place;
-  final String name;
-  final IconData icon;
-  final Color iconColor;
-  final double iconSize;
-  final double offsetY;
-  final String? imageUrl;
-  final double fadedCircleSize;
-  final bool iconAbove;
-  const _PodiumPlace({
-    required this.place,
-    required this.name,
-    required this.icon,
-    required this.iconColor,
-    required this.iconSize,
-    required this.offsetY,
-    this.imageUrl,
-    this.fadedCircleSize = 80,
-    this.iconAbove = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: offsetY),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.center,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
             children: [
-              Container(
-                width: fadedCircleSize,
-                height: fadedCircleSize,
-                decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.18),
-                  shape: BoxShape.circle,
+              // Header
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Celebrity Leaderboards',
+                      style: TextStyle(
+                        color: Color(0xFFD6AF0C),
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.search,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                    onPressed: () {
+                      // TODO: Implement search
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.filter_list,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                    onPressed: _showFilterDialog,
+                  ),
+                ],
+              ),
+              Text(
+                LeaderboardService.getSubtitle(
+                  selectedLocation: _selectedLocation,
+                  selectedCategory: _selectedCategory,
+                ),
+                style: TextStyle(
+                  color: isDark ? Colors.grey[400] : Colors.grey[600],
+                  fontSize: 14,
                 ),
               ),
-              ProfileAvatar(
-                radius: fadedCircleSize / 2.5,
-                imageUrl: imageUrl != null ? imageUrl! : null,
-                backgroundColor: const Color(0xFF9E9E9E),
+              const SizedBox(height: 20),
+        
+              // Leaderboard Table
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: _filteredCelebrities.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final celebrity = entry.value;
+                      final rank = index + 1;
+        
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.grey[900] : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isDark ? Colors.grey[800]! : Colors.grey[200]!,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            // Rank
+                            Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: rank == 1 ? Colors.amber :
+                                rank == 2 ? Colors.grey[400] :
+                                rank == 3 ? Colors.orange[700] :
+                                Colors.grey[600],
+                              ),
+                              child: Center(
+                                child: Text(
+                                  '$rank',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+        
+                            // Celebrity Info
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  // Profile Image
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                                                      child: Image.network(
+                                    celebrity.image,
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Container(
+                                          width: 50,
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey[300],
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: Icon(
+                                            Icons.person,
+                                            color: Colors.grey[600],
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+        
+                                  // Name and Details
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          celebrity.name,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        Text(
+                                          '${celebrity.category} • ${celebrity.country}',
+                                          style: TextStyle(
+                                            color: isDark ? Colors.grey[400] : Colors.grey[600],
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+        
+                            // Followers
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  celebrity.followers,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                Text(
+                                  'Followers',
+                                  style: TextStyle(
+                                    color: isDark ? Colors.grey[400] : Colors.grey[600],
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 16),
+        
+                            // Score
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  '${celebrity.score}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                Text(
+                                  'Score',
+                                  style: TextStyle(
+                                    color: isDark ? Colors.grey[400] : Colors.grey[600],
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 16),
+        
+                            // Trend
+                            Icon(
+                              celebrity.trend == 'up' ? Icons.trending_up :
+                              celebrity.trend == 'down' ? Icons.trending_down :
+                              Icons.remove,
+                              color: celebrity.trend == 'up' ? Colors.green :
+                              celebrity.trend == 'down' ? Colors.red :
+                              Colors.grey,
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
               ),
-              // Icon placement for 1st, 2nd, 3rd
-              if (place == 1)
-                Positioned(
-                  top: -fadedCircleSize * 0.20,
-                  right: -fadedCircleSize * 0.10,
-                  child: Icon(icon, color: Colors.amber, size: fadedCircleSize / 2.2),
-                ),
-              if (place == 2)
-                Positioned(
-                  bottom: -fadedCircleSize * 0.12,
-                  right: -fadedCircleSize * 0.10,
-                  child: Icon(icon, color: iconColor, size: fadedCircleSize / 2.5),
-                ),
-              if (place == 3)
-                Positioned(
-                  bottom: -fadedCircleSize * 0.10,
-                  right: -fadedCircleSize * 0.10,
-                  child: Icon(icon, color: iconColor, size: fadedCircleSize / 2.5),
-                ),
             ],
           ),
-          const SizedBox(height: 6),
-          Text(
-            name,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-          ),
-        ],
+        ),
       ),
     );
   }
