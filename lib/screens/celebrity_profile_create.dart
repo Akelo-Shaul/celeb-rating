@@ -22,6 +22,25 @@ class CelebrityProfileCreate extends StatefulWidget {
 class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
   int _currentIndex = 0;
 
+  // Celebrity fields list
+  final List<String> _celebrityFields = [
+    'Music',
+    'Football',
+    'Basketball',
+    'Acting',
+    'Comedy',
+    'Art',
+    'Fashion',
+    'Politics',
+    'Business',
+    'Technology'
+  ];
+  String? _selectedCelebrityField;
+
+  // Socials list
+  List<Map<String, dynamic>> _socialsList = [];
+  bool _isAddingSocial = false;
+
   // Additions for family search
   List<User> _allUsers = [];
   List<User> _filteredUsers = [];
@@ -37,12 +56,13 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
   final TextEditingController _institutionController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
 
-  // --- MISSING VARIABLES FOR _updateProfile ---
+  // --- Profile Variables ---
   final GlobalKey<FormState> _formKeyUpdateProfile = GlobalKey<FormState>();
   String? _updateStageName;
   String? _updateSign;
   String? _updateReligion;
   String? _updateNetWorth;
+  String? _updateCelebrityField;
   bool _isSubmitting = false;
 
   void _submitUpdates() async {
@@ -176,6 +196,54 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                 children: [
                   Expanded(child: _addEducation()),
                   if (_qualifications.isNotEmpty)
+                    SizedBox.shrink(),
+                ],
+              ),
+            if (_currentIndex == 5)
+              Column(
+                children: [
+                  Expanded(child: _addSocials()),
+                  if (_socialsList.isNotEmpty)
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Card(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Text(
+                                'Added Social Media',
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: _socialsList.length,
+                              itemBuilder: (context, index) {
+                                final social = _socialsList[index];
+                                return ListTile(
+                                  leading: const Icon(Icons.link),
+                                  title: Text(social['platform'] ?? ''),
+                                  subtitle: Text(social['link'] ?? ''),
+                                  trailing: IconButton(
+                                    icon: const Icon(Icons.delete),
+                                    onPressed: () {
+                                      setState(() {
+                                        _socialsList.removeAt(index);
+                                      });
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     SizedBox(
                       height: 220, // Adjust height as needed
                       child: ListView(
@@ -651,6 +719,76 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                 context.goNamed('feed');
               },
             ), mainButton: null,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Add Socials
+  final TextEditingController _socialPlatformController = TextEditingController();
+  final TextEditingController _socialLinkController = TextEditingController();
+
+  Widget _addSocials() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              children: [
+                const SizedBox(height: 40),
+                Text(
+                  'Add Social Media',
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                Text('Add your social media platforms and links.', textAlign: TextAlign.center),
+                const SizedBox(height: 24),
+                TextFormField(
+                  controller: _socialPlatformController,
+                  decoration: const InputDecoration(
+                    labelText: 'Platform (e.g. Instagram)',
+                    prefixIcon: Icon(Icons.alternate_email),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _socialLinkController,
+                  decoration: const InputDecoration(
+                    labelText: 'Link',
+                    prefixIcon: Icon(Icons.link),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                AppButton(
+                  text: 'Add Social',
+                  icon: Icons.add_link,
+                  onPressed: () {
+                    final platform = _socialPlatformController.text.trim();
+                    final link = _socialLinkController.text.trim();
+                    if (platform.isNotEmpty && link.isNotEmpty) {
+                      setState(() {
+                        _socialsList.add({'platform': platform, 'link': link});
+                        _socialPlatformController.clear();
+                        _socialLinkController.clear();
+                      });
+                    }
+                  },
+                  backgroundColor: const Color(0xFFD6AF0C),
+                  textColor: Colors.white,
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+          _BottomActions(
+            mainButton: AppButton(
+              text: 'Skip',
+              icon: Icons.skip_next,
+              onPressed: _goToNextTab,
+            ),
           ),
         ],
       ),

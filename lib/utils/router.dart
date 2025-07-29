@@ -396,7 +396,8 @@ class AppRouter {
       '/onboarding',
       '/verification',
       '/create-celebrity-profile', // This is part of registration flow
-      '/camera'
+      '/camera',
+      '/interests-selection'
     ];
     final isGoingToPublicRoute = publicRoutes.contains(state.matchedLocation);
 
