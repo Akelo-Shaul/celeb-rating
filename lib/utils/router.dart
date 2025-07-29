@@ -35,6 +35,7 @@ import 'dart:async'; // For StreamSubscription
 import 'package:celebrating/services/user_service.dart';
 
 import '../models/versus_user.dart'; // For fetching user
+import 'package:celebrating/screens/interests_selection_screen.dart';
 
 class AppRouter {
   final AuthService _authService;
@@ -100,6 +101,11 @@ class AppRouter {
             final returnRoute = state.uri.queryParameters['returnRoute'] ?? '/auth';
             return CameraScreen(returnRoute: returnRoute);
           }
+      ),
+      GoRoute(
+        path: '/interests-selection',
+        name: 'interestsSelection',
+        builder: (context, state) => const InterestsSelectionScreen(),
       ),
 
       // Auth Required Routes (without bottom nav)

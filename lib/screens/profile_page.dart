@@ -878,7 +878,7 @@ class _ProfilePageState extends State<ProfilePage>
             children: [
               // Sign
               Text(
-                '${AppLocalizations.of(context)!.sign}: ${celeb.zodiacSign}',
+                '${AppLocalizations.of(context)!.zodiacSign}: ${celeb.zodiacSign}',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

@@ -20,8 +20,8 @@ class _AddEducationModalState extends State<AddEducationModal> {
   final _formKey = GlobalKey<FormState>();
 
   // Declaring missing controllers
-  final TextEditingController _universityController = TextEditingController();
-  final TextEditingController _degreeController = TextEditingController();
+  final TextEditingController _institutionController = TextEditingController();
+  final TextEditingController _qualificationController = TextEditingController();
   final TextEditingController _valueController = TextEditingController(); // This was already declared but now its purpose is clearer as year of completion.
 
   // Removed unused variables:
@@ -32,8 +32,8 @@ class _AddEducationModalState extends State<AddEducationModal> {
 
   @override
   void dispose() {
-    _universityController.dispose(); // Dispose the new controller
-    _degreeController.dispose();    // Dispose the new controller
+    _institutionController.dispose(); // Dispose the new controller
+    _qualificationController.dispose();    // Dispose the new controller
     _valueController.dispose();
     super.dispose();
   }
@@ -41,8 +41,8 @@ class _AddEducationModalState extends State<AddEducationModal> {
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
     widget.onAdd({
-      'university': _universityController.text.trim(), // Renamed 'name' to 'university'
-      'degree': _degreeController.text.trim(),       // Renamed 'description' to 'degree'
+      'institution': _institutionController.text.trim(), // Renamed 'name' to 'university'
+      'qualification': _qualificationController.text.trim(),       // Renamed 'description' to 'degree'
       'yearOfCompletion': _valueController.text.trim(), // Renamed 'value' to 'yearOfCompletion'
       // Removed 'category' as it's not used in the form
     });
@@ -98,7 +98,7 @@ class _AddEducationModalState extends State<AddEducationModal> {
                 ),
                 const SizedBox(height: 14),
                 TextFormField(
-                  controller: _universityController, // Declared and used
+                  controller: _institutionController, // Declared and used
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)!.certifyingUniversity,
                     prefixIcon: Icon(Icons.account_balance),
@@ -107,7 +107,7 @@ class _AddEducationModalState extends State<AddEducationModal> {
                 ),
                 const SizedBox(height: 14),
                 TextFormField(
-                  controller: _degreeController, // Declared and used
+                  controller: _qualificationController, // Declared and used
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)!.degreeLabel,
                     prefixIcon: Icon(Icons.school),

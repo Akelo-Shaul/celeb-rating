@@ -32,9 +32,9 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
   List<Map<String, String>> _educationList = [];
 
   // For education degrees
-  final List<Map<String, String>> _degrees = [];
-  final TextEditingController _degreeController = TextEditingController();
-  final TextEditingController _universityController = TextEditingController();
+  final List<Map<String, String>> _qualifications = [];
+  final TextEditingController _qualificationController = TextEditingController();
+  final TextEditingController _institutionController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
 
   // --- MISSING VARIABLES FOR _updateProfile ---
@@ -175,7 +175,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
               Column(
                 children: [
                   Expanded(child: _addEducation()),
-                  if (_degrees.isNotEmpty)
+                  if (_qualifications.isNotEmpty)
                     SizedBox(
                       height: 220, // Adjust height as needed
                       child: ListView(
@@ -189,7 +189,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          ..._degrees.map((deg) => Card(
+                          ..._qualifications.map((deg) => Card(
                             margin: const EdgeInsets.symmetric(vertical: 4),
                             child: ListTile(
                               leading: const Icon(Icons.school),
@@ -547,7 +547,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                 Text('Add Education Information', textAlign: TextAlign.center),
                 const SizedBox(height: 24),
                 TextFormField(
-                  controller: _universityController,
+                  controller: _institutionController,
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)!.certifyingUniversity,
                     prefixIcon: Icon(Icons.account_balance),
@@ -558,7 +558,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                 const SizedBox(height: 14),
 
                 TextFormField(
-                  controller: _degreeController,
+                  controller: _qualificationController,
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)!.degreeLabel,
                     prefixIcon: Icon(Icons.school),
@@ -588,29 +588,29 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                   text: AppLocalizations.of(context)!.addEducation,
                   icon: Icons.add,
                   onPressed: () {
-                    final degree = _degreeController.text.trim();
-                    final university = _universityController.text.trim();
+                    final degree = _qualificationController.text.trim();
+                    final institution = _institutionController.text.trim();
                     final year = _yearController.text.trim();
-                    if (degree.isEmpty || university.isEmpty || year.isEmpty) {
+                    if (degree.isEmpty || institution.isEmpty || year.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(AppLocalizations.of(context)!.pleaseFillAllFieldsToAddDegree)),
                       );
                       return;
                     }
                     setState(() {
-                      _degrees.add({
+                      _qualifications.add({
                         'degree': degree,
-                        'university': university,
+                        'institution': institution,
                         'year': year,
                       });
-                      _degreeController.clear();
-                      _universityController.clear();
+                      _qualificationController.clear();
+                      _institutionController.clear();
                       _yearController.clear();
                     });
                   },
                 ),
                 const SizedBox(height: 24),
-                if (_degrees.isNotEmpty)
+                if (_qualifications.isNotEmpty)
                   SizedBox(
                     height: 220, // Adjust height as needed
                     child: ListView(
@@ -624,12 +624,12 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        ..._degrees.map((deg) => Card(
+                        ..._qualifications.map((deg) => Card(
                           margin: const EdgeInsets.symmetric(vertical: 4),
                           child: ListTile(
                             leading: const Icon(Icons.school),
                             title: Text(
-                              '${deg['university']} (${deg['year']})',
+                              '${deg['institution']} (${deg['year']})',
                               style: theme.textTheme.bodyMedium?.copyWith(color: secondaryTextColor),
                             ),
                             subtitle: Text(

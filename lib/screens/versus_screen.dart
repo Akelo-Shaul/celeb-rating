@@ -57,13 +57,13 @@ class _VersusScreenState extends State<VersusScreen> {
     setState(() {
       _searchQuery = query;
       _isLoading = false; // No async search, just filter locally
-      if (_selectedUser1 == null) {
+        if (_selectedUser1 == null) {
         _searchUserResults = _allUsers.where((u) => u.name.toLowerCase().contains(query.toLowerCase())).toList();
-      } else {
+        } else {
         _searchUserResults = _allUsers
             .where((u) => u.id != _selectedUser1!.id && u.name.toLowerCase().contains(query.toLowerCase()))
             .toList();
-      }
+        }
     });
   }
 
@@ -108,16 +108,16 @@ class _VersusScreenState extends State<VersusScreen> {
           if (_searchQuery.isEmpty ||
               user1.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
               user2.name.toLowerCase().contains(_searchQuery.toLowerCase())) {
-            versusPairs.add(
-              _VersusUserPairListItem(
-                user1: user1,
-                user2: user2,
-                onTap: () {
-                  _selectUser1(user1);
-                  _selectUser2(user2);
-                },
-              ),
-            );
+          versusPairs.add(
+            _VersusUserPairListItem(
+              user1: user1,
+              user2: user2,
+              onTap: () {
+                _selectUser1(user1);
+                _selectUser2(user2);
+              },
+            ),
+          );
           }
         }
       }
@@ -137,9 +137,9 @@ class _VersusScreenState extends State<VersusScreen> {
           child: versusPairs.isEmpty
               ? const Center(child: Text('No trending pairs found.'))
               : ListView(
-                  padding: const EdgeInsets.symmetric(vertical: 0),
-                  children: versusPairs,
-                ),
+            padding: const EdgeInsets.symmetric(vertical: 0),
+            children: versusPairs,
+          ),
         ),
       ],
     );
@@ -154,12 +154,9 @@ class _VersusScreenState extends State<VersusScreen> {
                 itemCount: _searchUserResults.length,
                 itemBuilder: (context, i) {
                   final versusUser = _searchUserResults[i];
-                  final user = SearchService.dummyUsers.firstWhere(
-                    (u) => u.id.toString() == versusUser.id,
-                  );
-                  return GestureDetector(
+                  return _UserListItem(
+                    user: versusUser,
                     onTap: () => _selectUser1(versusUser),
-                    child: SearchUserCard(user: user),
                   );
                 },
               );
@@ -187,14 +184,29 @@ class _VersusScreenState extends State<VersusScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 0),
                       itemBuilder: (context, i) {
                         final user = _searchUserResults[i];
-                        return _VersusUserPairListItem(
-                          user1: _selectedUser1!,
-                          user2: user,
+                        return _UserListItem(
+                          user: user,
                           onTap: () => _selectUser2(user),
                         );
                       },
                     ),
         ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton.icon(
+              onPressed: _clearSelection,
+              icon: const Icon(Icons.arrow_back),
+              label: const Text('Back'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey[200],
+                foregroundColor: Colors.black,
+                elevation: 0,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
       ],
     );
   }

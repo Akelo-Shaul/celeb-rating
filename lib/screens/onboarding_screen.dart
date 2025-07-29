@@ -699,8 +699,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 text: AppLocalizations.of(context)!.continueAsMember,
                 textColor: Color(0xFFD6AF0C),
                 onPressed: () {
-                  //TODO: Navigate to profile
-                  context.goNamed('feed');;
+                  context.goNamed('interestsSelection');
                   setState(() {
                   });
                 },

@@ -126,19 +126,19 @@ class _FeedScreenState extends State<FeedScreen> {
                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                  borderRadius: BorderRadius.circular(25), // More rounded corners
               ),
-              AppTransparentButton(
-                text: 'Hall of Fame',
-                icon: Icons.emoji_events,
-                // iconColor: Colors.blueAccent, // Custom icon color
-                fontSize: 20,
-                onPressed: () {
-                  print('Hall of Fame tapped');
-                  context.pushNamed('hallOfFame');
-                  Navigator.pop(context);
-                },
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
-                borderRadius: BorderRadius.circular(25), // More rounded corners
-              ),
+              // AppTransparentButton(
+              //   text: 'Hall of Fame',
+              //   icon: Icons.emoji_events,
+              //   // iconColor: Colors.blueAccent, // Custom icon color
+              //   fontSize: 20,
+              //   onPressed: () {
+              //     print('Hall of Fame tapped');
+              //     context.pushNamed('hallOfFame');
+              //     Navigator.pop(context);
+              //   },
+              //   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+              //   borderRadius: BorderRadius.circular(25), // More rounded corners
+              // ),
               AppTransparentButton(
                 text: 'Uhondo Kona',
                 icon: Icons.coffee,
@@ -178,19 +178,19 @@ class _FeedScreenState extends State<FeedScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
               ),
-              AppTransparentButton(
-                text: 'Awards',
-                icon: Icons.military_tech,
-                // iconColor: Colors.blueAccent, // Custom icon color
-                fontSize: 20,
-                onPressed: () {
-                  print('Awards tapped');
-                  context.pushNamed('award');
-                  Navigator.pop(context);
-                },
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
-                borderRadius: BorderRadius.circular(25), // More rounded corners
-              ),
+              // AppTransparentButton(
+              //   text: 'Awards',
+              //   icon: Icons.military_tech,
+              //   // iconColor: Colors.blueAccent, // Custom icon color
+              //   fontSize: 20,
+              //   onPressed: () {
+              //     print('Awards tapped');
+              //     context.pushNamed('award');
+              //     Navigator.pop(context);
+              //   },
+              //   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+              //   borderRadius: BorderRadius.circular(25), // More rounded corners
+              // ),
               AppTransparentButton(
                 text: 'Profile',
                 icon: Icons.person_outline,
