@@ -86,18 +86,22 @@ class CelebrityUser extends User {
   final Map<String, List<Map<String, String>>> wealthEntries;
   final String zodiacSign;
   final List<Map<String, dynamic>> familyMembers;
-  final List<String> relationships;
+  final List<Map<String,dynamic>> relationships;
   final List<Map<String, dynamic>> educationEntries;
   final List<Map<String, dynamic>> hobbies;
   final String diet;
   final String spirituality;
   final List<Map<String, String>> involvedCauses;
-  final List<String> pets;
-  final List<String> tattoos;
+  final List<Map<String, String>> pets;
+  final List<Map<String,dynamic>> tattoos;
   final List<Map<String, dynamic>> favouritePlaces;
+  final List<Map<String, dynamic>> favouriteThings;
+  final List<Map<String, dynamic>> fanTheoriesOrInteractions;
   final List<Map<String, dynamic>> talents;
   final List<Map<String, dynamic>> socials;
-  final String publicImageDescription;
+  final List<Map<String, dynamic>> publicImageDescription;
+  final List<Map<String, dynamic>> redCarpetMoments;
+  final List<Map<String, dynamic>> quotesAndPublicStatements;
   final Map<String, List<Map<String, dynamic>>> fashionStyle;
   final String hometown; // Added hometown field
 
@@ -134,9 +138,13 @@ class CelebrityUser extends User {
     required this.pets,
     required this.tattoos,
     required this.favouritePlaces,
+    required this.favouriteThings,
+    required this.fanTheoriesOrInteractions,
     required this.talents,
     required this.socials,
     required this.publicImageDescription,
+    required this.redCarpetMoments,
+    required this.quotesAndPublicStatements,
     required this.fashionStyle,
     required DateTime dob, // dob is passed correctly here
     required this.hometown, // Added hometown to constructor

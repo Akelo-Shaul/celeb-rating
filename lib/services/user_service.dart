@@ -363,7 +363,16 @@ class UserService {
         {'title': 'snapchat', 'link': 'https://www.snapchat.com/add/celeb'},
       ];
 
-      final String publicImageDescription = 'Known for philanthropy and well spoken. A public Icon with a great following and fans';
+      final List<Map<String,dynamic>> publicImageDescription = [
+        {'title': 'Philanthropic Work', 'description': 'Known for extensive charity work and advocacy.'},
+        {'title': 'Role Model', 'description': 'Considered a positive role model by many fans.'},
+      ];
+
+      final List<Map<String, dynamic>> redCarpetMoments = [
+        {'title': 'Met Gala 2023', 'description': 'Stunning custom gown by designer X, widely praised for its innovative design.', 'imageUrl': 'https://i.ibb.co/N73yB9c/red-carpet1.jpg'},
+        {'title': 'Oscars 2024', 'description': 'Epitome of elegance in a classic black tuxedo, breaking traditional gender norms.', 'imageUrl': 'https://i.ibb.co/y4L2k2n/red-carpet2.jpg'},
+        {'title': 'Cannes Film Festival', 'description': 'Wore a shimmering silver dress that captured international attention for its bold silhouette.', 'imageUrl': 'https://i.ibb.co/C0f11Kk/red-carpet3.jpg'},
+      ];
 
       final Map<String, List<Map<String, dynamic>>> fashionStyle = {
         'vintage': [
@@ -392,12 +401,11 @@ class UserService {
         {'name': 'Brother', 'imageUrl': 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=facearea&w=200&h=200&q=80'},
         {'name': 'Sister', 'imageUrl': 'https://images.unsplash.com/photo-1461632830798-3adb3034e4c8?auto=format&fit=facearea&w=200&h=200&q=80'},
       ];
-      final List<String> relationships = [
-        'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=facearea&w=200&h=200&q=80',
-        'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80',
-        'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=facearea&w=200&h=200&q=80',
-        'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=facearea&w=200&h=200&q=80',
-        'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=facearea&w=200&h=200&q=80',
+      final List<Map<String,String>> relationships = [
+        {'name': 'Jane Doe', 'type': 'Friend', 'description': 'Best friend from college.','imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
+        {'name': 'John Smith', 'type': 'Sibling', 'description': 'Older brother.','imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
+        {'name': 'Bund Smith', 'type': 'Sibling', 'description': 'Older brother.', 'imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
+        {'name': 'Hank Smith', 'type': 'Sibling', 'description': 'Older brother.', 'imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
       ];
       final List<Map<String, dynamic>> hobbies = [
         {'name': 'Basketball', 'imageUrl': 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=200&q=80'},
@@ -406,15 +414,10 @@ class UserService {
         {'name': 'Swimming', 'imageUrl': 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=200&q=80'},
         {'name': 'Fishing', 'imageUrl': 'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=200&q=80'},
       ];
-      final List<String> pets = [
-        'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=facearea&w=200&h=200&q=80',
-        'https://images.unsplash.com/photo-1518715308788-3005759c41c8?auto=format&fit=facearea&w=200&h=200&q=80',
-        'https://images.unsplash.com/photo-1518715308788-3005759c41c8?auto=format&fit=facearea&w=200&h=200&q=80',
-      ];
-      final List<String> tattoos = [
-        'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80',
-        'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=200&q=80',
-        'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=200&q=80',
+      final List<Map<String,dynamic>> tattoos = [
+        {'name': 'Eye of the titan','imageUrl':'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80', 'description': 'A playful golden retriever, often featured on social media.'},
+        {'name': 'Last titan','imageUrl':'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=200&q=80', 'description': 'A playful golden retriever, often featured on social media.'},
+        {'name': 'Aloha titan','imageUrl':'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=200&q=80', 'description': 'A playful golden retriever, often featured on social media.'},
       ];
       final List<Map<String, dynamic>> favouritePlaces = [
         {'name': 'Vienna', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
@@ -423,15 +426,29 @@ class UserService {
         {'name': 'Lagos', 'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=200&q=80'},
         {'name': 'Kenya', 'imageUrl': 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=200&q=80'},
       ];
+      final List<Map<String, dynamic>> favouriteThings = [
+        {'item': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+        {'item': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+      ];
       final List<Map<String, dynamic>> talents = [
         {'name': 'Basketball', 'imageUrl': 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=200&q=80'},
         {'name': 'Skiing', 'imageUrl': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=200&q=80'},
         {'name': 'Sky Diving', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
       ];
 
+      final List<Map<String,dynamic>> quotesAndPublicStatements = [
+        {'quote': '“Be yourself; everyone else is already taken.”', 'context': 'Interview with Vogue, 2021.'},
+        {'quote': '“The only way to do great work is to love what you do.”', 'context': 'Award acceptance speech, 2023.'},
+      ];
+
+      final List<Map<String,dynamic>> fanTheoriesOrInteractions = [
+        {'theory': 'Secret Album Theory', 'description': 'Fans speculate about a hidden album to be released on a specific date.'},
+        {'interaction': 'Surprise Fan Meetup', 'description': 'Known for organizing spontaneous meetups with fans in different cities.'},
+      ];
+
       // Dummy data for Education, Diet, Spirituality, and Involved Causes
       final List<Map<String, dynamic>> educationEntries = [
-        {'university': 'Princeton University', 'degrees': [
+        {'institution': 'Princeton University', 'qualifications': [
           {"title":"Bachelor's degree in Sociology", "year":"2013"},
           {"title": "Bachelor's degree in Psychology", "year": "2013"}
         ],},
@@ -441,6 +458,12 @@ class UserService {
       final List<Map<String, String>> involvedCauses = [
         {'name': 'Getrude Childrens Mission', 'role': 'Donor'},
         {'name': 'All Sales Funds', 'role': 'Manager'},
+      ];
+
+      final List<Map<String, String>> pets = [
+        {'name': 'Buddy', 'type': 'Golden Retriever', 'description': 'A playful golden retriever, often featured on social media.', 'imageUrl': 'https://i.ibb.co/S6wPzJc/pet1.jpg'},
+        {'name': 'Whiskers', 'type': 'Siamese Cat', 'description': 'A shy but affectionate Siamese cat.', 'imageUrl': 'https://i.ibb.co/L84k7b4/pet2.jpg'},
+        {'name': 'Rex', 'type': 'Parrot', 'description': 'An intelligent parrot who can mimic human speech.', 'imageUrl': 'https://i.ibb.co/g421t2C/pet3.jpg'},
       ];
 
       // Return a dummy celebrity user with extra fields
@@ -469,17 +492,21 @@ class UserService {
         familyMembers: familyMembers,
         relationships: relationships,
         educationEntries: educationEntries,
+        fanTheoriesOrInteractions: fanTheoriesOrInteractions,
         hobbies: hobbies,
         diet: diet,
         spirituality: spirituality,
         involvedCauses: involvedCauses,
         pets: pets,
         tattoos: tattoos,
-        favouritePlaces: favouritePlaces,
+        favouriteThings: favouriteThings,
         talents: talents,
         socials: socials,
         publicImageDescription: publicImageDescription,
+        quotesAndPublicStatements: quotesAndPublicStatements,
         fashionStyle: fashionStyle,
+        redCarpetMoments: redCarpetMoments,
+        favouritePlaces: favouritePlaces,
       );
     }
   }

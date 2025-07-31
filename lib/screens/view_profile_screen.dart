@@ -483,192 +483,355 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
     );
   }
 
+
   Widget _buildPersonalTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final iconColor = isDark ? Colors.orange[300] : Colors.brown[300];
+    final secondaryTextColor =
+    isDark ? Colors.grey.shade400 : Colors.grey.shade600;
 
     // Check if the user is a CelebrityUser and has personal entries
     if (widget.user is! CelebrityUser) {
       return const Center(child: Text("No personal data available."));
     }
-
     final celeb = widget.user as CelebrityUser;
-    // Dummy personal data
-    final Map<String, List<Map<String, String>>> personalData = {
-      'Relationships': [
-        {'name': 'Jane Doe', 'type': 'Friend', 'description': 'Best friend from college.'},
-        {'name': 'John Smith', 'type': 'Sibling', 'description': 'Older brother.'},
-      ],
-      'Education': [
-        {'institution': 'Harvard University', 'degree': 'B.A. in Music', 'period': '2010-2014'},
-      ],
-    };
+    // Dummy data for Pets (MOVED to Personal Tab, previously in Fun & Niche)
 
-    // A map to define icons for each category, similar to careerCategoryIcons
-    final Map<String, IconData> personalCategoryIcons = {
-      'Relationships': Icons.favorite_outline,
-      'Education': Icons.school_outlined,
-      'Other': Icons.info_outline, // Default or for categories without specific icons
-    };
-
-    return ListView(
-      children: personalData.entries
-          .where((entry) => entry.value.isNotEmpty)
-          .map((entry) {
-        final category = entry.key;
-        final items = entry.value;
-        final icon = personalCategoryIcons[category] ?? Icons.info_outline;
-
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          child: Row(
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(icon, size: 32, color: iconColor),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      category,
-                      style: TextStyle(
-                          fontSize: 13,
-                          color: isDark ? Colors.orange[300] : Colors.brown[300]),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: items.map((item) {
-                        if (category == 'Relationships') {
-                          final name = item['name'];
-                          final type = item['type'];
-                          final description = item['description'];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (name != null)
-                                  Text(
-                                    name,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        color: defaultTextColor),
-                                  ),
-                                if (type != null)
-                                  Text(
-                                    type,
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        color: defaultTextColor.withOpacity(0.8)),
-                                  ),
-                                if (description != null)
-                                  Text(
-                                    description,
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: defaultTextColor.withOpacity(0.7)),
-                                  ),
-                              ],
-                            ),
+              // Relationships Section
+              _buildSectionHeader(
+                  AppLocalizations.of(context)!.family,
+                  Icons.link,
+                  Color(0xFFD6AF0C),),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 60,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: celeb.familyMembers.length,
+                  itemBuilder: (context, index) {
+                    final relationship = celeb.familyMembers[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          _showProfilePreviewModal(
+                            context: context,
+                            userName: relationship['name'], // Replace with actual name if available
+                            userProfession: relationship['relation'], // Replace with actual relationship type if available
+                            userProfileImageUrl: relationship['imageUrl'],
+                            onViewProfile: () {
+                              // Add navigation to profile view here
+                            },
                           );
-                        } else if (category == 'Education') {
-                          final institution = item['institution'];
-                          final degree = item['degree'];
-                          final period = item['period'];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (institution != null)
-                                  Text(
-                                    institution,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        color: defaultTextColor),
-                                  ),
-                                if (degree != null)
-                                  Text(
-                                    degree,
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        color: defaultTextColor.withOpacity(0.8)),
-                                  ),
-                                if (period != null)
-                                  Text(
-                                    period,
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: defaultTextColor.withOpacity(0.7)),
-                                  ),
-                              ],
-                            ),
-                          );
-                        } else {
-                          // General structure for other personal items
-                          final title = item['title'];
-                          final description = item['description'];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (title != null)
-                                  Text(
-                                    title,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        color: defaultTextColor),
-                                  ),
-                                if (description != null)
-                                  Text(
-                                    description,
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: defaultTextColor.withOpacity(0.7)),
-                                  ),
-                              ],
-                            ),
-                          );
-                        }
-                      }).toList(),
-                    ),
-                  ],
+                        },
+                        child: ProfileAvatar(
+                          radius: 30,
+                          imageUrl: relationship['imageUrl'],
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
+              const SizedBox(height: 20),
+              // Relationships Section
+              _buildSectionHeader(
+                  AppLocalizations.of(context)!.relationships,
+                  Icons.people,
+                  Color(0xFFD6AF0C),),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 60,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: celeb.relationships.length,
+                  itemBuilder: (context, index) {
+                    final relationship = celeb.relationships[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          _showProfilePreviewModal(
+                            context: context,
+                            userName: relationship['name'], // Replace with actual name if available
+                            userProfession: relationship['type'], // Replace with actual relationship type if available
+                            userProfileImageUrl: relationship['imageUrl'],
+                            onViewProfile: () {
+                              // Add navigation to profile view here
+                            },
+                          );
+                        },
+                        child: ProfileAvatar(
+                          radius: 30,
+                          imageUrl: relationship['imageUrl'],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Pets Section (MOVED here, displayed with ProfileAvatar)
+              _buildSectionHeader(
+                  AppLocalizations.of(context)!.pets,
+                  Icons.pets,
+                  Color(0xFFD6AF0C),),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 60, // Height for horizontal list
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: celeb.pets.length,
+                  itemBuilder: (context, index) {
+                    final pet = celeb.pets[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: GestureDetector(
+                        onTapDown: (details) {
+                          // Existing _showProfilePreviewModal for pets
+                          _showProfilePreviewModal(
+                            context: context,
+                            userName: pet['name']!,
+                            userProfession: pet['type']!,
+                            userProfileImageUrl: pet['imageUrl'],
+                            onViewProfile: () {
+                              // Optionally handle view profile action
+                            },
+                          );
+                        },
+                        child: ProfileAvatar(
+                          radius: 30,
+                          imageUrl: pet['imageUrl'],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Education Section
+              _buildSectionHeader(
+                  AppLocalizations.of(context)!.education,
+                  Icons.menu_book,
+                  Color(0xFFD6AF0C),),
+              const SizedBox(height: 10),
+              ...celeb.educationEntries.map((entry) {
+                final institution = entry['institution'] ?? '';
+                final qualifications = (entry['qualifications'] as List?) ?.cast<Map<String, String>>() ?? [];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: Row(
+                    // This is the main Row for the icon and text content
+                    crossAxisAlignment: CrossAxisAlignment.start, // Align content to the top
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.school_outlined, size: 35, color: Color(0xFFD6AF0C)),
+                      ),
+                      const SizedBox(width: 12), // Add spacing between icon and text
+                      Expanded(
+                        // This Expanded widget ensures the text content takes up remaining space
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              institution,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: defaultTextColor,
+                              ),
+                            ),
+                            ...qualifications.map<Widget>((deg) {
+                              return Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 4.0, left: 2.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          deg['title'] ?? '',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                            color: defaultTextColor
+                                                .withOpacity(0.85),
+                                          ),
+                                        ),
+                                        if (deg['year'] != null)
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 2.0),
+                                            child: Text(
+                                              deg['year']!,
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: secondaryTextColor
+                                                    .withOpacity(0.7),
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+              const SizedBox(height: 20),
+              _buildSectionHeader(
+                  AppLocalizations.of(context)!.hobbies,
+                  Icons.sports_soccer,
+                  Color(0xFFD6AF0C),),
+              // Hobbies Section
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 180,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: celeb.hobbies.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          _showItemPopupModal(
+                            context: context,
+                            imageUrl: celeb.hobbies[index]['imageUrl'],
+                            title: celeb.hobbies[index]['name']!,
+                            description: celeb.hobbies[index]['description'] ?? '', // Assuming description may be empty
+                          );
+                        },
+                        child: ImageWithOptionalText(
+                          width: 100,
+                          height: 150,
+                          imageUrl: celeb.hobbies[index]['imageUrl'],
+                          bottomText: celeb.hobbies[index]['name'],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Lifestyle Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.nightlife, size: 24, color: Color(0xFFD6AF0C),),
+                      const SizedBox(width: 8),
+                      Text(
+                        AppLocalizations.of(context)!.lifestyle,
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFD6AF0C)
+                        ),
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
+                    tooltip: 'Edit lifestyle',
+                    onPressed: (){
+                      //TODO: Add edit lifestyle
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Diet: ${celeb.diet}',
+                style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic ,color: defaultTextColor),
+              ),
+              Text(
+                'Spirituality: ${celeb.spirituality}',
+                style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic , color: defaultTextColor),
+              ),
+              const SizedBox(height: 20),
+              // Involved Causes Section
+              _buildSectionHeader(
+                  AppLocalizations.of(context)!.involvedCauses,
+                  Icons.volunteer_activism,
+                  Color(0xFFD6AF0C),),
+              const SizedBox(height: 10),
+              ...celeb.involvedCauses.map((cause) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        // Icon here if needed
+                      ),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            cause['cause'] ?? '',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: defaultTextColor,
+                            ),
+                          ),
+                          Text(
+                            cause['role'] ?? '',
+                            style: TextStyle(fontSize: 14, color: secondaryTextColor),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
             ],
           ),
-        );
-      }).toList(),
+        ),
+      ),
     );
   }
 
-  Widget _buildWealthTab(){
+
+  Widget _buildWealthTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final secondaryTextColor =
+    isDark ? Colors.grey.shade400 : Colors.grey.shade600;
     if (widget.user is! CelebrityUser) { // Simplified null check
       return const Center(child: Text("No wealth data available."));
     }
     final celeb = widget.user as CelebrityUser;
-    final Map<String, List<Map<String, String>>> wealthData = celeb.wealthEntries;
+    final Map<String, List<Map<String, String>>> wealthData =
+        celeb.wealthEntries;
     final localizations = AppLocalizations.of(context)!;
-    // Check if there are any items in any category
-    bool hasAnyItems = false;
-    for (var category in _wealthCategories) {
-      if ((wealthData[category] ?? []).isNotEmpty) {
-        hasAnyItems = true;
-        break;
-      }
-    }
-    if (!hasAnyItems) {
-      return const Center(child: Text("No wealth items to display"));
-    }
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -680,56 +843,83 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                 Text(
                   '${localizations.netWorth} : ',
                   style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: defaultTextColor,
+                  ),
                 ),
                 Text(
-                  celeb.netWorth, // Assuming netWorth is a String or formatted as such
+                  celeb.netWorth,
                   style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: secondaryTextColor),
+                    fontSize: 18,
+                    color: secondaryTextColor,
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            ..._wealthCategories.map((category) {
-              final items = wealthData[category] ?? [];
-              if (items.isEmpty) return const SizedBox.shrink(); // Hide if no items
-
+            const SizedBox(height: 25),
+            ..._wealthCategories.map((categoryKey) {
+              final items = wealthData[categoryKey] ?? [];
+              if (items.isEmpty) return const SizedBox.shrink();
+              String localizedCategory;
+              IconData icon;
+              switch (categoryKey) {
+                case 'Cars':
+                  localizedCategory = localizations.categoryValueCar;
+                  icon = Icons.directions_car_sharp;
+                  break;
+                case 'Houses':
+                  localizedCategory = localizations.categoryValueHouse;
+                  icon = Icons.house;
+                  break;
+                case 'Art Collection':
+                  localizedCategory = localizations.categoryValueArt;
+                  icon = Icons.brush_outlined;
+                  break;
+                case 'Watch Collection':
+                  localizedCategory = localizations.categoryValueJewelry;
+                  icon = Icons.watch;
+                  break;
+                default:
+                  localizedCategory = categoryKey;
+                  icon = Icons.category_outlined;
+              }
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionHeader(category, Icons.category, defaultTextColor), // Generic icon for now
+                  _buildSectionHeader(
+                    localizedCategory,
+                    icon,
+                    defaultTextColor,),
                   const SizedBox(height: 10),
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      childAspectRatio: 0.8, // Adjust as needed
+                  SizedBox(
+                    height: 170,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        final item = items[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 12.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              _showItemPopupModal(
+                                context: context,
+                                imageUrl: item['imageUrl'],
+                                title: item['title']!,
+                                description: item['description']!,
+                              );
+                            }, // Wealth items don't trigger item_popup
+                            child: ImageWithOptionalText(
+                              width: 100,
+                              height: 150,
+                              imageUrl: item['imageUrl'],
+                              bottomText: item['name'],
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      final item = items[index];
-                      return GestureDetector(
-                        onTap: () => _showItemPopupModal(
-                          context: context,
-                          imageUrl: item['imageUrl'],
-                          title: item['title']!,
-                          description: item['description']!,
-                        ),
-                        child: ImageWithOptionalText(
-                          width: 150,
-                          height: 150,
-                          imageUrl: item['imageUrl'],
-                          bottomText: item['title'],
-                        ),
-                      );
-                    },
                   ),
                   const SizedBox(height: 20),
                 ],
@@ -744,287 +934,178 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
   Widget _buildCareerTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final iconColor = isDark ? const Color(0xFFD6AF0C): Colors.brown[300];
+    final iconColor = isDark ? Colors.orange[300] : Colors.brown[300];
     if (widget.user is! CelebrityUser) { // Simplified null check
       return const Center(child: Text("No career data available."));
     }
     final celeb = widget.user as CelebrityUser;
-    final Map<String, List<Map<String, String>>> careerData = celeb.careerEntries;
+    final Map<String, List<Map<String, String>>> careerData =
+        celeb.careerEntries;
 
-    // Check if there are any career items with actual content
-    bool hasAnyCareerItems = careerData.values.any((list) => list.any((item) {
-      if (item.containsKey('title') && item['title']?.isNotEmpty == true) return true;
-      if (item.containsKey('award') && item['award']?.isNotEmpty == true) return true;
-      if (item.containsKey('subtitle') && item['subtitle']?.isNotEmpty == true) return true;
-      if (item.containsKey('type') && item['type']?.isNotEmpty == true) return true;
-      return false;
-    })
-    );
+    return Column(
+      children: [
+        Expanded(
+          child: ListView(
+            children: careerData.entries
+                .where((entry) => entry.value.isNotEmpty)
+                .map((entry) {
+              final category = entry.key;
+              final items = entry.value;
+              final icon = _careerCategoryIcons[category] ?? Icons.info_outline;
 
-    if (!hasAnyCareerItems) {
-      return const Center(child: Text("No career entries"));
-    }
-
-    return ListView(
-      children: careerData.entries
-          .where((entry) {
-        // Only include categories that have items with non-null values
-        return entry.value.any((item) {
-          if (entry.key == 'Awards') {
-            return (item['title']?.isNotEmpty ?? false) || (item['award']?.isNotEmpty ?? false);
-          } else if (entry.key == 'Collaborations') {
-            return (item['title']?.isNotEmpty ?? false) || (item['subtitle']?.isNotEmpty ?? false) || (item['type']?.isNotEmpty ?? false);
-          } else if (entry.key == 'Debut Work') {
-            return (item['title']?.isNotEmpty ?? false) || (item['subtitle']?.isNotEmpty ?? false);
-          } else {
-            return (item['title']?.isNotEmpty ?? false) || (item['subtitle']?.isNotEmpty ?? false);
-          }
-        });
-      })
-          .map((entry) {
-        final category = entry.key;
-        final items = entry.value;
-        final icon = _careerCategoryIcons[category] ?? Icons.info_outline;
-
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(icon, size: 32, color: iconColor),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
+              return Padding(
+                padding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: items.map((item) {
-                    if (category == 'Awards') {
-                      final title = item['title'];
-                      final award = item['award'];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 2.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (title != null)
-                              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
-                            if (award != null)
-                              Text(award, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
-                          ],
-                        ),
-                      );
-                    } else if (category == 'Collaborations') {
-                      final title = item['title'];
-                      final subtitle = item['subtitle'];
-                      final type = item['type'];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 2.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (title != null)
-                              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
-                            if (subtitle != null)
-                              Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
-                            if (type != null)
-                              Text(type, style: TextStyle(fontSize: 13, color: defaultTextColor.withOpacity(0.7))),
-                          ],
-                        ),
-                      );
-                    } else if (category == 'Debut Work') {
-                      final title = item['title'];
-                      final subtitle = item['subtitle'];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (title != null)
-                              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
-                            if (subtitle != null) ...[
-                              const SizedBox(height: 2),
-                              Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
-                            ],
-                          ],
-                        ),
-                      );
-                    } else { // Covers 'Profession' and any other general categories
-                      final title = item['title'];
-                      final subtitle = item['subtitle'];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 2.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (title != null)
-                              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor)),
-                            if (subtitle != null)
-                              Text(subtitle, style: TextStyle(fontSize: 15, color: defaultTextColor.withOpacity(0.8))),
-                          ],
-                        ),
-                      );
-                    }
-                  }).toList(),
+                  children: [
+                    Icon(icon, size: 32, color: iconColor),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            category, // Use ! as celeb is non-null if isCelebrity is true
+                            style: TextStyle( fontSize: 13,color: isDark ? Colors.orange[300] : Colors.brown[300]),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: items.map((item) {
+                              if (category == 'Awards') {
+                                final title = item['title'];
+                                final award = item['award'];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 2.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      if (title != null)
+                                        Text(title,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: defaultTextColor)),
+                                      if (award != null)
+                                        Text(award,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: defaultTextColor.withOpacity(0.8))),
+                                    ],
+                                  ),
+                                );
+                              } else if (category == 'Collaborations') {
+                                final title = item['title'];
+                                final subtitle = item['subtitle'];
+                                final type = item['type'];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 2.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      if (title != null)
+                                        Text(title,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: defaultTextColor)),
+                                      if (subtitle != null)
+                                        Text(subtitle,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: defaultTextColor.withOpacity(0.8))),
+                                      if (type != null)
+                                        Text(type,
+                                            style: TextStyle(
+                                                fontSize: 13,
+                                                color: defaultTextColor.withOpacity(0.7))),
+                                    ],
+                                  ),
+                                );
+                              } else if (category == 'Debut Work') {
+                                final title = item['title'];
+                                final subtitle = item['subtitle'];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      if (title != null)
+                                        Text(title,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: defaultTextColor)),
+                                      if (subtitle != null) ...[
+                                        const SizedBox(height: 2),
+                                        Text(subtitle,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: defaultTextColor.withOpacity(0.8))),
+                                      ],
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                // Covers 'Profession' and any other general categories
+                                final title = item['title'];
+                                final subtitle = item['subtitle'];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 2.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      if (title != null)
+                                        Text(title,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: defaultTextColor)),
+                                      if (subtitle != null)
+                                        Text(subtitle,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: defaultTextColor.withOpacity(0.8))),
+                                    ],
+                                  ),
+                                );
+                              }
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+              );
+            }).toList(),
           ),
-        );
-      }).toList(),
+        ),// Add some padding at the bottom
+      ],
     );
   }
+
 
   Widget _buildPublicPersonaTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final secondaryTextColor =
+    isDark ? Colors.grey.shade400 : Colors.grey.shade600;
 
     if (widget.user is! CelebrityUser) {
       return const Center(child: Text("No public persona data available."));
     }
 
     final celeb = widget.user as CelebrityUser;
-    // Dummy public persona data
+
+    // Dummy data for Public Persona sections (MODIFIED with image URLs)
     final Map<String, List<Map<String, String>>> publicPersonaData = {
-      'Personas': [
-        {'title': 'The Charmer', 'description': 'Known for a charismatic stage presence.'},
-        {'title': 'The Philanthropist', 'description': 'Active in charity events.'},
-      ],
-      'Relationships': [
-        {'name': 'Jane Doe', 'type': 'Manager', 'description': 'Longtime manager and friend.'},
+      'Quotes or Public Statements': [
+        {'quote': '“Be yourself; everyone else is already taken.”', 'context': 'Interview with Vogue, 2021.'},
+        {'quote': '“The only way to do great work is to love what you do.”', 'context': 'Award acceptance speech, 2023.'},
       ],
     };
 
-    // Check if there are any public persona items
-    bool hasPublicPersonaItems = publicPersonaData.values.any((list) => list.isNotEmpty);
-    if (!hasPublicPersonaItems) {
-      return const Center(child: Text("No public persona items to display."));
-    }
-
-    // A map to define icons for each category
-    final Map<String, IconData> publicPersonaCategoryIcons = {
-      'Personas': Icons.masks_outlined,
-      'Relationships': Icons.people_alt_outlined,
-      'Other': Icons.info_outline, // Default or for categories without specific icons
-    };
-
-
-    return ListView(
-      children: publicPersonaData.entries
-          .where((entry) => entry.value.isNotEmpty)
-          .map((entry) {
-        final category = entry.key;
-        final items = entry.value;
-        final icon = publicPersonaCategoryIcons[category] ?? Icons.info_outline;
-
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildSectionHeader(category, icon, defaultTextColor),
-              const SizedBox(height: 10),
-              ...items.map((item) {
-                if (category == 'Personas') {
-                  final title = item['title'];
-                  final description = item['description'];
-                  final imageUrl = item['imageUrl'];
-
-                  return GestureDetector(
-                    onTap: () => _showItemPopupModal(
-                      context: context,
-                      imageUrl: imageUrl,
-                      title: title!,
-                      description: description!,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (title != null)
-                            Text(
-                              title,
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  color: defaultTextColor),
-                            ),
-                          if (description != null)
-                            Text(
-                              description,
-                              style: TextStyle(fontSize: 14, color: secondaryTextColor),
-                            ),
-                        ],
-                      ),
-                    ),
-                  );
-                } else if (category == 'Relationships') {
-                  final name = item['name'];
-                  final type = item['type'];
-                  final description = item['description'];
-
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (name != null)
-                          Text(
-                            name,
-                            style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: defaultTextColor),
-                          ),
-                        if (type != null)
-                          Text(
-                            type,
-                            style: TextStyle(fontSize: 14, color: secondaryTextColor),
-                          ),
-                        if (description != null)
-                          Text(
-                            description,
-                            style: TextStyle(fontSize: 14, color: secondaryTextColor),
-                          ),
-                      ],
-                    ),
-                  );
-                }
-                return const SizedBox.shrink(); // Fallback for unhandled categories
-              }).toList(),
-            ],
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildFunNicheTab() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
-
-    if (widget.user is! CelebrityUser) {
-      return const Center(child: Text("No fun & niche data available."));
-    }
-
-    final celeb = widget.user as CelebrityUser;
-    // Dummy fun & niche data
-    final Map<String, List<Map<String, String>>> funNicheData = {
-      'Favorite Things': [
-        {'item': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.'},
-        {'item': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.'},
-      ],
-      'Fan Theories or Fan Interactions': [
-        {'theory': 'Secret Album Theory', 'description': 'Fans speculate about a hidden album to be released on a specific date.'},
-        {'interaction': 'Surprise Fan Meetup', 'description': 'Known for organizing spontaneous meetups with fans in different cities.'},
-      ],
-    };
-
-    bool hasFunNicheItems = funNicheData.values.any((list) => list.isNotEmpty);
-    if (!hasFunNicheItems) {
-      return const Center(child: Text("No fun & niche items to display."));
-    }
 
     return SingleChildScrollView(
       child: Padding(
@@ -1032,23 +1113,35 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Social Media Presence
             _buildSectionHeader(
-              'Favorite Things',
-              Icons.favorite_border,
-              defaultTextColor,
-            ),
-            ... (funNicheData['Favorite Things'] ?? []).map((item) {
+                AppLocalizations.of(context)!.socialMediaPresence,
+                Icons.public,
+                defaultTextColor,),
+
+            _buildSocialIcons(),
+            const SizedBox(height: 20),
+
+            // Public Image / Reputation
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.publicImageReputation,
+                Icons.stars,
+                defaultTextColor,),
+            ... celeb.publicImageDescription.map((item) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      item['item'] ?? '',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor),
+                      item['title']!,
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: defaultTextColor),
                     ),
                     Text(
-                      item['description'] ?? '',
+                      item['description']!,
                       style: TextStyle(fontSize: 14, color: secondaryTextColor),
                     ),
                   ],
@@ -1056,26 +1149,270 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
               );
             }).toList(),
             const SizedBox(height: 20),
+
+            // Fashion Style (MODIFIED to horizontal list with images)
             _buildSectionHeader(
-              AppLocalizations.of(context)!.fanTheoriesInteractions,
-              Icons.people_outline,
-              defaultTextColor,
+                AppLocalizations.of(context)!.fashionStyle,
+                Icons.whatshot,
+                defaultTextColor,),
+            const SizedBox(height: 10),
+            ...celeb.fashionStyle.entries.map((entry) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    entry.key[0].toUpperCase() + entry.key.substring(1),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: defaultTextColor,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 150,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: entry.value.length,
+                      itemBuilder: (context, idx) {
+                        final img = entry.value[idx]['imageUrl'];
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 12.0),
+                          child: ImageWithOptionalText(
+                            width: 100,
+                            height: 150,
+                            imageUrl: img,
+                            bottomText: null, // No bottom text for fashion images
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              );
+            }).toList(),
+            const SizedBox(height: 20),
+
+            // Red Carpet Moments (MODIFIED to horizontal list with images)
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.redCarpetMoments,
+                Icons.movie_filter,
+                defaultTextColor,),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 170, // Height for horizontal list
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: celeb.redCarpetMoments.length,
+                itemBuilder: (context, index) {
+                  final item = celeb.redCarpetMoments[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        _showItemPopupModal(
+                          context: context,
+                          imageUrl: item['imageUrl'],
+                          title: item['title'],
+                          description: item['description'],
+                        );
+                      },
+                      child: ImageWithOptionalText(
+                        width: 100,
+                        height: 150,
+                        imageUrl: item['imageUrl'],
+                        bottomText: item['title'],
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
-            ... (funNicheData['Fan Theories or Fan Interactions'] ?? []).map((item) {
+            const SizedBox(height: 20),
+
+            // Quotes or Public Statements
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.quotesPublicStatements,
+                Icons.format_quote,
+                defaultTextColor,),
+            ... celeb.quotesAndPublicStatements.map((item) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      item['theory'] ?? item['interaction'] ?? '',
+                      item['quote'] ?? item['interaction']!,
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontStyle: FontStyle.italic,
+                          color: defaultTextColor),
+                    ),
+                    Text(
+                      '- ${item['context']}',
+                      style: TextStyle(fontSize: 13, color: secondaryTextColor),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+  Widget _buildFunNicheTab() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultTextColor = isDark ? Colors.white : Colors.black;
+    final secondaryTextColor =
+    isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+
+    if (widget.user is! CelebrityUser) {
+      return const Center(child: Text("No personal data available."));
+    }
+    final celeb = widget.user as CelebrityUser;
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Tattoos or Unique Physical Traits (MODIFIED to horizontal list with images)
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.tattoos,
+                Icons.brush,
+              Color(0xFFD6AF0C),),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 170, // Height for horizontal list
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: celeb.tattoos.length,
+                itemBuilder: (context, index) {
+                  final tattoo = celeb.tattoos[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        _showItemPopupModal(
+                          context: context,
+                          imageUrl: tattoo['imageUrl'],
+                          title: tattoo['name'],
+                          description: tattoo['description'],
+                        );
+                      },
+                      child: ImageWithOptionalText(
+                        width: 100,
+                        height: 150,
+                        imageUrl: tattoo['imageUrl'],
+                        bottomText: tattoo['name'],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Favorite Things (MODIFIED to horizontal list with images)
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.favoriteThings,
+                Icons.favorite_border,
+              Color(0xFFD6AF0C),),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 170, // Height for horizontal list
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: celeb.favouriteThings.length,
+                itemBuilder: (context, index) {
+                  final item = celeb.favouriteThings[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        _showItemPopupModal(
+                          context: context,
+                          imageUrl: item['imageUrl'],
+                          title:item['item'],
+                          description: item['description'],
+                        );
+                      },
+                      child: ImageWithOptionalText(
+                        width: 100,
+                        height: 150,
+                        imageUrl: item['imageUrl'],
+                        bottomText: item['item'],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Hidden Talents (MODIFIED to horizontal list with images)
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.hiddenTalents,
+                Icons.star_outline,
+              Color(0xFFD6AF0C),),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 170, // Height for horizontal list
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: celeb.talents.length,
+                itemBuilder: (context, index) {
+                  final item = celeb.talents[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        _showItemPopupModal(
+                          context: context,
+                          imageUrl: item['imageUrl'],
+                          title: item['name']!,
+                          description: item['name'],
+                        );
+                      },
+                      child: ImageWithOptionalText(
+                        width: 100,
+                        height: 150,
+                        imageUrl: item['imageUrl'],
+                        bottomText: item['name'],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Fan Theories or Fan Interactions
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.fanTheoriesInteractions,
+                Icons.people_outline,
+              Color(0xFFD6AF0C),),
+            ... celeb.fanTheoriesOrInteractions.map((item) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item['theory'] ?? item['interaction']!,
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                           color: defaultTextColor),
                     ),
                     Text(
-                      item['description'] ?? '',
+                      item['description']!,
                       style: TextStyle(fontSize: 14, color: secondaryTextColor),
                     ),
                   ],
@@ -1088,6 +1425,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
       ),
     );
   }
+
 
   Widget _buildSectionHeader(
       String title, IconData icon, Color defaultTextColor) {
@@ -1107,6 +1445,55 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildSocialIcons() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultTextColor = isDark ? Colors.white : Colors.black;
+    final appPrimaryColor = Theme.of(context).primaryColor;
+    if (widget.user == null || widget.user is! CelebrityUser) return const SizedBox.shrink();
+    final celeb = widget.user as CelebrityUser;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+
+        // Socials Section
+        SizedBox(
+          height: 50,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: celeb.socials.length,
+            itemBuilder: (context, index) {
+              final social = celeb.socials[index];
+              final iconPath = _getSocialIconPath(social['title']);
+              if (iconPath.isEmpty) return const SizedBox.shrink();
+
+              return Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: GestureDetector(
+                  onTap: () {
+                    if (social['link'] != null) {
+                      //TODO: Create a socials preview
+                      // _launchSocialLink(social['link']);
+                    }
+                  },
+                  child: Image.asset(
+                    iconPath,
+                    height: 40,
+                    width: 40,
+                    errorBuilder: (context, error, stackTrace) {
+                      // Return a fallback icon if the image fails to load
+                      return Icon(Icons.error_outline, size: 24, color: Colors.grey);
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 

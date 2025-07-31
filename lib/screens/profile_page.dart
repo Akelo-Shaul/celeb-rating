@@ -62,22 +62,6 @@ class _ProfilePageState extends State<ProfilePage>
     }
   }
 
-  //TODO: Implement following code block when fetching logged in user
-  /*** void fetchProfileUser() async {
-      // If your User model has a role or type field:
-      bool isCelebrity = loggedInUser.role == 'Celebrity';
-
-      final user = await UserService.fetchUser(loggedInUser.id.toString(), isCelebrity: isCelebrity);
-
-      setState(() {
-      if (isCelebrity && user is CelebrityUser) {
-      this.user = user;
-      } else if (!isCelebrity && user is User) {
-      this.user = user as User;
-      }
-      });
-      } **/
-
   void fetchProfileUser() async {
     // Use widget.userId if provided, otherwise a default for testing/own profile
     final String userIdToFetch = widget.userId ?? '456';
@@ -1232,12 +1216,6 @@ class _ProfilePageState extends State<ProfilePage>
     }
     final celeb = user as CelebrityUser;
     // Dummy data for Pets (MOVED to Personal Tab, previously in Fun & Niche)
-    final List<Map<String, String>> petsData = [
-      {'name': 'Buddy', 'type': 'Golden Retriever', 'description': 'A playful golden retriever, often featured on social media.', 'imageUrl': 'https://i.ibb.co/S6wPzJc/pet1.jpg'},
-      {'name': 'Whiskers', 'type': 'Siamese Cat', 'description': 'A shy but affectionate Siamese cat.', 'imageUrl': 'https://i.ibb.co/L84k7b4/pet2.jpg'},
-      {'name': 'Rex', 'type': 'Parrot', 'description': 'An intelligent parrot who can mimic human speech.', 'imageUrl': 'https://i.ibb.co/g421t2C/pet3.jpg'},
-    ];
-
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -1247,65 +1225,40 @@ class _ProfilePageState extends State<ProfilePage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Relationships Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Family',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle_outline,
-                        color: Color(0xFFD6AF0C)),
-                    tooltip: 'Add Family',
-                    onPressed: () async {
-                      await showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        isDismissible: true,
-                        enableDrag: true,
-                        useSafeArea: true,
-                        builder: (context) => PopScope(
-                          canPop: true,
-                          onPopInvoked: (didPop) {
-                            if (!didPop) {
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: AddRelationshipModal(
-                            onAdd: (family) {
-                              // TODO: Add logic to update dummy data
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
+              _buildSectionHeader(
+                  AppLocalizations.of(context)!.family,
+                  Icons.link,
+                  Color(0xFFD6AF0C),
+                      () async {
+                    await showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => AddRelationshipModal(
+                        sectionTitle: AppLocalizations.of(context)!.family,
+                        onAdd: (item) {
+                          // TODO: Add logic to update dummy data
+                        },
+                      ),
+                    );
+                  }),
               const SizedBox(height: 10),
               SizedBox(
                 height: 60,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: celeb.relationships.length,
+                  itemCount: celeb.familyMembers.length,
                   itemBuilder: (context, index) {
-                    final relationship = celeb.relationships[index];
+                    final family = celeb.familyMembers[index];
                     return Padding(
                       padding: const EdgeInsets.only(right: 12.0),
                       child: GestureDetector(
                         onTap: () {
                           _showProfilePreviewModal(
                             context: context,
-                            userName: "Relationship ${index + 1}", // Replace with actual name if available
-                            userProfession: "Friend", // Replace with actual relationship type if available
-                            userProfileImageUrl: relationship,
+                            userName: family['name'], // Replace with actual name if available
+                            userProfession: family['name'], // Replace with actual relationship type if available
+                            userProfileImageUrl: family['imageUrl'],
                             onViewProfile: () {
                               // Add navigation to profile view here
                             },
@@ -1313,7 +1266,7 @@ class _ProfilePageState extends State<ProfilePage>
                         },
                         child: ProfileAvatar(
                           radius: 30,
-                          imageUrl: celeb.relationships[index],
+                          imageUrl: family['imageUrl'],
                         ),
                       ),
                     );
@@ -1322,48 +1275,23 @@ class _ProfilePageState extends State<ProfilePage>
               ),
               const SizedBox(height: 20),
               // Relationships Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Relationships',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle_outline,
-                        color: Color(0xFFD6AF0C)),
-                    tooltip: 'Add Relationship',
-                    onPressed: () async {
-                      await showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        isDismissible: true,
-                        enableDrag: true,
-                        useSafeArea: true,
-                        builder: (context) => PopScope(
-                          canPop: true,
-                          onPopInvoked: (didPop) {
-                            if (!didPop) {
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: AddRelationshipModal(
-                            onAdd: (relationship) {
-                              // TODO: Add logic to update dummy data
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
+              _buildSectionHeader(
+                  AppLocalizations.of(context)!.relationships,
+                  Icons.people,
+                  Color(0xFFD6AF0C),
+                      () async {
+                    await showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => AddRelationshipModal(
+                        sectionTitle: AppLocalizations.of(context)!.relationships,
+                        onAdd: (item) {
+                          // TODO: Add logic to update dummy data
+                        },
+                      ),
+                    );
+                  }),
               const SizedBox(height: 10),
               SizedBox(
                 height: 60,
@@ -1378,9 +1306,9 @@ class _ProfilePageState extends State<ProfilePage>
                         onTap: () {
                           _showProfilePreviewModal(
                             context: context,
-                            userName: "Relationship ${index + 1}", // Replace with actual name if available
-                            userProfession: "Friend", // Replace with actual relationship type if available
-                            userProfileImageUrl: relationship,
+                            userName: relationship['name'], // Replace with actual name if available
+                            userProfession: relationship['type'], // Replace with actual relationship type if available
+                            userProfileImageUrl: relationship['imageUrl'],
                             onViewProfile: () {
                               // Add navigation to profile view here
                             },
@@ -1388,7 +1316,7 @@ class _ProfilePageState extends State<ProfilePage>
                         },
                         child: ProfileAvatar(
                           radius: 30,
-                          imageUrl: celeb.relationships[index],
+                          imageUrl: relationship['imageUrl'],
                         ),
                       ),
                     );
@@ -1397,57 +1325,31 @@ class _ProfilePageState extends State<ProfilePage>
               ),
               const SizedBox(height: 20),
               // Pets Section (MOVED here, displayed with ProfileAvatar)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.pets,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle_outline,
-                        color: Color(0xFFD6AF0C)),
-                    tooltip: 'Add Pet',
-                    onPressed: () async {
-                      await showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        isDismissible: true,
-                        enableDrag: true,
-                        useSafeArea: true,
-                        builder: (context) => PopScope(
-                          canPop: true,
-                          onPopInvoked: (didPop) {
-                            if (!didPop) {
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: AddFunNicheModal( // Using AddFunNicheModal for pets
-                            sectionTitle: AppLocalizations.of(context)!.pets,
-                            onAdd: (pet) {
-                              // TODO: Add logic to update dummy data
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
+              _buildSectionHeader(
+                  AppLocalizations.of(context)!.pets,
+                  Icons.pets,
+                  Color(0xFFD6AF0C),
+                      () async {
+                    await showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => AddFunNicheModal(
+                        sectionTitle: AppLocalizations.of(context)!.pets,
+                        onAdd: (item) {
+                          // TODO: Add logic to update dummy data
+                        },
+                      ),
+                    );
+                  }),
               const SizedBox(height: 10),
               SizedBox(
                 height: 60, // Height for horizontal list
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: petsData.length,
+                  itemCount: celeb.pets.length,
                   itemBuilder: (context, index) {
-                    final pet = petsData[index];
+                    final pet = celeb.pets[index];
                     return Padding(
                       padding: const EdgeInsets.only(right: 12.0),
                       child: GestureDetector(
@@ -1474,48 +1376,22 @@ class _ProfilePageState extends State<ProfilePage>
               ),
               const SizedBox(height: 20),
               // Education Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.education,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle_outline,
-                        color: Color(0xFFD6AF0C)),
-                    tooltip: 'Add Education',
-                    onPressed: () async {
-                      await showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        isDismissible: true,
-                        enableDrag: true,
-                        useSafeArea: true,
-                        builder: (context) => PopScope(
-                          canPop: true,
-                          onPopInvoked: (didPop) {
-                            if (!didPop) {
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: AddEducationModal(
-                            onAdd: (education) {
-                              // TODO: Add logic to update dummy data
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
+              _buildSectionHeader(
+                  AppLocalizations.of(context)!.education,
+                  Icons.menu_book,
+                  Color(0xFFD6AF0C),
+                      () async {
+                    await showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => AddEducationModal(
+                        onAdd: (item) {
+                          // TODO: Add logic to update dummy data
+                        },
+                      ),
+                    );
+                  }),
               const SizedBox(height: 10),
               ...celeb.educationEntries.map((entry) {
                 final institution = entry['institution'] ?? '';
@@ -1593,50 +1469,24 @@ class _ProfilePageState extends State<ProfilePage>
                 );
               }).toList(),
               const SizedBox(height: 20),
+              _buildSectionHeader(
+                  AppLocalizations.of(context)!.hobbies,
+                  Icons.sports_soccer,
+                  Color(0xFFD6AF0C),
+                      () async {
+                    await showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => AddFunNicheModal(
+                        sectionTitle: AppLocalizations.of(context)!.hobbies,
+                        onAdd: (item) {
+                          // TODO: Add logic to update dummy data
+                        },
+                      ),
+                    );
+                  }),
               // Hobbies Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.hobbies,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle_outline,
-                        color: Color(0xFFD6AF0C)),
-                    tooltip: 'Add Hobby',
-                    onPressed: () async {
-                      await showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        isDismissible: true,
-                        enableDrag: true,
-                        useSafeArea: true,
-                        builder: (context) => PopScope(
-                          canPop: true,
-                          onPopInvoked: (didPop) {
-                            if (!didPop) {
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: AddFunNicheModal( // Using AddFunNicheModal for hobbies
-                            sectionTitle: AppLocalizations.of(context)!.hobbies,
-                            onAdd: (hobby) {
-                              // TODO: Add logic to update dummy data
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
               const SizedBox(height: 10),
               SizedBox(
                 height: 180,
@@ -1668,25 +1518,61 @@ class _ProfilePageState extends State<ProfilePage>
               ),
               const SizedBox(height: 20),
               // Lifestyle Section
-              Text(
-                AppLocalizations.of(context)!.lifestyle,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: defaultTextColor,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.nightlife, size: 24, color: Color(0xFFD6AF0C),),
+                      const SizedBox(width: 8),
+                      Text(
+                        AppLocalizations.of(context)!.lifestyle,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                            color: Color(0xFFD6AF0C)
+                        ),
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
+                    tooltip: 'Edit lifestyle',
+                    onPressed: (){
+                      //TODO: Add edit lifestyle
+                    },
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
               Text(
                 'Diet: ${celeb.diet}',
-                style: TextStyle(fontSize: 14, color: defaultTextColor),
+                style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic ,color: defaultTextColor),
               ),
               Text(
                 'Spirituality: ${celeb.spirituality}',
-                style: TextStyle(fontSize: 14, color: defaultTextColor),
+                style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic , color: defaultTextColor),
               ),
               const SizedBox(height: 20),
               // Involved Causes Section
+              _buildSectionHeader(
+                  AppLocalizations.of(context)!.involvedCauses,
+                  Icons.volunteer_activism,
+                  defaultTextColor,
+                      () async {
+                    await showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => AddPersonaModal(
+                        sectionTitle: AppLocalizations.of(context)!.involvedCauses,
+                        onAdd: (item) {
+                          // TODO: Add logic to update dummy data
+                          Navigator.pop(context);
+                        },
+                      ),
+                    );
+                  }),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -1758,7 +1644,7 @@ class _ProfilePageState extends State<ProfilePage>
                             ),
                           ),
                           Text(
-                            cause['description'] ?? '',
+                            cause['role'] ?? '',
                             style: TextStyle(fontSize: 14, color: secondaryTextColor),
                           ),
                         ],
@@ -1786,27 +1672,6 @@ class _ProfilePageState extends State<ProfilePage>
     final celeb = user as CelebrityUser;
 
     // Dummy data for Fun or Niche Details sections (MODIFIED with image URLs)
-    final Map<String, List<Map<String, String>>> funNicheData = {
-      'Tattoos or Unique Physical Traits': [
-        {'title': 'Anchor Tattoo', 'description': 'Small anchor on left wrist, symbolizing stability.', 'imageUrl': 'https://i.ibb.co/Zc01k23/tattoo1.jpg'},
-        {'title': 'Birthmark', 'description': 'Star-shaped birthmark on right shoulder.', 'imageUrl': 'https://i.ibb.co/pLg0L67/tattoo2.jpg'},
-        {'title': 'Dragon Sleeve', 'description': 'Intricate dragon design covering the entire left arm.', 'imageUrl': 'https://i.ibb.co/6y45sKq/tattoo3.jpg'},
-      ],
-      'Favorite Things': [
-        {'category': 'Food', 'item': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.', 'imageUrl': 'https://i.ibb.co/y423n5P/fave-sushi.jpg'},
-        {'category': 'Place', 'item': 'Kyoto, Japan', 'description': 'Enjoys the tranquility and cultural richness.', 'imageUrl': 'https://i.ibb.co/c123h1j/fave-kyoto.jpg'},
-        {'category': 'Music Genre', 'item': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.', 'imageUrl': 'https://i.ibb.co/9y56g7F/fave-jazz.jpg'},
-      ],
-      'Hidden Talents': [
-        {'title': 'Juggling', 'description': 'Can juggle up to five objects simultaneously.', 'imageUrl': 'https://i.ibb.co/C0f11Kk/talent-juggling.jpg'}, // Placeholder image
-        {'title': 'Amateur Chef', 'description': 'Known among friends for cooking gourmet meals.', 'imageUrl': 'https://i.ibb.co/y4L2k2n/talent-chef.jpg'}, // Placeholder image
-      ],
-      'Fan Theories or Fan Interactions': [
-        {'theory': 'Secret Album Theory', 'description': 'Fans speculate about a hidden album to be released on a specific date.'},
-        {'interaction': 'Surprise Fan Meetup', 'description': 'Known for organizing spontaneous meetups with fans in different cities.'},
-      ],
-      // 'Pets' section removed from here and moved to personal tab
-    };
 
     return SingleChildScrollView(
       child: Padding(
@@ -1837,25 +1702,25 @@ class _ProfilePageState extends State<ProfilePage>
               height: 170, // Height for horizontal list
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: (funNicheData['Tattoos or Unique Physical Traits'] ?? []).length,
+                itemCount: celeb.tattoos.length,
                 itemBuilder: (context, index) {
-                  final item = funNicheData['Tattoos or Unique Physical Traits']![index];
+                  final tattoo = celeb.tattoos[index];
                   return Padding(
                     padding: const EdgeInsets.only(right: 12.0),
                     child: GestureDetector(
                       onTap: () {
                         _showItemPopupModal(
                           context: context,
-                          imageUrl: item['imageUrl'],
-                          title: item['title']!,
-                          description: item['description']!,
+                          imageUrl: tattoo['imageUrl'],
+                          title: tattoo['name'],
+                          description: tattoo['description'],
                         );
                       },
                       child: ImageWithOptionalText(
                         width: 100,
                         height: 150,
-                        imageUrl: item['imageUrl'],
-                        bottomText: item['title'],
+                        imageUrl: tattoo['imageUrl'],
+                        bottomText: tattoo['name'],
                       ),
                     ),
                   );
@@ -1887,9 +1752,9 @@ class _ProfilePageState extends State<ProfilePage>
               height: 170, // Height for horizontal list
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: (funNicheData['Favorite Things'] ?? []).length,
+                itemCount: celeb.favouriteThings.length,
                 itemBuilder: (context, index) {
-                  final item = funNicheData['Favorite Things']![index];
+                  final item = celeb.favouriteThings[index];
                   return Padding(
                     padding: const EdgeInsets.only(right: 12.0),
                     child: GestureDetector(
@@ -1897,7 +1762,7 @@ class _ProfilePageState extends State<ProfilePage>
                         _showItemPopupModal(
                           context: context,
                           imageUrl: item['imageUrl'],
-                          title: '${item['category']}: ${item['item']}',
+                          title:item['item'],
                           description: item['description']!,
                         );
                       },
@@ -1937,9 +1802,9 @@ class _ProfilePageState extends State<ProfilePage>
               height: 170, // Height for horizontal list
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: (funNicheData['Hidden Talents'] ?? []).length,
+                itemCount: celeb.talents.length,
                 itemBuilder: (context, index) {
-                  final item = funNicheData['Hidden Talents']![index];
+                  final item = celeb.talents[index];
                   return Padding(
                     padding: const EdgeInsets.only(right: 12.0),
                     child: GestureDetector(
@@ -1947,15 +1812,15 @@ class _ProfilePageState extends State<ProfilePage>
                         _showItemPopupModal(
                           context: context,
                           imageUrl: item['imageUrl'],
-                          title: item['title']!,
-                          description: item['description']!,
+                          title: item['name'],
+                          description: item['name'],
                         );
                       },
                       child: ImageWithOptionalText(
                         width: 100,
                         height: 150,
                         imageUrl: item['imageUrl'],
-                        bottomText: item['title'],
+                        bottomText: item['name'],
                       ),
                     ),
                   );
@@ -1982,7 +1847,7 @@ class _ProfilePageState extends State<ProfilePage>
                     ),
                   );
                 }),
-            ... (funNicheData['Fan Theories or Fan Interactions'] ?? []).map((item) {
+            ... celeb.fanTheoriesOrInteractions.map((item) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Column(

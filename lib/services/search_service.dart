@@ -23,30 +23,117 @@ class SearchService {
       nationality: 'American',
       dob: DateTime(1923,11,11),
       followers: 1000000,
-      publicImageDescription: 'Pop Singer',
+      publicImageDescription: [
+        {'title': 'Philanthropic Work', 'description': 'Known for extensive charity work and advocacy.'},
+        {'title': 'Role Model', 'description': 'Considered a positive role model by many fans.'},
+      ],
+      quotesAndPublicStatements:[
+        {'quote': '“Be yourself; everyone else is already taken.”', 'context': 'Interview with Vogue, 2021.'},
+        {'quote': '“The only way to do great work is to love what you do.”', 'context': 'Award acceptance speech, 2023.'},
+      ],
       bio: 'Award-winning pop artist',
       website: 'https://bruam.com',
       posts: 150,
       postsList: [],
       netWorth: '50M',
       careerEntries: {
-        'music': [{'year': '2020', 'achievement': 'Grammy Award'}]
+        'Profession': [
+          {'title': 'Musician, Public Speaker'},
+        ],
+        'Debut Work': [
+          {'title': 'Lead Actor', 'subtitle': 'The Last of Us'},
+        ],
+        'Awards': [
+          {'title': 'Lead Actor, The Last of Us','award': 'Emmy Awards'},
+          {'title': 'Sting on the view','award': 'Grammy Awards'},
+          {'title': 'Best Upcoming Artist','award': 'MTV Awards'},
+        ],
+        'Collaborations': [
+          {'title': 'Horror on the Moves', 'subtitle': 'ft Chunk Molksey', 'type': 'Song'},
+          {'title': 'Sting on the view','subtitle': 'ft Alice Mahone', 'type': 'Song'}
+        ],
       },
       wealthEntries: {
-        'income': [{'source': 'Music', 'amount': '10M'}]
+        'Cars': [
+          {'imageUrl': 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=400&q=80', 'name': 'Lamborghini Aventador'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1461632830798-3adb3034e4c8?auto=format&fit=crop&w=400&q=80', 'name': 'Ferrari 488'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1511918984145-48de785d4c4e?auto=format&fit=crop&w=400&q=80', 'name': 'Rolls Royce Phantom'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=400&q=80', 'name': 'Porsche 911'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80', 'name': 'Tesla Model S'},
+        ],
+        'Houses': [
+          {'imageUrl': 'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=400&q=80', 'name': 'Malibu Mansion'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1460518451285-97b6aa326961?auto=format&fit=crop&w=400&q=80', 'name': 'NYC Penthouse'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80', 'name': 'Lake House'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80', 'name': 'Paris Apartment'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80', 'name': 'Dubai Villa'},
+        ],
+        'Art Collection': [
+          {'imageUrl': 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80', 'name': 'Van Gogh Painting'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=400&q=80', 'name': 'Picasso Sculpture'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=400&q=80', 'name': 'Modern Abstract'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=400&q=80', 'name': 'Classic Portrait'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80', 'name': 'Street Art'},
+        ],
+        'Watch Collection': [
+          {'imageUrl': 'https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=400&q=80', 'name': 'Rolex Daytona'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80', 'name': 'Patek Philippe'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80', 'name': 'Audemars Piguet'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80', 'name': 'Omega Seamaster'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80', 'name': 'Tag Heuer'},
+        ],
       },
+      redCarpetMoments: [
+        {'title': 'Met Gala 2023', 'description': 'Stunning custom gown by designer X, widely praised for its innovative design.', 'imageUrl': 'https://i.ibb.co/N73yB9c/red-carpet1.jpg'},
+        {'title': 'Oscars 2024', 'description': 'Epitome of elegance in a classic black tuxedo, breaking traditional gender norms.', 'imageUrl': 'https://i.ibb.co/y4L2k2n/red-carpet2.jpg'},
+        {'title': 'Cannes Film Festival', 'description': 'Wore a shimmering silver dress that captured international attention for its bold silhouette.', 'imageUrl': 'https://i.ibb.co/C0f11Kk/red-carpet3.jpg'},
+      ],
       zodiacSign: 'Leo',
-      familyMembers: [{'name': 'Jane Halaberry', 'relation': 'Sister'}],
-      relationships: ['Single'],
-      educationEntries: [{'school': 'Juilliard', 'year': '2015'}],
+      familyMembers: [{'name': 'Jane Halaberry', 'relation': 'Sister', 'imageUrl': 'https://randomuser.me/api/portraits/men/3.jpg'}],
+      relationships: [
+        {'name': 'Jane Doe', 'type': 'Friend', 'description': 'Best friend from college.'},
+        {'name': 'John Smith', 'type': 'Sibling', 'description': 'Older brother.'},
+      ],
+      educationEntries: [
+        {'institution': 'Princeton University', 'qualifications': [
+          {"title":"Bachelor's degree in Sociology", "year":"2013"},
+          {"title": "Bachelor's degree in Psychology", "year": "2013"}
+        ],},
+      ],
       hobbies: [{'name': 'Piano', 'description': 'Classical training'}],
       diet: 'Vegan',
       spirituality: 'Buddhist',
       involvedCauses: [{'cause': 'Climate Change', 'role': 'Activist'}],
-      pets: ['Golden Retriever'],
-      tattoos: ['Phoenix on arm'],
-      favouritePlaces: [{'name': 'Paris', 'reason': 'First concert'}],
-      talents: [{'talent': 'Singing', 'details': 'Five octave range'}],
+      pets: [
+        {'name': 'Buddy', 'type': 'Golden Retriever', 'description': 'A playful golden retriever, often featured on social media.', 'imageUrl': 'https://i.ibb.co/S6wPzJc/pet1.jpg'},
+        {'name': 'Whiskers', 'type': 'Siamese Cat', 'description': 'A shy but affectionate Siamese cat.', 'imageUrl': 'https://i.ibb.co/L84k7b4/pet2.jpg'},
+        {'name': 'Rex', 'type': 'Parrot', 'description': 'An intelligent parrot who can mimic human speech.', 'imageUrl': 'https://i.ibb.co/g421t2C/pet3.jpg'},
+      ],
+      tattoos: [
+        {'name': 'Eye of the titan','imageUrl':'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80', 'description': 'A playful golden retriever, often featured on social media.'},
+        {'name': 'Last titan','imageUrl':'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=200&q=80', 'description': 'A playful golden retriever, often featured on social media.'},
+        {'name': 'Aloha titan','imageUrl':'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=200&q=80', 'description': 'A playful golden retriever, often featured on social media.'},
+      ],
+      fanTheoriesOrInteractions: [
+        {'theory': 'Secret Album Theory', 'description': 'Fans speculate about a hidden album to be released on a specific date.'},
+        {'interaction': 'Surprise Fan Meetup', 'description': 'Known for organizing spontaneous meetups with fans in different cities.'},
+      ],
+      favouriteThings: [
+        {'item': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+        {'item': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+      ],
+      favouritePlaces : [
+        {'name': 'Vienna', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Seattle', 'imageUrl': 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'New York', 'imageUrl': 'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Lagos', 'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Kenya', 'imageUrl': 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=200&q=80'},
+      ],
+      talents: [
+        {'name': 'Basketball', 'imageUrl': 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Skiing', 'imageUrl': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Sky Diving', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+      ],
       socials: [{'title': 'reddit', 'link': 'https://www.reddit.com/user/celeb'}],
       fashionStyle: {
         'casual': [{'style': 'Bohemian', 'description': 'Earth tones'}]
@@ -77,29 +164,112 @@ class SearchService {
       hometown: 'Los Angeles, California',
       nationality: 'French',
       followers: 500000,
-      publicImageDescription: 'Jazz Artist',
+      publicImageDescription: [
+        {'title': 'Philanthropic Work', 'description': 'Known for extensive charity work and advocacy.'},
+        {'title': 'Role Model', 'description': 'Considered a positive role model by many fans.'},
+      ],
+      quotesAndPublicStatements: [
+        {'quote': '“Be yourself; everyone else is already taken.”', 'context': 'Interview with Vogue, 2021.'},
+        {'quote': '“The only way to do great work is to love what you do.”', 'context': 'Award acceptance speech, 2023.'},
+      ],
+      redCarpetMoments: [
+        {'title': 'Met Gala 2023', 'description': 'Stunning custom gown by designer X, widely praised for its innovative design.', 'imageUrl': 'https://i.ibb.co/N73yB9c/red-carpet1.jpg'},
+        {'title': 'Oscars 2024', 'description': 'Epitome of elegance in a classic black tuxedo, breaking traditional gender norms.', 'imageUrl': 'https://i.ibb.co/y4L2k2n/red-carpet2.jpg'},
+        {'title': 'Cannes Film Festival', 'description': 'Wore a shimmering silver dress that captured international attention for its bold silhouette.', 'imageUrl': 'https://i.ibb.co/C0f11Kk/red-carpet3.jpg'},
+      ],
       bio: 'Legendary jazz performer',
       website: 'https://jazzcat.com',
       posts: 75,
       postsList: [],
       netWorth: '10M',
       careerEntries: {
-        'music': [{'year': '2019', 'achievement': 'Jazz Hall of Fame'}]
+        'Profession': [
+          {'title': 'Musician, Public Speaker'},
+        ],
+        'Debut Work': [
+          {'title': 'Lead Actor', 'subtitle': 'The Last of Us'},
+        ],
+        'Awards': [
+          {'title': 'Lead Actor, The Last of Us','award': 'Emmy Awards'},
+          {'title': 'Sting on the view','award': 'Grammy Awards'},
+          {'title': 'Best Upcoming Artist','award': 'MTV Awards'},
+        ],
+        'Collaborations': [
+          {'title': 'Horror on the Moves', 'subtitle': 'ft Chunk Molksey', 'type': 'Song'},
+          {'title': 'Sting on the view','subtitle': 'ft Alice Mahone', 'type': 'Song'}
+        ],
       },
+      fanTheoriesOrInteractions: [
+        {'theory': 'Secret Album Theory', 'description': 'Fans speculate about a hidden album to be released on a specific date.'},
+        {'interaction': 'Surprise Fan Meetup', 'description': 'Known for organizing spontaneous meetups with fans in different cities.'},
+      ],
       wealthEntries: {
-        'income': [{'source': 'Tours', 'amount': '2M'}]
+        'Cars': [
+          {'imageUrl': 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=400&q=80', 'name': 'Lamborghini Aventador'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1461632830798-3adb3034e4c8?auto=format&fit=crop&w=400&q=80', 'name': 'Ferrari 488'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1511918984145-48de785d4c4e?auto=format&fit=crop&w=400&q=80', 'name': 'Rolls Royce Phantom'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=400&q=80', 'name': 'Porsche 911'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80', 'name': 'Tesla Model S'},
+        ],
+        'Houses': [
+          {'imageUrl': 'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=400&q=80', 'name': 'Malibu Mansion'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1460518451285-97b6aa326961?auto=format&fit=crop&w=400&q=80', 'name': 'NYC Penthouse'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80', 'name': 'Lake House'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80', 'name': 'Paris Apartment'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80', 'name': 'Dubai Villa'},
+        ],
+        'Art Collection': [
+          {'imageUrl': 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80', 'name': 'Van Gogh Painting'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=400&q=80', 'name': 'Picasso Sculpture'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=400&q=80', 'name': 'Modern Abstract'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=400&q=80', 'name': 'Classic Portrait'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80', 'name': 'Street Art'},
+        ],
+        'Watch Collection': [
+          {'imageUrl': 'https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=400&q=80', 'name': 'Rolex Daytona'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80', 'name': 'Patek Philippe'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80', 'name': 'Audemars Piguet'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80', 'name': 'Omega Seamaster'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80', 'name': 'Tag Heuer'},
+        ],
       },
       zodiacSign: 'Pisces',
-      familyMembers: [{'name': 'Marie Cat', 'relation': 'Wife'}],
-      relationships: ['Married'],
-      educationEntries: [{'school': 'Paris Conservatory', 'year': '2010'}],
+      familyMembers: [{'name': 'Marie Cat', 'relation': 'Wife','imageUrl': 'https://randomuser.me/api/portraits/men/3.jpg'}],
+      relationships: [
+        {'name': 'Jane Doe', 'type': 'Friend', 'description': 'Best friend from college.'},
+        {'name': 'John Smith', 'type': 'Sibling', 'description': 'Older brother.'},
+      ],
+      educationEntries: [
+        {'institution': 'Princeton University', 'qualifications': [
+          {"title":"Bachelor's degree in Sociology", "year":"2013"},
+          {"title": "Bachelor's degree in Psychology", "year": "2013"}
+        ],},
+      ],
       hobbies: [{'name': 'Wine Tasting', 'description': 'Sommelier'}],
       diet: 'Mediterranean',
       spirituality: 'Atheist',
       involvedCauses: [{'cause': 'Music Education', 'role': 'Patron'}],
-      pets: ['Siamese Cat'],
-      tattoos: ['Music Notes'],
-      favouritePlaces: [{'name': 'New Orleans', 'reason': 'Jazz roots'}],
+      pets: [
+        {'name': 'Buddy', 'type': 'Golden Retriever', 'description': 'A playful golden retriever, often featured on social media.', 'imageUrl': 'https://i.ibb.co/S6wPzJc/pet1.jpg'},
+        {'name': 'Whiskers', 'type': 'Siamese Cat', 'description': 'A shy but affectionate Siamese cat.', 'imageUrl': 'https://i.ibb.co/L84k7b4/pet2.jpg'},
+        {'name': 'Rex', 'type': 'Parrot', 'description': 'An intelligent parrot who can mimic human speech.', 'imageUrl': 'https://i.ibb.co/g421t2C/pet3.jpg'},
+      ],
+      tattoos: [
+        {'name': 'Eye of the titan','imageUrl':'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80', 'description': 'A playful golden retriever, often featured on social media.'},
+        {'name': 'Last titan','imageUrl':'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=200&q=80', 'description': 'A playful golden retriever, often featured on social media.'},
+        {'name': 'Aloha titan','imageUrl':'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=200&q=80', 'description': 'A playful golden retriever, often featured on social media.'},
+      ],
+      favouriteThings: [
+        {'item': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+        {'item': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+      ],
+      favouritePlaces : [
+        {'name': 'Vienna', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Seattle', 'imageUrl': 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'New York', 'imageUrl': 'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Lagos', 'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Kenya', 'imageUrl': 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=200&q=80'},
+      ],
       talents: [{'talent': 'Saxophone', 'details': 'Jazz improvisation'}],
       socials: [{'title': 'tiktok', 'link': 'https://www.tiktok.com/@celeb'}],
       fashionStyle: {
@@ -119,29 +289,112 @@ class SearchService {
       occupation: 'Rock Musician',
       nationality: 'British',
       followers: 750000,
-      publicImageDescription: 'Rock Star',
+      publicImageDescription: [
+        {'title': 'Philanthropic Work', 'description': 'Known for extensive charity work and advocacy.'},
+        {'title': 'Role Model', 'description': 'Considered a positive role model by many fans.'},
+      ],
       bio: 'Rock legend with multiple platinum albums',
       website: 'https://rockstar.com',
       posts: 200,
       postsList: [],
       netWorth: '25M',
       careerEntries: {
-        'music': [{'year': '2022', 'achievement': 'Platinum Album'}]
+        'Profession': [
+          {'title': 'Musician, Public Speaker'},
+        ],
+        'Debut Work': [
+          {'title': 'Lead Actor', 'subtitle': 'The Last of Us'},
+        ],
+        'Awards': [
+          {'title': 'Lead Actor, The Last of Us','award': 'Emmy Awards'},
+          {'title': 'Sting on the view','award': 'Grammy Awards'},
+          {'title': 'Best Upcoming Artist','award': 'MTV Awards'},
+        ],
+        'Collaborations': [
+          {'title': 'Horror on the Moves', 'subtitle': 'ft Chunk Molksey', 'type': 'Song'},
+          {'title': 'Sting on the view','subtitle': 'ft Alice Mahone', 'type': 'Song'}
+        ],
       },
       wealthEntries: {
-        'income': [{'source': 'Album Sales', 'amount': '5M'}]
+        'Cars': [
+          {'imageUrl': 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=400&q=80', 'name': 'Lamborghini Aventador'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1461632830798-3adb3034e4c8?auto=format&fit=crop&w=400&q=80', 'name': 'Ferrari 488'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1511918984145-48de785d4c4e?auto=format&fit=crop&w=400&q=80', 'name': 'Rolls Royce Phantom'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=400&q=80', 'name': 'Porsche 911'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80', 'name': 'Tesla Model S'},
+        ],
+        'Houses': [
+          {'imageUrl': 'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=400&q=80', 'name': 'Malibu Mansion'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1460518451285-97b6aa326961?auto=format&fit=crop&w=400&q=80', 'name': 'NYC Penthouse'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80', 'name': 'Lake House'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80', 'name': 'Paris Apartment'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80', 'name': 'Dubai Villa'},
+        ],
+        'Art Collection': [
+          {'imageUrl': 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80', 'name': 'Van Gogh Painting'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=400&q=80', 'name': 'Picasso Sculpture'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=400&q=80', 'name': 'Modern Abstract'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=400&q=80', 'name': 'Classic Portrait'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80', 'name': 'Street Art'},
+        ],
+        'Watch Collection': [
+          {'imageUrl': 'https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=400&q=80', 'name': 'Rolex Daytona'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80', 'name': 'Patek Philippe'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80', 'name': 'Audemars Piguet'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80', 'name': 'Omega Seamaster'},
+          {'imageUrl': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80', 'name': 'Tag Heuer'},
+        ],
       },
+      quotesAndPublicStatements: [
+        {'quote': '“Be yourself; everyone else is already taken.”', 'context': 'Interview with Vogue, 2021.'},
+        {'quote': '“The only way to do great work is to love what you do.”', 'context': 'Award acceptance speech, 2023.'},
+      ],
+      redCarpetMoments: [
+        {'title': 'Met Gala 2023', 'description': 'Stunning custom gown by designer X, widely praised for its innovative design.', 'imageUrl': 'https://i.ibb.co/N73yB9c/red-carpet1.jpg'},
+        {'title': 'Oscars 2024', 'description': 'Epitome of elegance in a classic black tuxedo, breaking traditional gender norms.', 'imageUrl': 'https://i.ibb.co/y4L2k2n/red-carpet2.jpg'},
+        {'title': 'Cannes Film Festival', 'description': 'Wore a shimmering silver dress that captured international attention for its bold silhouette.', 'imageUrl': 'https://i.ibb.co/C0f11Kk/red-carpet3.jpg'},
+      ],
+      fanTheoriesOrInteractions: [
+        {'theory': 'Secret Album Theory', 'description': 'Fans speculate about a hidden album to be released on a specific date.'},
+        {'interaction': 'Surprise Fan Meetup', 'description': 'Known for organizing spontaneous meetups with fans in different cities.'},
+      ],
       zodiacSign: 'Scorpio',
-      familyMembers: [{'name': 'Jack Star Jr', 'relation': 'Son'}],
-      relationships: ['Divorced'],
-      educationEntries: [{'school': 'London Music School', 'year': '2005'}],
+      familyMembers: [{'name': 'Jack Star Jr', 'relation': 'Son', 'imageUrl': 'https://randomuser.me/api/portraits/men/3.jpg'}],
+      relationships: [
+        {'name': 'Jane Doe', 'type': 'Friend', 'description': 'Best friend from college.'},
+        {'name': 'John Smith', 'type': 'Sibling', 'description': 'Older brother.'},
+      ],
+      educationEntries: [
+        {'institution': 'Princeton University', 'qualifications': [
+          {"title":"Bachelor's degree in Sociology", "year":"2013"},
+          {"title": "Bachelor's degree in Psychology", "year": "2013"}
+        ],},
+      ],
       hobbies: [{'name': 'Guitar Collection', 'description': 'Vintage pieces'}],
       diet: 'Balanced',
       spirituality: 'Agnostic',
       involvedCauses: [{'cause': 'Mental Health', 'role': 'Advocate'}],
-      pets: ['British Bulldog'],
-      tattoos: ['Dragon Sleeve'],
-      favouritePlaces: [{'name': 'London', 'reason': 'First gig'}],
+      pets: [
+        {'name': 'Buddy', 'type': 'Golden Retriever', 'description': 'A playful golden retriever, often featured on social media.', 'imageUrl': 'https://i.ibb.co/S6wPzJc/pet1.jpg'},
+        {'name': 'Whiskers', 'type': 'Siamese Cat', 'description': 'A shy but affectionate Siamese cat.', 'imageUrl': 'https://i.ibb.co/L84k7b4/pet2.jpg'},
+        {'name': 'Rex', 'type': 'Parrot', 'description': 'An intelligent parrot who can mimic human speech.', 'imageUrl': 'https://i.ibb.co/g421t2C/pet3.jpg'},
+      ],
+      tattoos: [
+        {'name': 'Eye of the titan','imageUrl':'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80', 'description': 'A playful golden retriever, often featured on social media.'},
+        {'name': 'Last titan','imageUrl':'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=200&q=80', 'description': 'A playful golden retriever, often featured on social media.'},
+        {'name': 'Aloha titan','imageUrl':'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=200&q=80', 'description': 'A playful golden retriever, often featured on social media.'},
+      ],
+      favouriteThings: [
+        {'item': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+        {'item': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+        ],
+      favouritePlaces : [
+        {'name': 'Vienna', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Seattle', 'imageUrl': 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'New York', 'imageUrl': 'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Lagos', 'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Kenya', 'imageUrl': 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=200&q=80'},
+      ],
       talents: [{'talent': 'Guitar', 'details': 'Lead guitarist'}],
       socials: [{'title': 'reddit', 'link': 'https://www.reddit.com/user/celeb'}],
       fashionStyle: {
