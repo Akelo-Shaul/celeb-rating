@@ -18,6 +18,7 @@ class AudioService {
         username: 'audiomaster',
         password: '',
         email: 'audiomaster@example.com',
+        dob: DateTime(1990, 1, 1),
         role: 'User',
         fullName: 'Audio Master',
         profileImageUrl: 'https://randomuser.me/api/portraits/men/10.jpg',
@@ -43,6 +44,7 @@ class AudioService {
       thumbnailUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb',
       from: User(
         id: 2,
+        dob: DateTime(1990, 1, 1),
         username: 'naturefan',
         password: '',
         email: 'naturefan@example.com',

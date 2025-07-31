@@ -11,6 +11,7 @@ class StreamService {
       username: 'streamer1',
       password: '',
       email: 'streamer1@example.com',
+      dob: DateTime(1990, 1, 1),
       role: 'User',
       fullName: 'Streamer One',
       profileImageUrl: 'https://randomuser.me/api/portraits/men/1.jpg',
@@ -22,6 +23,7 @@ class StreamService {
       email: 'streamer2@example.com',
       role: 'User',
       fullName: 'Streamer Two',
+      dob: DateTime(1990, 1, 1),
       profileImageUrl: 'https://randomuser.me/api/portraits/women/2.jpg',
     ),
   ];

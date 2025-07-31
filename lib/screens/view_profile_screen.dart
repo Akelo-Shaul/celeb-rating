@@ -2,6 +2,7 @@ import 'package:celebrating/widgets/add_wealth_item_modal.dart';
 import 'package:celebrating/widgets/slideup_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/comment.dart';
@@ -10,10 +11,12 @@ import '../models/user.dart';
 import '../services/user_service.dart';
 import '../utils/constants.dart';
 import '../widgets/add_education_modal.dart';
+import '../widgets/add_fun_niche_modal.dart';
 import '../widgets/add_persona_modal.dart';
 import '../widgets/add_relationship_modal.dart';
 import '../widgets/app_buttons.dart';
 import '../widgets/comments_modal.dart';
+import '../widgets/item_popup_modal.dart';
 import '../widgets/post_card.dart';
 import '../widgets/profile_avatar.dart';
 import '../widgets/image_optional_text.dart';
@@ -87,11 +90,32 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
     );
   }
 
+  void _showItemPopupModal({
+    required BuildContext context,
+    String? imageUrl,
+    required String title,
+    required String description,
+  }) {
+    showSlideUpDialog(
+      context: context,
+      height: MediaQuery.of(context).size.height * 0.6,
+      width: MediaQuery.of(context).size.width * 0.9,
+      borderRadius: BorderRadius.circular(20),
+      backgroundColor: Theme.of(context).cardColor,
+      child: ItemPopupModal(
+        imageUrl: imageUrl,
+        title: title,
+        description: description,
+      ),
+    );
+  }
+
+
   @override
   void initState() {
     super.initState();
     final isCelebrity = widget.user is CelebrityUser;
-    _tabController = TabController(length: isCelebrity ? 5 : 1, vsync: this);
+    _tabController = TabController(length: isCelebrity ? 6 : 1, vsync: this);
     _loadUserData();
   }
 
@@ -148,17 +172,38 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20,),
-            _buildProfileHeader(defaultTextColor, secondaryTextColor),
-            _buildActionButtons(),
-            const SizedBox(height: 8,),
-            _buildStatsRow(defaultTextColor, secondaryTextColor),
-            _buildTabBar(isDark),
-            Expanded(child: _buildTabs()),
-          ],
+        child: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                expandedHeight: 430.0, // Estimated height of header content
+                floating: true,
+                pinned: true,
+                automaticallyImplyLeading: false,
+                snap: true, // Optional: for snapping effect
+                elevation: 0, // No shadow for a cleaner look
+                backgroundColor: Theme.of(context).cardColor, // Background for the app bar itself
+                flexibleSpace: FlexibleSpaceBar(
+                  collapseMode: CollapseMode.pin, // Ensures background content collapses correctly
+                  background: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // These widgets already have their background set within their own functions
+                      _buildProfileHeader(defaultTextColor, secondaryTextColor),
+                      _buildActionButtons(),
+                      const SizedBox(height: 5,),
+                      _buildStatsRow(defaultTextColor, secondaryTextColor),
+                    ],
+                  ),
+                ),
+                bottom: PreferredSize(
+                  preferredSize: Size.fromHeight(48.0), // Standard TabBar height
+                  child: _buildTabBar(isDark),
+                ),
+              ),
+            ];
+          },
+          body: _buildTabs(),
         ),
       ),
     );
@@ -168,13 +213,15 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
     final user = widget.user;
     final isCelebrity = user is CelebrityUser;
     final celeb = isCelebrity ? user as CelebrityUser : null;
-    return Padding(
+    return Container(
+      color: Theme.of(context).cardColor,
       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,26 +229,64 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                   Text(
                     user.fullName, // Removed `user != null ?` as user is always non-null here
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
                       color: defaultTextColor,
                     ),
                   ),
                   Text(
-                    user.username, // Removed `user != null ?`
+                    '@${user.username}', // Removed `user != null ?`
                     style: TextStyle(
                       fontSize: 16,
                       color: secondaryTextColor,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 5),
+                  Text(
+                    'Profession', // Use ! as celeb is non-null if isCelebrity is true
+                    style: TextStyle(color: secondaryTextColor),
+                  ),
                   Text(
                     isCelebrity ? celeb!.occupation : '', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: defaultTextColor),
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'Nationality', // Use ! as celeb is non-null if isCelebrity is true
+                    style: TextStyle(color: secondaryTextColor),
                   ),
                   Text(
                     isCelebrity ? celeb!.nationality : '', // Use !
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'Place of Birth', // Use ! as celeb is non-null if isCelebrity is true
                     style: TextStyle(color: secondaryTextColor),
+                  ),
+                  Text(
+                    isCelebrity && celeb != null ? celeb.hometown : '',
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'Date Of Birth', // Use ! as celeb is non-null if isCelebrity is true
+                    style: TextStyle(color: secondaryTextColor),
+                  ),
+                  Text(
+                    user.dob != null
+                        ? DateFormat('MMMM d, y').format(user.dob) // Format as "July 31, 2025"
+                        : '',
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'Zodiac Sign', // Use ! as celeb is non-null if isCelebrity is true
+                    style: TextStyle(color: secondaryTextColor),
+                  ),
+                  Text(
+                    isCelebrity ? celeb!.zodiacSign : '', // Use !
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -367,6 +452,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
         Tab(text: localizations.wealthTab),
         Tab(text: localizations.careerTab),
         Tab(text: localizations.publicPersonaTab),
+        const Tab(text: 'Fun & Niche'), // New Tab
       ] : const [ // Added const
         Tab(text: 'Celebrations'),
       ],
@@ -384,6 +470,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
         _buildWealthTab(),
         _buildCareerTab(),
         _buildPublicPersonaTab(),
+        _buildFunNicheTab()
       ] : [
         _buildPostsTab(),
       ],
@@ -1181,6 +1268,34 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
     );
   }
 
+
+  Widget _buildSectionHeader(String title, IconData icon, Color textColor, VoidCallback onAddPressed) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 24, color: textColor),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
+            ),
+          ],
+        ),
+        IconButton(
+          icon: const Icon(Icons.add_circle_outline, color: Color(0xFFD6AF0C)),
+          tooltip: 'Add $title',
+          onPressed: onAddPressed,
+        ),
+      ],
+    );
+  }
+
   Widget _buildPublicPersonaTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
@@ -1351,6 +1466,243 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                 ),
               ),
             ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+  Widget _buildFunNicheTab() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultTextColor = isDark ? Colors.white : Colors.black;
+    final secondaryTextColor =
+    isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+
+    if (widget.user is! CelebrityUser) {
+      return const Center(child: Text("No fun & niche data available."));
+    }
+    final celeb = widget.user as CelebrityUser;
+
+    // Dummy data for Fun or Niche Details sections (MODIFIED with image URLs)
+    final Map<String, List<Map<String, String>>> funNicheData = {
+      'Tattoos or Unique Physical Traits': [
+        {'title': 'Anchor Tattoo', 'description': 'Small anchor on left wrist, symbolizing stability.', 'imageUrl': 'https://i.ibb.co/Zc01k23/tattoo1.jpg'},
+        {'title': 'Birthmark', 'description': 'Star-shaped birthmark on right shoulder.', 'imageUrl': 'https://i.ibb.co/pLg0L67/tattoo2.jpg'},
+        {'title': 'Dragon Sleeve', 'description': 'Intricate dragon design covering the entire left arm.', 'imageUrl': 'https://i.ibb.co/6y45sKq/tattoo3.jpg'},
+      ],
+      'Favorite Things': [
+        {'category': 'Food', 'item': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.', 'imageUrl': 'https://i.ibb.co/y423n5P/fave-sushi.jpg'},
+        {'category': 'Place', 'item': 'Kyoto, Japan', 'description': 'Enjoys the tranquility and cultural richness.', 'imageUrl': 'https://i.ibb.co/c123h1j/fave-kyoto.jpg'},
+        {'category': 'Music Genre', 'item': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.', 'imageUrl': 'https://i.ibb.co/9y56g7F/fave-jazz.jpg'},
+      ],
+      'Hidden Talents': [
+        {'title': 'Juggling', 'description': 'Can juggle up to five objects simultaneously.', 'imageUrl': 'https://i.ibb.co/C0f11Kk/talent-juggling.jpg'}, // Placeholder image
+        {'title': 'Amateur Chef', 'description': 'Known among friends for cooking gourmet meals.', 'imageUrl': 'https://i.ibb.co/y4L2k2n/talent-chef.jpg'}, // Placeholder image
+      ],
+      'Fan Theories or Fan Interactions': [
+        {'theory': 'Secret Album Theory', 'description': 'Fans speculate about a hidden album to be released on a specific date.'},
+        {'interaction': 'Surprise Fan Meetup', 'description': 'Known for organizing spontaneous meetups with fans in different cities.'},
+      ],
+      // 'Pets' section removed from here and moved to personal tab
+    };
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Tattoos or Unique Physical Traits (MODIFIED to horizontal list with images)
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.tattoos,
+                Icons.brush,
+                defaultTextColor,
+                    () async {
+                  await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => AddFunNicheModal(
+                      sectionTitle: AppLocalizations.of(context)!.tattoos,
+                      onAdd: (item) {
+                        // TODO: Add logic to update dummy data
+                      },
+                    ),
+                  );
+                }),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 170, // Height for horizontal list
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: (funNicheData['Tattoos or Unique Physical Traits'] ?? []).length,
+                itemBuilder: (context, index) {
+                  final item = funNicheData['Tattoos or Unique Physical Traits']![index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        _showItemPopupModal(
+                          context: context,
+                          imageUrl: item['imageUrl'],
+                          title: item['title']!,
+                          description: item['description']!,
+                        );
+                      },
+                      child: ImageWithOptionalText(
+                        width: 100,
+                        height: 150,
+                        imageUrl: item['imageUrl'],
+                        bottomText: item['title'],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Favorite Things (MODIFIED to horizontal list with images)
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.favoriteThings,
+                Icons.favorite_border,
+                defaultTextColor,
+                    () async {
+                  await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => AddFunNicheModal(
+                      sectionTitle: AppLocalizations.of(context)!.favoriteThings,
+                      onAdd: (item) {
+                        // TODO: Add logic to update dummy data
+                      },
+                    ),
+                  );
+                }),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 170, // Height for horizontal list
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: (funNicheData['Favorite Things'] ?? []).length,
+                itemBuilder: (context, index) {
+                  final item = funNicheData['Favorite Things']![index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        _showItemPopupModal(
+                          context: context,
+                          imageUrl: item['imageUrl'],
+                          title: '${item['category']}: ${item['item']}',
+                          description: item['description']!,
+                        );
+                      },
+                      child: ImageWithOptionalText(
+                        width: 100,
+                        height: 150,
+                        imageUrl: item['imageUrl'],
+                        bottomText: item['item'],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Hidden Talents (MODIFIED to horizontal list with images)
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.hiddenTalents,
+                Icons.star_outline,
+                defaultTextColor,
+                    () async {
+                  await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => AddFunNicheModal(
+                      sectionTitle: AppLocalizations.of(context)!.hiddenTalents,
+                      onAdd: (item) {
+                        // TODO: Add logic to update dummy data
+                      },
+                    ),
+                  );
+                }),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 170, // Height for horizontal list
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: (funNicheData['Hidden Talents'] ?? []).length,
+                itemBuilder: (context, index) {
+                  final item = funNicheData['Hidden Talents']![index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        _showItemPopupModal(
+                          context: context,
+                          imageUrl: item['imageUrl'],
+                          title: item['title']!,
+                          description: item['description']!,
+                        );
+                      },
+                      child: ImageWithOptionalText(
+                        width: 100,
+                        height: 150,
+                        imageUrl: item['imageUrl'],
+                        bottomText: item['title'],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Fan Theories or Fan Interactions
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.fanTheoriesInteractions,
+                Icons.people_outline,
+                defaultTextColor,
+                    () async {
+                  await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => AddFunNicheModal(
+                      sectionTitle: AppLocalizations.of(context)!.fanTheoriesInteractions,
+                      onAdd: (item) {
+                        // TODO: Add logic to update dummy data
+                      },
+                    ),
+                  );
+                }),
+            ... (funNicheData['Fan Theories or Fan Interactions'] ?? []).map((item) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item['theory'] ?? item['interaction']!,
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: defaultTextColor),
+                    ),
+                    Text(
+                      item['description']!,
+                      style: TextStyle(fontSize: 14, color: secondaryTextColor),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
             const SizedBox(height: 20),
           ],
         ),

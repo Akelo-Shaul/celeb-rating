@@ -22,81 +22,96 @@ class _AddPersonaModalState extends State<AddPersonaModal> {
   // Controllers for all possible fields
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
-  final TextEditingController _valueController = TextEditingController(); // unused now
-  final TextEditingController _bodyPartController = TextEditingController(); // tattoos
-  final TextEditingController _locationController = TextEditingController(); // favourite places
-  final TextEditingController _reasonController = TextEditingController(); // favourite places
-  final TextEditingController _startYearController = TextEditingController(); // talents, hobbies
-  final TextEditingController _inspirationController = TextEditingController(); // fashion style // fashion style
-  final TextEditingController _socialPlatformController = TextEditingController(); // New: Socials platform
+  final TextEditingController _valueController = TextEditingController();
+  final TextEditingController _socialPlatformController = TextEditingController();
   final TextEditingController _socialLinkController = TextEditingController();
+  final TextEditingController _followerCountController = TextEditingController();
+  final TextEditingController _publicImageTitleController = TextEditingController();
+  final TextEditingController _publicImageDescController = TextEditingController();
+  // Removed _controversyTitleController and _controversyDescController
+  final TextEditingController _fashionStyleTitleController = TextEditingController();
+  final TextEditingController _fashionStyleDescController = TextEditingController();
+  final TextEditingController _redCarpetTitleController = TextEditingController(); // New
+  final TextEditingController _redCarpetDescController = TextEditingController(); // New
+  final TextEditingController _quoteController = TextEditingController();
+  final TextEditingController _quoteContextController = TextEditingController();
+
+
   XFile? _pickedImage;
   DateTime? _selectStartDate;
 
+  // Updated persona types for Public Persona tab
   final List<String> _personaTypes = [
-    'Tattoos', 'Favourite Places', 'Talents', 'Hobbies', 'Fashion Style', 'Socials'
+    'Social Media Presence',
+    'Public Image / Reputation',
+    'Fashion Style', // Separated
+    'Red Carpet Moments', // Separated
+    'Quotes or Public Statements'
   ];
   String? _selectedPersonaType;
+
+  @override
+  void initState() {
+    super.initState();
+    // Set initial selected persona type based on sectionTitle
+    _selectedPersonaType = widget.sectionTitle;
+  }
 
   @override
   void dispose() {
     _nameController.dispose();
     _descController.dispose();
     _valueController.dispose();
-    _bodyPartController.dispose();
-    _locationController.dispose();
-    _reasonController.dispose();
-    _startYearController.dispose();
-    _inspirationController.dispose();
     _socialPlatformController.dispose();
     _socialLinkController.dispose();
+    _followerCountController.dispose();
+    _publicImageTitleController.dispose();
+    _publicImageDescController.dispose();
+    // Removed dispose for controversy controllers
+    _fashionStyleTitleController.dispose();
+    _fashionStyleDescController.dispose();
+    _redCarpetTitleController.dispose(); // New dispose
+    _redCarpetDescController.dispose(); // New dispose
+    _quoteController.dispose();
+    _quoteContextController.dispose();
     super.dispose();
   }
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
     final Map<String, dynamic> data = {'type': _selectedPersonaType};
+
     switch (_selectedPersonaType) {
-      case 'Tattoos':
-        data.addAll({
-          'name': _nameController.text.trim(),
-          'bodyPart': _bodyPartController.text.trim(),
-          'description': _descController.text.trim(),
-        });
-        break;
-      case 'Favourite Places':
-        data.addAll({
-          'location': _locationController.text.trim(),
-          'description': _descController.text.trim(),
-          'reason': _reasonController.text.trim(),
-        });
-        break;
-      case 'Talents':
-        data.addAll({
-          'name': _nameController.text.trim(),
-          'description': _descController.text.trim(),
-          'startYear': _startYearController.text.trim(),
-        });
-        break;
-      case 'Hobbies':
-        data.addAll({
-          'name': _nameController.text.trim(),
-          'description': _descController.text.trim(),
-          'startYear': _startYearController.text.trim(),
-        });
-        break;
-      case 'Fashion Style':
-        data.addAll({
-        'name': _nameController.text.trim(),
-        'description': _descController.text.trim(),
-        'inspiration': _inspirationController.text.trim(),
-      });
-        break;
-      case 'Socials':
+      case 'Social Media Presence':
         data.addAll({
           'platform': _socialPlatformController.text.trim(),
           'link': _socialLinkController.text.trim(),
-          'description': _descController.text.trim(),
+          'followers': _followerCountController.text.trim(),
+        });
+        break;
+      case 'Public Image / Reputation':
+        data.addAll({
+          'title': _publicImageTitleController.text.trim(),
+          'description': _publicImageDescController.text.trim(),
+        });
+        break;
+    // Removed 'Controversies or Scandals' case
+      case 'Fashion Style': // Separated
+        data.addAll({
+          'title': _fashionStyleTitleController.text.trim(),
+          'description': _fashionStyleDescController.text.trim(),
+        });
+        break;
+      case 'Red Carpet Moments': // Separated
+        data.addAll({
+          'title': _redCarpetTitleController.text.trim(),
+          'description': _redCarpetDescController.text.trim(),
+        });
+        break;
+      case 'Quotes or Public Statements':
+        data.addAll({
+          'quote': _quoteController.text.trim(),
+          'context': _quoteContextController.text.trim(),
         });
         break;
     }
@@ -117,366 +132,253 @@ class _AddPersonaModalState extends State<AddPersonaModal> {
   List<Widget> _buildFieldsForType(String? type) {
     final loc = AppLocalizations.of(context)!;
     switch (type) {
-      case 'Tattoos':
-        return [
-          TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              labelText: loc.name,
-              prefixIcon: Icon(Icons.label),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? loc.enterName : null,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _bodyPartController,
-            decoration: InputDecoration(
-              labelText: 'Body Part',
-              prefixIcon: Icon(Icons.accessibility_new),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? 'Enter body part' : null,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _descController,
-            decoration: InputDecoration(
-              labelText: loc.description,
-              prefixIcon: Icon(Icons.description),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? loc.enterDescription : null,
-          ),
-        ];
-      case 'Favourite Places':
-        return [
-          TextFormField(
-            controller: _locationController,
-            decoration: InputDecoration(
-              labelText: 'Location',
-              prefixIcon: Icon(Icons.location_on),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? 'Enter location' : null,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _descController,
-            decoration: InputDecoration(
-              labelText: loc.description,
-              prefixIcon: Icon(Icons.description),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? loc.enterDescription : null,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _reasonController,
-            decoration: InputDecoration(
-              labelText: 'Reason',
-              prefixIcon: Icon(Icons.question_answer),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? 'Enter reason' : null,
-          ),
-        ];
-      case 'Talents':
-        return [
-          TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              labelText: loc.name,
-              prefixIcon: Icon(Icons.label),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? loc.enterName : null,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _descController,
-            decoration: InputDecoration(
-              labelText: loc.description,
-              prefixIcon: Icon(Icons.description),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? loc.enterDescription : null,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _startYearController,
-            decoration: InputDecoration(
-              labelText: 'Start Year',
-              prefixIcon: Icon(Icons.calendar_today),
-            ),
-            readOnly: true,
-            onTap: () async {
-              final picked = await CustomDatePicker.show(context);
-              if (picked != null) {
-                setState(() {
-                  _selectStartDate = picked;
-                  _startYearController.text = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
-                });
-              }
-            },
-            validator: (v) {
-              if (v == null || v.trim().isEmpty) return AppLocalizations.of(context)!.enterAge;
-              return null;
-            },
-          ),
-        ];
-      case 'Hobbies':
-        return [
-          TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              labelText: loc.name,
-              prefixIcon: Icon(Icons.label),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? loc.enterName : null,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _descController,
-            decoration: InputDecoration(
-              labelText: loc.description,
-              prefixIcon: Icon(Icons.description),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? loc.enterDescription : null,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _startYearController,
-            decoration: InputDecoration(
-              labelText: 'Start Year',
-              prefixIcon: Icon(Icons.calendar_today),
-            ),
-            readOnly: true,
-            onTap: () async {
-              final picked = await CustomDatePicker.show(context);
-              if (picked != null) {
-                setState(() {
-                  _selectStartDate = picked;
-                  _startYearController.text = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
-                });
-              }
-            },
-          ),
-        ];
-      case 'Fashion Style':
-        return [
-          TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              labelText: loc.name,
-              prefixIcon: Icon(Icons.label),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? loc.enterName : null,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _descController,
-            decoration: InputDecoration(
-              labelText: loc.description,
-              prefixIcon: Icon(Icons.description),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? loc.enterDescription : null,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
-            controller: _inspirationController,
-            decoration: InputDecoration(
-              labelText: 'Inspiration',
-              prefixIcon: Icon(Icons.lightbulb_outline),
-            ),
-            validator: (v) => v == null || v.trim().isEmpty ? 'Enter inspiration' : null,
-          ),
-        ];
-      case 'Socials':
+      case 'Social Media Presence':
         return [
           TextFormField(
             controller: _socialPlatformController,
-            decoration: const InputDecoration(
-              labelText: 'Platform Name',
+            decoration: InputDecoration(
+              labelText: 'Platform',
               prefixIcon: Icon(Icons.public),
             ),
-            validator: (v) => v == null || v.trim().isEmpty ? 'Enter platform name' : null,
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter platform' : null,
           ),
           const SizedBox(height: 14),
           TextFormField(
             controller: _socialLinkController,
-            decoration: const InputDecoration(
-              labelText: 'Social Link',
+            decoration: InputDecoration(
+              labelText: 'Link',
               prefixIcon: Icon(Icons.link),
             ),
-            validator: (v) => v == null || v.trim().isEmpty ? 'Enter social link' : null,
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter link' : null,
           ),
           const SizedBox(height: 14),
           TextFormField(
-            controller: _descController,
+            controller: _followerCountController,
             decoration: InputDecoration(
-              labelText: loc.description,
-              prefixIcon: const Icon(Icons.description),
+              labelText: 'Follower Count',
+              prefixIcon: Icon(Icons.people),
             ),
-            validator: (v) => v == null || v.trim().isEmpty ? loc.enterDescription : null,
+            keyboardType: TextInputType.number,
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter follower count' : null,
+          ),
+        ];
+      case 'Public Image / Reputation':
+        return [
+          TextFormField(
+            controller: _publicImageTitleController,
+            decoration: InputDecoration(
+              labelText: 'Title',
+              prefixIcon: Icon(Icons.title),
+            ),
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter title' : null,
+          ),
+          const SizedBox(height: 14),
+          TextFormField(
+            controller: _publicImageDescController,
+            decoration: InputDecoration(
+              labelText: 'Description',
+              prefixIcon: Icon(Icons.description),
+            ),
+            maxLines: 3,
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter description' : null,
+          ),
+        ];
+    // Removed 'Controversies or Scandals' case
+      case 'Fashion Style': // Separated
+        return [
+          TextFormField(
+            controller: _fashionStyleTitleController,
+            decoration: InputDecoration(
+              labelText: 'Style Name/Characteristic',
+              prefixIcon: Icon(Icons.checkroom),
+            ),
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter style name' : null,
+          ),
+          const SizedBox(height: 14),
+          TextFormField(
+            controller: _fashionStyleDescController,
+            decoration: InputDecoration(
+              labelText: 'Description',
+              prefixIcon: Icon(Icons.description),
+            ),
+            maxLines: 3,
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter description' : null,
+          ),
+        ];
+      case 'Red Carpet Moments': // Separated
+        return [
+          TextFormField(
+            controller: _redCarpetTitleController,
+            decoration: InputDecoration(
+              labelText: 'Event/Moment Name',
+              prefixIcon: Icon(Icons.movie_filter),
+            ),
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter event name' : null,
+          ),
+          const SizedBox(height: 14),
+          TextFormField(
+            controller: _redCarpetDescController,
+            decoration: InputDecoration(
+              labelText: 'Description (Outfit, Designer, Impact)',
+              prefixIcon: Icon(Icons.description),
+            ),
+            maxLines: 3,
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter description' : null,
+          ),
+        ];
+      case 'Quotes or Public Statements':
+        return [
+          TextFormField(
+            controller: _quoteController,
+            decoration: InputDecoration(
+              labelText: 'Quote',
+              prefixIcon: Icon(Icons.format_quote),
+            ),
+            maxLines: 3,
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter quote' : null,
+          ),
+          const SizedBox(height: 14),
+          TextFormField(
+            controller: _quoteContextController,
+            decoration: InputDecoration(
+              labelText: 'Context/Source',
+              prefixIcon: Icon(Icons.info_outline),
+            ),
+            maxLines: 2,
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter context' : null,
           ),
         ];
       default:
-        return [];
+        return [
+          Center(
+            child: Text(loc.selectTypePrompt),
+          ),
+        ];
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
-    final appPrimaryColor = const Color(0xFFD6AF0C);
-    final bool hasSectionTitle = (widget.sectionTitle.isNotEmpty);
-    if (hasSectionTitle && _selectedPersonaType != widget.sectionTitle) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_selectedPersonaType != widget.sectionTitle) {
-          setState(() {
-            _selectedPersonaType = widget.sectionTitle;
-          });
+    final appPrimaryColor = Theme.of(context).primaryColor;
+    final localizations = AppLocalizations.of(context)!;
+
+    return PopScope(
+      canPop: true,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          Navigator.pop(context);
         }
-      });
-    }
-    return Padding(
-      padding: const EdgeInsets.only(top: 40), // leave space for the close button
-      child: SingleChildScrollView(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Container(
-          padding: EdgeInsets.only(
-              top: 24,
-            left: 16.0,
-            right: 16.0,
-            bottom: MediaQuery.of(context).viewInsets.bottom,
+      },
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.9,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        builder: (_, controller) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
-            decoration: BoxDecoration(
-              color: isDark ? Colors.grey.shade900 : Colors.white,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-          child: Form(
-            key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.close, color: Colors.grey[700], size: 28),
-                        onPressed: () => Navigator.of(context).pop(),
-                        tooltip: 'Close',
+          child: SingleChildScrollView(
+            controller: controller,
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        width: 40,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
-                    ],
-                  ),
-                  Text(
-                    widget.sectionTitle,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 10,),
-                  Container(
-                    height: 4,
-                    width: 40,
-                    margin: const EdgeInsets.only(bottom: 12),
-                    decoration: BoxDecoration(
-                      color: secondaryTextColor,
-                      borderRadius: BorderRadius.circular(2),
                     ),
-                  ),
-                  // Persona type dropdown
-                  if (!hasSectionTitle)
-                    DropdownButtonFormField<String>(
+                    const SizedBox(height: 16),
+                    Text(
+                      widget.sectionTitle, // Use sectionTitle passed from parent
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).appBarTheme.titleTextStyle?.color,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    AppDropdown<String>(
                       value: _selectedPersonaType,
-                      decoration: InputDecoration(
-                        labelText: 'Type',
-                        prefixIcon: Icon(Icons.category),
-                      ),
-                      items: _personaTypes.map((type) => DropdownMenuItem(
-                        value: type,
-                        child: Text(type),
-                      )).toList(),
-                      onChanged: (val) => setState(() => _selectedPersonaType = val),
-                      validator: (v) => v == null || v.isEmpty ? 'Select type' : null,
+                      items: _personaTypes.map((String type) {
+                        return DropdownMenuItem<String>(
+                          value: type,
+                          child: Text(type),
+                        );
+                      }).toList(),
+                      labelText: localizations.selectPersonaType,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedPersonaType = newValue;
+                        });
+                      },
+                      validator: (v) => v == null ? localizations.selectTypeValidation : null,
                     ),
-                  if (hasSectionTitle)
-                    DropdownButtonFormField<String>(
-                      value: _selectedPersonaType,
-                      decoration: InputDecoration(
-                        labelText: 'Type',
-                        prefixIcon: Icon(Icons.category),
-                      ),
-                      items: [DropdownMenuItem(
-                        value: widget.sectionTitle,
-                        child: Text(widget.sectionTitle),
-                      )],
-                      onChanged: null,
-                      validator: (v) => v == null || v.isEmpty ? 'Select type' : null,
-                    ),
-                  const SizedBox(height: 14),
-                  // Photo picker
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      height: 100,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(14),
-                        color: Colors.grey[200],
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      child: _pickedImage != null
+                    const SizedBox(height: 20),
+                    if (_selectedPersonaType != null) ...[
+                      ..._buildFieldsForType(_selectedPersonaType),
+                      const SizedBox(height: 14),
+                      _pickedImage != null
                           ? Image.file(
-                              File(_pickedImage!.path),
-                              height: 100,
-                              width: 100,
-                              fit: BoxFit.cover,
-                            )
-                          : const Center(
-                              child: Icon(Icons.camera_alt, size: 36, color: Colors.grey),
+                        File(_pickedImage!.path),
+                        height: 150,
+                        fit: BoxFit.cover,
+                      )
+                          : Container(),
+                      const SizedBox(height: 14),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Flexible(
+                            child: AppButton(
+                              icon: Icons.camera_alt,
+                              text: localizations.takePhoto,
+                              onPressed: () => _pickImage(ImageSource.camera),
                             ),
-                    ),
-                  ),
-                  const SizedBox(height: 10,),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        child: AppButton(
-                          icon: Icons.photo_camera,
-                          text: AppLocalizations.of(context)!.openCamera,
-                          onPressed: () => _pickImage(ImageSource.camera),
+                          ),
+                          const SizedBox(width: 10),
+                          Flexible(
+                            child: AppButton(
+                              icon: Icons.photo_library,
+                              text: localizations.openGallery,
+                              onPressed: () => _pickImage(ImageSource.gallery),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.check),
+                          label: Text(localizations.add),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: appPrimaryColor,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          onPressed: _submit,
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      Flexible(
-                        child: AppButton(
-                          icon: Icons.photo_library,
-                          text: AppLocalizations.of(context)!.openGallery,
-                          onPressed: () => _pickImage(ImageSource.gallery),
-                        ),
-                      ),
+                      const SizedBox(height: 10),
                     ],
-                  ),
-                  const SizedBox(height: 14),
-                  ..._buildFieldsForType(_selectedPersonaType),
-                  const SizedBox(height: 18),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      icon: const Icon(Icons.check),
-                      label: Text(AppLocalizations.of(context)!.add),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: appPrimaryColor,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      onPressed: _submit,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

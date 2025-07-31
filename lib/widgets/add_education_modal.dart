@@ -100,7 +100,7 @@ class _AddEducationModalState extends State<AddEducationModal> {
                 TextFormField(
                   controller: _institutionController, // Declared and used
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.certifyingUniversity,
+                    labelText: AppLocalizations.of(context)!.certifyingInstitution,
                     prefixIcon: Icon(Icons.account_balance),
                   ),
                   validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterName : null,
@@ -109,7 +109,7 @@ class _AddEducationModalState extends State<AddEducationModal> {
                 TextFormField(
                   controller: _qualificationController, // Declared and used
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.degreeLabel,
+                    labelText: AppLocalizations.of(context)!.qualificationLabel,
                     prefixIcon: Icon(Icons.school),
                   ),
                   validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterDescription : null,

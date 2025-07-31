@@ -2,6 +2,7 @@ import 'package:celebrating/widgets/add_career_higlights_modal.dart';
 import 'package:celebrating/widgets/add_wealth_item_modal.dart';
 import 'package:celebrating/widgets/slideup_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 
@@ -10,15 +11,15 @@ import '../models/comment.dart';
 import '../models/post.dart';
 import '../models/user.dart';
 import '../services/user_service.dart';
-import '../utils/constants.dart';
 import '../widgets/add_education_modal.dart';
 import '../widgets/add_persona_modal.dart';
 import '../widgets/add_relationship_modal.dart';
+import '../widgets/add_fun_niche_modal.dart';
 import '../widgets/app_buttons.dart';
 import '../widgets/comments_modal.dart';
+import '../widgets/item_popup_modal.dart';
 import '../widgets/post_card.dart';
 import '../widgets/profile_avatar.dart';
-import '../widgets/image_optional_text.dart';
 
 class ProfilePage extends StatefulWidget {
   // Added userId parameter to enable viewing other user profiles
@@ -33,8 +34,9 @@ class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   CelebrityUser? user;
-  List<Post> posts = [];
   bool isLoading = true;
+  List<Post> posts = [];
+
 
   // --- MISSING VARIABLES AND METHODS ---
   bool isOwnProfile = false; // Set to true if viewing own profile
@@ -96,6 +98,7 @@ class _ProfilePageState extends State<ProfilePage>
     }
   }
 
+  // MODIFIED: _showProfilePreviewModal to include action buttons
   void _showProfilePreviewModal({
     required BuildContext context,
     required String userName,
@@ -127,12 +130,33 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
+  // NEW: _showItemPopupModal for image-enabled sections
+  void _showItemPopupModal({
+    required BuildContext context,
+    String? imageUrl,
+    required String title,
+    required String description,
+  }) {
+    showSlideUpDialog(
+      context: context,
+      height: MediaQuery.of(context).size.height * 0.6,
+      width: MediaQuery.of(context).size.width * 0.9,
+      borderRadius: BorderRadius.circular(20),
+      backgroundColor: Theme.of(context).cardColor,
+      child: ItemPopupModal(
+        imageUrl: imageUrl,
+        title: title,
+        description: description,
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     // Call the method to fetch a celebrity user
     fetchProfileUser();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 6, vsync: this); // Length remains 6 as two sections replaced one
   }
 
   final Map<String, IconData> _careerCategoryIcons = {
@@ -183,25 +207,41 @@ class _ProfilePageState extends State<ProfilePage>
     final defaultTextColor = isDark ? Colors.white : Colors.black;
     final secondaryTextColor =
     isDark ? Colors.grey.shade400 : Colors.grey.shade600;
-    // Removed unused appPrimaryColor here as it's not directly used in the Scaffold/AppBar
-    final tabBackgroundColor =
-    isDark ? Colors.grey.shade800 : Colors.grey.shade200;
 
     return Scaffold(
-      // appBar: _buildAppBar(defaultTextColor), // Re-enable if you want an AppBar
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildProfileHeader(defaultTextColor, secondaryTextColor),
-            _buildActionButtons(),
-            const SizedBox(height: 8,),
-            _buildStatsRow(defaultTextColor, secondaryTextColor),
-            _buildTabBar(isDark),
-            Expanded(child: _buildTabs()),
-          ],
+        child: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                expandedHeight: 450.0, // Estimated height of header content
+                floating: true,
+                pinned: true,
+                snap: true, // Optional: for snapping effect
+                elevation: 0, // No shadow for a cleaner look
+                backgroundColor: Theme.of(context).cardColor, // Background for the app bar itself
+                flexibleSpace: FlexibleSpaceBar(
+                  collapseMode: CollapseMode.pin, // Ensures background content collapses correctly
+                  background: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // These widgets already have their background set within their own functions
+                      _buildProfileHeader(defaultTextColor, secondaryTextColor),
+                      _buildActionButtons(),
+                      _buildStatsRow(defaultTextColor, secondaryTextColor),
+                    ],
+                  ),
+                ),
+                bottom: PreferredSize(
+                  preferredSize: Size.fromHeight(48.0), // Standard TabBar height
+                  child: _buildTabBar(isDark),
+                ),
+              ),
+            ];
+          },
+          body: _buildTabs(),
         ),
       ),
     );
@@ -210,13 +250,15 @@ class _ProfilePageState extends State<ProfilePage>
   Widget _buildProfileHeader(Color defaultTextColor, Color secondaryTextColor) {
     final isCelebrity = user is CelebrityUser;
     final celeb = isCelebrity ? user as CelebrityUser : null;
-    return Padding(
+    return Container( // Wrap with Container
+      color: Theme.of(context).cardColor, // Set background color to match bottom sections
       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,26 +266,64 @@ class _ProfilePageState extends State<ProfilePage>
                   Text(
                     user != null ? user!.fullName : '',
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
                       color: defaultTextColor,
                     ),
                   ),
                   Text(
-                    user != null ? user!.username : '',
+                    user != null ? '@${user!.username}' : '',
                     style: TextStyle(
                       fontSize: 16,
                       color: secondaryTextColor,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 5),
+                  Text(
+                    'Profession', // Use ! as celeb is non-null if isCelebrity is true
+                    style: TextStyle(color: secondaryTextColor),
+                  ),
                   Text(
                     isCelebrity && celeb != null ? celeb.occupation : '',
-                    style: TextStyle(color: defaultTextColor),
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'Nationality', // Use ! as celeb is non-null if isCelebrity is true
+                    style: TextStyle(color: secondaryTextColor),
                   ),
                   Text(
                     isCelebrity && celeb != null ? celeb.nationality : '',
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'Place of Birth', // Use ! as celeb is non-null if isCelebrity is true
                     style: TextStyle(color: secondaryTextColor),
+                  ),
+                  Text(
+                    isCelebrity && celeb != null ? celeb.hometown : '',
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'Date Of Birth', // Use ! as celeb is non-null if isCelebrity is true
+                    style: TextStyle(color: secondaryTextColor),
+                  ),
+                  Text(
+                    isCelebrity && celeb?.dob != null 
+                        ? DateFormat('MMMM d, y').format(celeb!.dob) // Format as "July 31, 2025"
+                        : '',
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'Zodiac Sign', // Use ! as celeb is non-null if isCelebrity is true
+                    style: TextStyle(color: secondaryTextColor),
+                  ),
+                  Text(
+                    isCelebrity && celeb != null ? celeb.zodiacSign : '',
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -288,12 +368,32 @@ class _ProfilePageState extends State<ProfilePage>
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.tiktok, size: 30, color: secondaryTextColor),
+                        Image.asset(
+                          _getSocialIconPath('Instagram'),
+                          height: 30,
+                          width: 30,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(Icons.public, size: 24, color: Colors.grey);
+                          },
+                        ),
                         const SizedBox(width: 12),
-                        Icon(Icons.camera_alt_outlined,
-                            size: 30, color: secondaryTextColor),
+                        Image.asset(
+                          _getSocialIconPath('Facebook'),
+                          height: 30,
+                          width: 30,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(Icons.public, size: 24, color: Colors.grey);
+                          },
+                        ),
                         const SizedBox(width: 12),
-                        Icon(Icons.tiktok, size: 30, color: secondaryTextColor),
+                        Image.asset(
+                          _getSocialIconPath('TikTok'),
+                          height: 30,
+                          width: 30,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(Icons.public, size: 24, color: Colors.grey);
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -324,86 +424,92 @@ class _ProfilePageState extends State<ProfilePage>
 
   Widget _buildActionButtons() {
     final localizations = AppLocalizations.of(context)!;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              if (!isOwnProfile)
-                ResizableButton(
-                  text: localizations.follow,
-                  onPressed: () {
-                    if (!(statsLoading || user == null)) {
-                      _handleFollowUnfollow();
-                    }
-                  },
-                  width: 100,
-                  height: 35,
+    return Container( // Wrap with Container
+      color: Theme.of(context).cardColor, // Set background color to match bottom sections
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                if (!isOwnProfile)
+                  ResizableButton(
+                    text: localizations.follow,
+                    onPressed: () {
+                      if (!(statsLoading || user == null)) {
+                        _handleFollowUnfollow();
+                      }
+                    },
+                    width: 100,
+                    height: 35,
+                  ),
+                GestureDetector(
+                  onTap: (){},
+                  child: SvgPicture.asset(
+                    'assets/icons/message.svg', // Replace with your icon's path
+                    height: 32,
+                    width: 35,
+                    colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
+                  ),
                 ),
-              GestureDetector(
-                onTap: (){},
-                child: SvgPicture.asset(
-                  'assets/icons/message.svg', // Replace with your icon's path
-                  height: 32,
-                  width: 35,
-                  colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
-                ),
-              ),
-            ],
-          ),
-          ResizableButton(
-            text: localizations.events,
-            onPressed: () {},
-            width: 120,
-            height: 35,
-          ),
-        ],
+              ],
+            ),
+            ResizableButton(
+              text: localizations.events,
+              onPressed: () {},
+              width: 120,
+              height: 35,
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildStatsRow(Color defaultTextColor, Color secondaryTextColor) {
-    final localizations = AppLocalizations.of(context)!;
+    final localizations = AppLocalizations.of(context)!; // Corrected typo here
     int followers = 0;
     if (user is CelebrityUser) {
       followers = (user as CelebrityUser).followers;
     }
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10.0,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            user != null ? '${formatCount(followers)} ' : '0 ',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: defaultTextColor,
+    return Container( // Wrap with Container
+      color: Theme.of(context).cardColor, // Set background color to match bottom sections
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10.0,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              user != null ? '${formatCount(followers)} ' : '0 ',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: defaultTextColor,
+              ),
             ),
-          ),
-          Text(
-            localizations.followers,
-            style: TextStyle(color: secondaryTextColor),
-          ),
-          const SizedBox(width: 20),
-          Text(
-            user != null && user!.postsList != null
-                ? '${user!.postsList!.length} '
-                : '0 ',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: defaultTextColor,
+            Text(
+              localizations.followers,
+              style: TextStyle(color: secondaryTextColor),
             ),
-          ),
-          Text(
-            localizations.posts,
-            style: TextStyle(color: secondaryTextColor),
-          ),
-        ],
+            const SizedBox(width: 20),
+            Text(
+              user != null && user!.postsList != null
+                  ? '${user!.postsList!.length} '
+                  : '0 ',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: defaultTextColor,
+              ),
+            ),
+            Text(
+              localizations.posts,
+              style: TextStyle(color: secondaryTextColor),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -435,6 +541,7 @@ class _ProfilePageState extends State<ProfilePage>
         Tab(text: localizations.wealthTab),
         Tab(text: localizations.careerTab),
         Tab(text: localizations.publicPersonaTab),
+        const Tab(text: 'Fun & Niche'), // New Tab
       ],
     );
   }
@@ -448,6 +555,7 @@ class _ProfilePageState extends State<ProfilePage>
         _buildWealthTab(),
         _buildCareerTab(),
         _buildPublicPersonaTab(),
+        _buildFunNicheTab(), // New Tab View
       ],
     );
   }
@@ -607,14 +715,14 @@ class _ProfilePageState extends State<ProfilePage>
         ElevatedButton(
           onPressed: () async {
             await showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (context) => AddCareerHighlightsModal(
-              onAdd: (item) {
-                // TODO: Add logic to update data
-              },
-            ),
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => AddCareerHighlightsModal(
+                onAdd: (item) {
+                  // TODO: Add logic to update data
+                },
+              ),
             );
           },
           style: ElevatedButton.styleFrom(
@@ -709,7 +817,7 @@ class _ProfilePageState extends State<ProfilePage>
                       ),
                       IconButton(
                         icon: const Icon(Icons.add_circle_outline,
-                            color: Colors.orange),
+                            color: Color(0xFFD6AF0C)),
                         tooltip: 'Add Wealth',
                         onPressed: () async {
                           await showModalBottomSheet(
@@ -738,7 +846,7 @@ class _ProfilePageState extends State<ProfilePage>
                         return Padding(
                           padding: const EdgeInsets.only(right: 12.0),
                           child: GestureDetector(
-                            onTapDown: (details) {},
+                            onTapDown: (details) {}, // Wealth items don't trigger item_popup
                             child: ImageWithOptionalText(
                               width: 100,
                               height: 150,
@@ -777,84 +885,318 @@ class _ProfilePageState extends State<ProfilePage>
     }
   }
 
-  Widget _buildSocialIcons() {
+  Widget _buildPublicPersonaTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final appPrimaryColor = Theme.of(context).primaryColor;
-    if (user == null || user is! CelebrityUser) return const SizedBox.shrink();
+    final secondaryTextColor =
+    isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+
+    if (user == null || user is! CelebrityUser) {
+      return const Center(child: Text("No public persona data available."));
+    }
     final celeb = user as CelebrityUser;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+    // Dummy data for Public Persona sections (MODIFIED with image URLs)
+    final Map<String, List<Map<String, String>>> publicPersonaData = {
+      'Social Media Presence': [
+        {'platform': 'Instagram', 'followers': '15M', 'link': 'https://instagram.com/celeba'},
+        {'platform': 'TikTok', 'followers': '10M', 'link': 'https://tiktok.com/@celeba'},
+      ],
+      'Public Image / Reputation': [
+        {'title': 'Philanthropic Work', 'description': 'Known for extensive charity work and advocacy.'},
+        {'title': 'Role Model', 'description': 'Considered a positive role model by many fans.'},
+      ],
+      'Fashion Style': [
+        {'title': 'Casual Chic', 'description': 'Known for casual yet chic street style, often incorporating vintage pieces.', 'imageUrl': 'https://i.ibb.co/T4X16yR/fashion-style1.jpg'},
+        {'title': 'Ethereal Gowns', 'description': 'Often seen in flowing, ethereal gowns at events, emphasizing grace and movement.', 'imageUrl': 'https://i.ibb.co/K2sY5sP/fashion-style2.jpg'},
+        {'title': 'Bohemian Edge', 'description': 'Combines bohemian elements with a modern, edgy twist, creating unique looks.', 'imageUrl': 'https://i.ibb.co/2d11VpX/fashion-style3.jpg'},
+      ],
+      'Red Carpet Moments': [
+        {'title': 'Met Gala 2023', 'description': 'Stunning custom gown by designer X, widely praised for its innovative design.', 'imageUrl': 'https://i.ibb.co/N73yB9c/red-carpet1.jpg'},
+        {'title': 'Oscars 2024', 'description': 'Epitome of elegance in a classic black tuxedo, breaking traditional gender norms.', 'imageUrl': 'https://i.ibb.co/y4L2k2n/red-carpet2.jpg'},
+        {'title': 'Cannes Film Festival', 'description': 'Wore a shimmering silver dress that captured international attention for its bold silhouette.', 'imageUrl': 'https://i.ibb.co/C0f11Kk/red-carpet3.jpg'},
+      ],
+      'Quotes or Public Statements': [
+        {'quote': '“Be yourself; everyone else is already taken.”', 'context': 'Interview with Vogue, 2021.'},
+        {'quote': '“The only way to do great work is to love what you do.”', 'context': 'Award acceptance speech, 2023.'},
+      ],
+    };
 
-        // Socials Section
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              AppLocalizations.of(context)!.socials,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: defaultTextColor,
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.add_circle_outline,
-                  color: const Color(0xFFD6AF0C)),
-              tooltip: 'Add Social',
-              onPressed: () async {
-                await showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => WillPopScope(
-                    onWillPop: () async => true,
-                    child: AddPersonaModal(
-                      sectionTitle: AppLocalizations.of(context)!.socials,
-                      onAdd: (social) {
+            // Social Media Presence
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.socialMediaPresence,
+                Icons.public,
+                defaultTextColor,
+                    () async {
+                  await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => AddPersonaModal(
+                      sectionTitle: AppLocalizations.of(context)!.socialMediaPresence,
+                      onAdd: (item) {
                         // TODO: Add logic to update dummy data
                       },
                     ),
-                  ),
-                );
-              },
+                  );
+                }),
+            ... (publicPersonaData['Social Media Presence'] ?? []).map((item) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Row(
+                  children: [
+                    Image.asset(
+                      _getSocialIconPath(item['platform']!),
+                      height: 30,
+                      width: 30,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(Icons.public, size: 24, color: Colors.grey);
+                      },
+                    ),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${item['platform']}: ${item['followers']}',
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: defaultTextColor),
+                        ),
+                        if (item['link'] != null)
+                          GestureDetector(
+                            onTap: () => _launchSocialLink(item['link']!),
+                            child: Text(
+                              item['link']!,
+                              style: const TextStyle(
+                                  color: Colors.blue, decoration: TextDecoration.underline),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+            const SizedBox(height: 20),
+
+            // Public Image / Reputation
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.publicImageReputation,
+                Icons.stars,
+                defaultTextColor,
+                    () async {
+                  await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => AddPersonaModal(
+                      sectionTitle: AppLocalizations.of(context)!.publicImageReputation,
+                      onAdd: (item) {
+                        // TODO: Add logic to update dummy data
+                      },
+                    ),
+                  );
+                }),
+            ... (publicPersonaData['Public Image / Reputation'] ?? []).map((item) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item['title']!,
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: defaultTextColor),
+                    ),
+                    Text(
+                      item['description']!,
+                      style: TextStyle(fontSize: 14, color: secondaryTextColor),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+            const SizedBox(height: 20),
+
+            // Fashion Style (MODIFIED to horizontal list with images)
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.fashionStyle,
+                Icons.whatshot,
+                defaultTextColor,
+                    () async {
+                  await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => AddPersonaModal(
+                      sectionTitle: AppLocalizations.of(context)!.fashionStyle,
+                      onAdd: (item) {
+                        // TODO: Add logic to update dummy data
+                      },
+                    ),
+                  );
+                }),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 170, // Height for horizontal list
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: (publicPersonaData['Fashion Style'] ?? []).length,
+                itemBuilder: (context, index) {
+                  final item = publicPersonaData['Fashion Style']![index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        _showItemPopupModal(
+                          context: context,
+                          imageUrl: item['imageUrl'],
+                          title: item['title']!,
+                          description: item['description']!,
+                        );
+                      },
+                      child: ImageWithOptionalText(
+                        width: 100,
+                        height: 150,
+                        imageUrl: item['imageUrl'],
+                        bottomText: item['title'],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Red Carpet Moments (MODIFIED to horizontal list with images)
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.redCarpetMoments,
+                Icons.movie_filter,
+                defaultTextColor,
+                    () async {
+                  await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => AddPersonaModal(
+                      sectionTitle: AppLocalizations.of(context)!.redCarpetMoments,
+                      onAdd: (item) {
+                        // TODO: Add logic to update dummy data
+                      },
+                    ),
+                  );
+                }),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 170, // Height for horizontal list
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: (publicPersonaData['Red Carpet Moments'] ?? []).length,
+                itemBuilder: (context, index) {
+                  final item = publicPersonaData['Red Carpet Moments']![index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        _showItemPopupModal(
+                          context: context,
+                          imageUrl: item['imageUrl'],
+                          title: item['title']!,
+                          description: item['description']!,
+                        );
+                      },
+                      child: ImageWithOptionalText(
+                        width: 100,
+                        height: 150,
+                        imageUrl: item['imageUrl'],
+                        bottomText: item['title'],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Quotes or Public Statements
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.quotesPublicStatements,
+                Icons.format_quote,
+                defaultTextColor,
+                    () async {
+                  await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => AddPersonaModal(
+                      sectionTitle: AppLocalizations.of(context)!.quotesPublicStatements,
+                      onAdd: (item) {
+                        // TODO: Add logic to update dummy data
+                      },
+                    ),
+                  );
+                }),
+            ... (publicPersonaData['Quotes or Public Statements'] ?? []).map((item) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item['quote'] ?? item['interaction']!,
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontStyle: FontStyle.italic,
+                          color: defaultTextColor),
+                    ),
+                    Text(
+                      '- ${item['context']}',
+                      style: TextStyle(fontSize: 13, color: secondaryTextColor),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title, IconData icon, Color textColor, VoidCallback onAddPressed) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 24, color: textColor),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
             ),
           ],
         ),
-        const SizedBox(height: 10),
-        SizedBox(
-          height: 50,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: celeb.socials.length,
-            itemBuilder: (context, index) {
-              final social = celeb.socials[index];
-              final iconPath = _getSocialIconPath(social['title']);
-              if (iconPath.isEmpty) return const SizedBox.shrink();
-
-              return Padding(
-                padding: const EdgeInsets.only(right: 16.0),
-                child: GestureDetector(
-                  onTap: () {
-                    if (social['link'] != null) {
-                      _launchSocialLink(social['link']);
-                    }
-                  },
-                  child: Image.asset(
-                    iconPath,
-                    height: 40,
-                    width: 40,
-                    errorBuilder: (context, error, stackTrace) {
-                      // Return a fallback icon if the image fails to load
-                      return Icon(Icons.error_outline, size: 24, color: Colors.grey);
-                    },
-                  ),
-                ),
-              );
-            },
-          ),
+        IconButton(
+          icon: const Icon(Icons.add_circle_outline, color: Color(0xFFD6AF0C)),
+          tooltip: 'Add $title',
+          onPressed: onAddPressed,
         ),
       ],
     );
@@ -869,6 +1211,14 @@ class _ProfilePageState extends State<ProfilePage>
       return const Center(child: Text("No personal data available."));
     }
     final celeb = user as CelebrityUser;
+    // Dummy data for Pets (MOVED to Personal Tab, previously in Fun & Niche)
+    final List<Map<String, String>> petsData = [
+      {'name': 'Buddy', 'type': 'Golden Retriever', 'description': 'A playful golden retriever, often featured on social media.', 'imageUrl': 'https://i.ibb.co/S6wPzJc/pet1.jpg'},
+      {'name': 'Whiskers', 'type': 'Siamese Cat', 'description': 'A shy but affectionate Siamese cat.', 'imageUrl': 'https://i.ibb.co/L84k7b4/pet2.jpg'},
+      {'name': 'Rex', 'type': 'Parrot', 'description': 'An intelligent parrot who can mimic human speech.', 'imageUrl': 'https://i.ibb.co/g421t2C/pet3.jpg'},
+    ];
+
+
     return SafeArea(
       child: SingleChildScrollView(
         child: Padding(
@@ -900,7 +1250,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline,
-                        color: const Color(0xFFD6AF0C)),
+                        color: Color(0xFFD6AF0C)),
                     tooltip: 'Add Relationship',
                     onPressed: () async {
                       await showModalBottomSheet(
@@ -940,14 +1290,13 @@ class _ProfilePageState extends State<ProfilePage>
                       padding: const EdgeInsets.only(right: 12.0),
                       child: GestureDetector(
                         onTapDown: (details) {
+                          // Existing _showProfilePreviewModal for relationships
                           if (user != null) {
                             _showProfilePreviewModal(
                               context: context,
-                              userName: user!.fullName,
-                              userProfession: user is CelebrityUser
-                                  ? (user as CelebrityUser).occupation
-                                  : '',
-                              userProfileImageUrl: user!.profileImageUrl,
+                              userName: user!.fullName, // Placeholder, should be the relationship's name
+                              userProfession: 'Relation', // Placeholder
+                              userProfileImageUrl: celeb.relationships[index], // The relationship image URL
                               onViewProfile: () {
                                 // Optionally handle view profile action
                               },
@@ -964,7 +1313,83 @@ class _ProfilePageState extends State<ProfilePage>
                 ),
               ),
               const SizedBox(height: 20),
-
+              // Pets Section (MOVED here, displayed with ProfileAvatar)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.pets,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: defaultTextColor,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add_circle_outline,
+                        color: Color(0xFFD6AF0C)),
+                    tooltip: 'Add Pet',
+                    onPressed: () async {
+                      await showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        isDismissible: true,
+                        enableDrag: true,
+                        useSafeArea: true,
+                        builder: (context) => PopScope(
+                          canPop: true,
+                          onPopInvoked: (didPop) {
+                            if (!didPop) {
+                              Navigator.pop(context);
+                            }
+                          },
+                          child: AddFunNicheModal( // Using AddFunNicheModal for pets
+                            sectionTitle: AppLocalizations.of(context)!.pets,
+                            onAdd: (pet) {
+                              // TODO: Add logic to update dummy data
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 60, // Height for horizontal list
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: petsData.length,
+                  itemBuilder: (context, index) {
+                    final pet = petsData[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: GestureDetector(
+                        onTapDown: (details) {
+                          // Existing _showProfilePreviewModal for pets
+                          _showProfilePreviewModal(
+                            context: context,
+                            userName: pet['name']!,
+                            userProfession: pet['type']!,
+                            userProfileImageUrl: pet['imageUrl'],
+                            onViewProfile: () {
+                              // Optionally handle view profile action
+                            },
+                          );
+                        },
+                        child: ProfileAvatar(
+                          radius: 30,
+                          imageUrl: pet['imageUrl'],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
               // Education Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -979,7 +1404,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline,
-                        color: const Color(0xFFD6AF0C)),
+                        color: Color(0xFFD6AF0C)),
                     tooltip: 'Add Education',
                     onPressed: () async {
                       await showModalBottomSheet(
@@ -1011,12 +1436,11 @@ class _ProfilePageState extends State<ProfilePage>
               const SizedBox(height: 10),
               ...celeb.educationEntries.map((entry) {
                 final university = entry['university'] ?? '';
-                final degrees = (entry['degrees'] as List?)
-                    ?.cast<Map<String, String>>() ??
-                    [];
+                final degrees = (entry['degrees'] as List?) ?.cast<Map<String, String>>() ?? [];
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
-                  child: Row( // This is the main Row for the icon and text content
+                  child: Row(
+                    // This is the main Row for the icon and text content
                     crossAxisAlignment: CrossAxisAlignment.start, // Align content to the top
                     children: [
                       Container(
@@ -1026,12 +1450,11 @@ class _ProfilePageState extends State<ProfilePage>
                           color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.school_outlined,
-                            size: 35,
-                            color: const Color(0xFFD6AF0C)),
+                        child: const Icon(Icons.school_outlined, size: 35, color: Color(0xFFD6AF0C)),
                       ),
                       const SizedBox(width: 12), // Add spacing between icon and text
-                      Expanded( // This Expanded widget ensures the text content takes up remaining space
+                      Expanded(
+                        // This Expanded widget ensures the text content takes up remaining space
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -1050,8 +1473,7 @@ class _ProfilePageState extends State<ProfilePage>
                                     padding: const EdgeInsets.only(
                                         top: 4.0, left: 2.0),
                                     child: Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           deg['title'] ?? '',
@@ -1064,8 +1486,7 @@ class _ProfilePageState extends State<ProfilePage>
                                         ),
                                         if (deg['year'] != null)
                                           Padding(
-                                            padding:
-                                            const EdgeInsets.only(top: 2.0),
+                                            padding: const EdgeInsets.only(top: 2.0),
                                             child: Text(
                                               deg['year']!,
                                               style: TextStyle(
@@ -1089,7 +1510,6 @@ class _ProfilePageState extends State<ProfilePage>
                 );
               }).toList(),
               const SizedBox(height: 20),
-
               // Hobbies Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1104,7 +1524,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline,
-                        color: const Color(0xFFD6AF0C)),
+                        color: Color(0xFFD6AF0C)),
                     tooltip: 'Add Hobby',
                     onPressed: () async {
                       await showModalBottomSheet(
@@ -1121,7 +1541,7 @@ class _ProfilePageState extends State<ProfilePage>
                               Navigator.pop(context);
                             }
                           },
-                          child: AddPersonaModal(
+                          child: AddFunNicheModal( // Using AddFunNicheModal for hobbies
                             sectionTitle: AppLocalizations.of(context)!.hobbies,
                             onAdd: (hobby) {
                               // TODO: Add logic to update dummy data
@@ -1144,7 +1564,14 @@ class _ProfilePageState extends State<ProfilePage>
                     return Padding(
                       padding: const EdgeInsets.only(right: 12.0),
                       child: GestureDetector(
-                        onTapDown: (details) {},
+                        onTap: () {
+                          _showItemPopupModal(
+                            context: context,
+                            imageUrl: celeb.hobbies[index]['imageUrl'],
+                            title: celeb.hobbies[index]['name']!,
+                            description: celeb.hobbies[index]['description'] ?? '', // Assuming description may be empty
+                          );
+                        },
                         child: ImageWithOptionalText(
                           width: 100,
                           height: 150,
@@ -1157,7 +1584,6 @@ class _ProfilePageState extends State<ProfilePage>
                 ),
               ),
               const SizedBox(height: 20),
-
               // Lifestyle Section
               Text(
                 AppLocalizations.of(context)!.lifestyle,
@@ -1177,9 +1603,7 @@ class _ProfilePageState extends State<ProfilePage>
                 style: TextStyle(fontSize: 14, color: defaultTextColor),
               ),
               const SizedBox(height: 20),
-
               // Involved Causes Section
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -1193,7 +1617,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline,
-                        color: const Color(0xFFD6AF0C)),
+                        color: Color(0xFFD6AF0C)),
                     tooltip: 'Add Involved Causes',
                     onPressed: () async {
                       await showModalBottomSheet(
@@ -1211,8 +1635,7 @@ class _ProfilePageState extends State<ProfilePage>
                             }
                           },
                           child: AddPersonaModal(
-                            sectionTitle:
-                            AppLocalizations.of(context)!.involvedCauses,
+                            sectionTitle: AppLocalizations.of(context)!.involvedCauses,
                             onAdd: (cause) {
                               // TODO: Add logic to update dummy data
                               Navigator.pop(context);
@@ -1252,11 +1675,8 @@ class _ProfilePageState extends State<ProfilePage>
                             ),
                           ),
                           Text(
-                            cause['role'] ?? '',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: secondaryTextColor,
-                            ),
+                            cause['description'] ?? '',
+                            style: TextStyle(fontSize: 14, color: secondaryTextColor),
                           ),
                         ],
                       ),
@@ -1264,278 +1684,6 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                 );
               }).toList(),
-              const SizedBox(height: 20),
-
-              // Pets Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.pets,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle_outline,
-                        color: const Color(0xFFD6AF0C)),
-                    tooltip: 'Add Pet',
-                    onPressed: () async {
-                      await showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        isDismissible: true,
-                        enableDrag: true,
-                        useSafeArea: true,
-                        builder: (context) => PopScope(
-                          canPop: true,
-                          onPopInvoked: (didPop) {
-                            if (!didPop) {
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: AddRelationshipModal(
-                            sectionTitle: AppLocalizations.of(context)!.pets,
-                            onAdd: (pet) {
-                              // TODO: Add logic to update dummy data
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 60,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: celeb.pets.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 12.0),
-                      child: GestureDetector(
-                        onTapDown: (details) {},
-                        child: ProfileAvatar(
-                          radius: 30,
-                          imageUrl: celeb.pets[index],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Tattoos Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.tattoos,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle_outline,
-                        color: const Color(0xFFD6AF0C)),
-                    tooltip: 'Add Tattoo',
-                    onPressed: () async {
-                      await showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        isDismissible: true,
-                        enableDrag: true,
-                        useSafeArea: true,
-                        builder: (context) => PopScope(
-                          canPop: true,
-                          onPopInvoked: (didPop) {
-                            if (!didPop) {
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: AddPersonaModal(
-                            sectionTitle: AppLocalizations.of(context)!.tattoos,
-                            onAdd: (tattoo) {
-                              // TODO: Add logic to update dummy data
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 150,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: celeb.tattoos.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 12.0),
-                      child: GestureDetector(
-                        onTapDown: (details) {},
-                        child: ImageWithOptionalText(
-                          width: 100,
-                          height: 150,
-                          imageUrl: celeb.tattoos[index],
-                          bottomText: null,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Favourites Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.favourites,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle_outline,
-                        color: const Color(0xFFD6AF0C)),
-                    tooltip: 'Add Favourite Place',
-                    onPressed: () async {
-                      await showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        isDismissible: true,
-                        enableDrag: true,
-                        useSafeArea: true,
-                        builder: (context) => PopScope(
-                          canPop: true,
-                          onPopInvoked: (didPop) {
-                            if (!didPop) {
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: AddPersonaModal(
-                            sectionTitle:
-                            AppLocalizations.of(context)!.favourites,
-                            onAdd: (place) {
-                              // TODO: Add logic to update dummy data
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 180,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: celeb.favouritePlaces.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 12.0),
-                      child: GestureDetector(
-                        onTapDown: (details) {},
-                        child: ImageWithOptionalText(
-                          width: 100,
-                          height: 150,
-                          imageUrl: celeb.favouritePlaces[index]['imageUrl'],
-                          bottomText: celeb.favouritePlaces[index]['name'],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Talents Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.talents,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle_outline,
-                        color: const Color(0xFFD6AF0C)),
-                    tooltip: 'Add Talent',
-                    onPressed: () async {
-                      await showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        isDismissible: true,
-                        enableDrag: true,
-                        useSafeArea: true,
-                        builder: (context) => PopScope(
-                          canPop: true,
-                          onPopInvoked: (didPop) {
-                            if (!didPop) {
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: AddPersonaModal(
-                            sectionTitle: AppLocalizations.of(context)!.talents,
-                            onAdd: (talent) {
-                              // TODO: Add logic to update dummy data
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 180,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: celeb.talents.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 12.0),
-                      child: GestureDetector(
-                        onTapDown: (details) {},
-                        child: ImageWithOptionalText(
-                          width: 100,
-                          height: 150,
-                          imageUrl: celeb.talents[index]['imageUrl'],
-                          bottomText: celeb.talents[index]['name'],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -1543,14 +1691,39 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-  Widget _buildPublicPersonaTab() {
+  Widget _buildFunNicheTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final appPrimaryColor = Theme.of(context).primaryColor;
+    final secondaryTextColor =
+    isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+
     if (user == null || user is! CelebrityUser) {
-      return const Center(child: Text("No public persona data available."));
+      return const Center(child: Text("No fun & niche data available."));
     }
     final celeb = user as CelebrityUser;
+
+    // Dummy data for Fun or Niche Details sections (MODIFIED with image URLs)
+    final Map<String, List<Map<String, String>>> funNicheData = {
+      'Tattoos or Unique Physical Traits': [
+        {'title': 'Anchor Tattoo', 'description': 'Small anchor on left wrist, symbolizing stability.', 'imageUrl': 'https://i.ibb.co/Zc01k23/tattoo1.jpg'},
+        {'title': 'Birthmark', 'description': 'Star-shaped birthmark on right shoulder.', 'imageUrl': 'https://i.ibb.co/pLg0L67/tattoo2.jpg'},
+        {'title': 'Dragon Sleeve', 'description': 'Intricate dragon design covering the entire left arm.', 'imageUrl': 'https://i.ibb.co/6y45sKq/tattoo3.jpg'},
+      ],
+      'Favorite Things': [
+        {'category': 'Food', 'item': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.', 'imageUrl': 'https://i.ibb.co/y423n5P/fave-sushi.jpg'},
+        {'category': 'Place', 'item': 'Kyoto, Japan', 'description': 'Enjoys the tranquility and cultural richness.', 'imageUrl': 'https://i.ibb.co/c123h1j/fave-kyoto.jpg'},
+        {'category': 'Music Genre', 'item': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.', 'imageUrl': 'https://i.ibb.co/9y56g7F/fave-jazz.jpg'},
+      ],
+      'Hidden Talents': [
+        {'title': 'Juggling', 'description': 'Can juggle up to five objects simultaneously.', 'imageUrl': 'https://i.ibb.co/C0f11Kk/talent-juggling.jpg'}, // Placeholder image
+        {'title': 'Amateur Chef', 'description': 'Known among friends for cooking gourmet meals.', 'imageUrl': 'https://i.ibb.co/y4L2k2n/talent-chef.jpg'}, // Placeholder image
+      ],
+      'Fan Theories or Fan Interactions': [
+        {'theory': 'Secret Album Theory', 'description': 'Fans speculate about a hidden album to be released on a specific date.'},
+        {'interaction': 'Surprise Fan Meetup', 'description': 'Known for organizing spontaneous meetups with fans in different cities.'},
+      ],
+      // 'Pets' section removed from here and moved to personal tab
+    };
 
     return SingleChildScrollView(
       child: Padding(
@@ -1558,139 +1731,196 @@ class _ProfilePageState extends State<ProfilePage>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Social Media Icons
-            _buildSocialIcons(),
-            const SizedBox(height: 20),
-            Text(
-              celeb.publicImageDescription,
-              style: TextStyle(
-                fontSize: 14,
-                color: defaultTextColor,
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Controversies Section
-            Text(
-              AppLocalizations.of(context)!.controversies,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: defaultTextColor,
-              ),
-            ),
-            const SizedBox(height: 10),
-            if (celeb.controversyMedia.isNotEmpty)
-              _ControversyCarousel(
-                controversyMedia: celeb.controversyMedia,
-                defaultTextColor: defaultTextColor,
-                cardColor: Theme.of(context).cardColor,
-              )
-            else
-              const Center(child: Text("No controversies to display.")),
-            const SizedBox(height: 20),
-
-            // Fashion Style Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  AppLocalizations.of(context)!.fashionStyle,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: defaultTextColor,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add_circle_outline,
-                      color: const Color(0xFFD6AF0C)),
-                  tooltip: 'Add Fashion Style',
-                  onPressed: () async {
-                    await showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (context) => WillPopScope(
-                        onWillPop: () async => true,
-                        child: AddPersonaModal(
-                          sectionTitle:
-                          AppLocalizations.of(context)!.fashionStyle,
-                          onAdd: (fashion) {
-                            // TODO: Add logic to update dummy data
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 10), // Spacing after Fashion Style title/button
-            // Fashion Style Images
-            ...celeb.fashionStyle.entries.map((entry) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    entry.key[0].toUpperCase() + entry.key.substring(1),
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    height: 150,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: entry.value.length,
-                      itemBuilder: (context, idx) {
-                        final img = entry.value[idx]['imageUrl'];
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 12.0),
-                          child: ImageWithOptionalText(
-                            width: 100,
-                            height: 150,
-                            imageUrl: img,
-                            bottomText: null, // No bottom text for fashion images
-                          ),
-                        );
+            // Tattoos or Unique Physical Traits (MODIFIED to horizontal list with images)
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.tattoos,
+                Icons.brush,
+                defaultTextColor,
+                    () async {
+                  await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => AddFunNicheModal(
+                      sectionTitle: AppLocalizations.of(context)!.tattoos,
+                      onAdd: (item) {
+                        // TODO: Add logic to update dummy data
                       },
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              );
-            }).toList(),
-
-            // Fan Theories & Interactions Button
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  // Handle button tap
-                  print('Fan Theories & Interactions tapped');
+                  );
+                }),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 170, // Height for horizontal list
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: (funNicheData['Tattoos or Unique Physical Traits'] ?? []).length,
+                itemBuilder: (context, index) {
+                  final item = funNicheData['Tattoos or Unique Physical Traits']![index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        _showItemPopupModal(
+                          context: context,
+                          imageUrl: item['imageUrl'],
+                          title: item['title']!,
+                          description: item['description']!,
+                        );
+                      },
+                      child: ImageWithOptionalText(
+                        width: 100,
+                        height: 150,
+                        imageUrl: item['imageUrl'],
+                        bottomText: item['title'],
+                      ),
+                    ),
+                  );
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: appPrimaryColor,
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-                child: Text(
-                  AppLocalizations.of(context)!.fanTheoriesInteractions,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
               ),
             ),
-            const SizedBox(height: 10), // Add some padding at the bottom
+            const SizedBox(height: 20),
+
+            // Favorite Things (MODIFIED to horizontal list with images)
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.favoriteThings,
+                Icons.favorite_border,
+                defaultTextColor,
+                    () async {
+                  await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => AddFunNicheModal(
+                      sectionTitle: AppLocalizations.of(context)!.favoriteThings,
+                      onAdd: (item) {
+                        // TODO: Add logic to update dummy data
+                      },
+                    ),
+                  );
+                }),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 170, // Height for horizontal list
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: (funNicheData['Favorite Things'] ?? []).length,
+                itemBuilder: (context, index) {
+                  final item = funNicheData['Favorite Things']![index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        _showItemPopupModal(
+                          context: context,
+                          imageUrl: item['imageUrl'],
+                          title: '${item['category']}: ${item['item']}',
+                          description: item['description']!,
+                        );
+                      },
+                      child: ImageWithOptionalText(
+                        width: 100,
+                        height: 150,
+                        imageUrl: item['imageUrl'],
+                        bottomText: item['item'],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Hidden Talents (MODIFIED to horizontal list with images)
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.hiddenTalents,
+                Icons.star_outline,
+                defaultTextColor,
+                    () async {
+                  await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => AddFunNicheModal(
+                      sectionTitle: AppLocalizations.of(context)!.hiddenTalents,
+                      onAdd: (item) {
+                        // TODO: Add logic to update dummy data
+                      },
+                    ),
+                  );
+                }),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 170, // Height for horizontal list
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: (funNicheData['Hidden Talents'] ?? []).length,
+                itemBuilder: (context, index) {
+                  final item = funNicheData['Hidden Talents']![index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        _showItemPopupModal(
+                          context: context,
+                          imageUrl: item['imageUrl'],
+                          title: item['title']!,
+                          description: item['description']!,
+                        );
+                      },
+                      child: ImageWithOptionalText(
+                        width: 100,
+                        height: 150,
+                        imageUrl: item['imageUrl'],
+                        bottomText: item['title'],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Fan Theories or Fan Interactions
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.fanTheoriesInteractions,
+                Icons.people_outline,
+                defaultTextColor,
+                    () async {
+                  await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => AddFunNicheModal(
+                      sectionTitle: AppLocalizations.of(context)!.fanTheoriesInteractions,
+                      onAdd: (item) {
+                        // TODO: Add logic to update dummy data
+                      },
+                    ),
+                  );
+                }),
+            ... (funNicheData['Fan Theories or Fan Interactions'] ?? []).map((item) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item['theory'] ?? item['interaction']!,
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: defaultTextColor),
+                    ),
+                    Text(
+                      item['description']!,
+                      style: TextStyle(fontSize: 14, color: secondaryTextColor),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -1698,116 +1928,104 @@ class _ProfilePageState extends State<ProfilePage>
   }
 }
 
+// Dummy classes for demonstration purposes
 class ProfilePreviewModalContent extends StatelessWidget {
   final String userName;
   final String userProfession;
   final String? userProfileImageUrl;
   final VoidCallback? onViewProfile;
-  final Color? defaultTextColor;
-  final Color? secondaryTextColor;
-  final Color? appPrimaryColor;
+  final Color defaultTextColor;
+  final Color secondaryTextColor;
+  final Color appPrimaryColor;
 
   const ProfilePreviewModalContent({
-    Key? key,
+    super.key,
     required this.userName,
     required this.userProfession,
     this.userProfileImageUrl,
     this.onViewProfile,
-    this.defaultTextColor,
-    this.secondaryTextColor,
-    this.appPrimaryColor,
-  }) : super(key: key);
+    required this.defaultTextColor,
+    required this.secondaryTextColor,
+    required this.appPrimaryColor,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final Color _defaultTextColor = defaultTextColor ??
-        (Theme.of(context).brightness == Brightness.dark
-            ? Colors.white
-            : Colors.black);
-    final Color _secondaryTextColor = secondaryTextColor ??
-        (Theme.of(context).brightness == Brightness.dark
-            ? Colors.grey.shade400
-            : Colors.grey.shade600);
-    final Color _appPrimaryColor =
-        appPrimaryColor ?? Theme.of(context).primaryColor;
-    final localizations = AppLocalizations.of(context)!;
-
     return Column(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            ProfileAvatar(
-                radius: 30,
-                imageUrl: userProfileImageUrl ?? 'https://via.placeholder.com/150'),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              ProfileAvatar(imageUrl: userProfileImageUrl, radius: 40),
+              const SizedBox(height: 10),
+              Text(
+                userName,
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: defaultTextColor),
+              ),
+              Text(
+                userProfession,
+                style: TextStyle(fontSize: 14, color: secondaryTextColor),
+              ),
+              const SizedBox(height: 20),
+              // NEW: Action buttons for Profile Preview Modal
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Row(
+                  Column(
                     children: [
-                      Text(
-                        userName,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: _defaultTextColor,
-                        ),
+                      IconButton(
+                        icon: Icon(Icons.favorite_border, color: defaultTextColor),
+                        onPressed: () {
+                          // Handle like for profile
+                        },
                       ),
-                      const SizedBox(width: 4),
-                      const Icon(Icons.verified, color: Colors.orange, size: 18),
+                      Text('Salute', style: TextStyle(color: secondaryTextColor)),
                     ],
                   ),
-                  Text(
-                    userProfession,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: _secondaryTextColor,
-                    ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.comment_outlined, color: defaultTextColor),
+                        onPressed: () {
+                          // Handle comment for profile
+                        },
+                      ),
+                      Text('comment', style: TextStyle(color: secondaryTextColor)),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.share, color: defaultTextColor),
+                        onPressed: () {
+                          // Handle share for profile
+                        },
+                      ),
+                      Text('share', style: TextStyle(color: secondaryTextColor)),
+                    ],
                   ),
                 ],
               ),
-            ),
-            ElevatedButton(
-              onPressed: onViewProfile ?? () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _appPrimaryColor,
-                padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: onViewProfile,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: appPrimaryColor,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                 ),
+                child: Text(AppLocalizations.of(context)!.viewProfile),
               ),
-              child: Text(
-                localizations.viewProfile,
-                style: const TextStyle(color: Colors.white, fontSize: 12),
-              ),
-            ),
-          ],
-        ),
-        // This Expanded SizedBox was preventing the lower content from rendering if the modal height was constrained.
-        // It's usually not needed unless you specifically want the content to push down.
-        // For a modal with Column, minAxisSize: MainAxisSize.min is better.
-        // const Expanded(
-        //   child: SizedBox(),
-        // ),
-        const SizedBox(height: 20), // Add some spacing here instead
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          decoration: BoxDecoration(
-            color: _defaultTextColor.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            userName, // This seems to be a placeholder, you might want a bio or description here
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: _defaultTextColor,
-            ),
+            ],
           ),
         ),
       ],
@@ -1815,161 +2033,71 @@ class ProfilePreviewModalContent extends StatelessWidget {
   }
 }
 
-class _ControversyCarousel extends StatefulWidget {
-  final List<Map<String, dynamic>> controversyMedia;
-  final Color defaultTextColor;
-  final Color cardColor;
-  const _ControversyCarousel({
-    required this.controversyMedia,
-    required this.defaultTextColor,
-    required this.cardColor,
-    Key? key,
-  }) : super(key: key);
+// Dummy class for ImageWithOptionalText (assuming it's a shared widget)
+class ImageWithOptionalText extends StatelessWidget {
+  final double width;
+  final double height;
+  final String? imageUrl;
+  final String? bottomText;
+  final bool isVideo; // New parameter to indicate if the media is a video
 
-  @override
-  State<_ControversyCarousel> createState() => _ControversyCarouselState();
-}
-
-class _ControversyCarouselState extends State<_ControversyCarousel> {
-  int _currentIndex = 0;
-
-  void _goLeft() {
-    setState(() {
-      _currentIndex = (_currentIndex - 1 + widget.controversyMedia.length) %
-          widget.controversyMedia.length;
-    });
-  }
-
-  void _goRight() {
-    setState(() {
-      _currentIndex = (_currentIndex + 1) % widget.controversyMedia.length;
-    });
-  }
+  const ImageWithOptionalText({
+    super.key,
+    required this.width,
+    required this.height,
+    this.imageUrl,
+    this.bottomText,
+    this.isVideo = false, // Default to false
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (widget.controversyMedia.isEmpty) {
-      return const SizedBox.shrink(); // Don't build if no media
-    }
-
-    final cont = widget.controversyMedia[_currentIndex];
-    final List media = cont['media'] ?? [];
-    final String controversy = cont['controversy'] ?? '';
-    const double cardWidth = 120;
-    const double cardHeight = 100;
-    const double spacing = 8;
-
-    Widget buildMediaBox(String url, {bool isVideo = false}) {
-      return Container(
-        width: cardWidth,
-        height: cardHeight,
-        decoration: BoxDecoration(
-          color: widget.cardColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: widget.defaultTextColor.withOpacity(0.2)),
-        ),
-        child: isVideo
-            ? Center(
-            child: Icon(Icons.play_circle_fill,
-                size: 50, color: Colors.grey[400])) // Adjusted icon color
-            : ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.network(
-            url,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) =>
-            const Icon(Icons.broken_image, size: 50, color: Colors.grey),
-          ),
-        ),
-      );
-    }
-
-    List<Widget> buildGrid() {
-      if (media.length == 1) {
-        final url = media[0].toString(); // Ensure it's a string
-        final isVideo = url.endsWith('.mp4');
-        return [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              buildMediaBox(url, isVideo: isVideo),
-            ],
-          ),
-        ];
-      } else if (media.length == 2) {
-        return [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              buildMediaBox(media[0].toString(),
-                  isVideo: media[0].toString().endsWith('.mp4')),
-              const SizedBox(width: spacing),
-              buildMediaBox(media[1].toString(),
-                  isVideo: media[1].toString().endsWith('.mp4')),
-            ],
-          ),
-        ];
-      } else if (media.length >= 3) {
-        // 2x2 grid: left column (2 rows), right column (1 row, full height)
-        return [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Left column (2 rows)
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  buildMediaBox(media[0].toString(),
-                      isVideo: media[0].toString().endsWith('.mp4')),
-                  const SizedBox(height: spacing),
-                  buildMediaBox(media[1].toString(),
-                      isVideo: media[1].toString().endsWith('.mp4')),
-                ],
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: BorderRadius.circular(12),
+        image: imageUrl != null && imageUrl!.isNotEmpty && !isVideo
+            ? DecorationImage(
+          image: NetworkImage(imageUrl!),
+          fit: BoxFit.cover,
+        )
+            : null,
+      ),
+      child: Stack(
+        children: [
+          if (imageUrl == null || imageUrl!.isEmpty)
+            Center(
+              child: Icon(
+                isVideo ? Icons.videocam : Icons.image,
+                size: 50,
+                color: Colors.grey[600],
               ),
-              const SizedBox(width: spacing),
-              // Right column (one media, full height)
-              // Ensure this Container correctly wraps the media box and fits its content
-              SizedBox(
-                width: cardWidth,
-                height: cardHeight * 2 + spacing,
-                child: buildMediaBox(media[2].toString(),
-                    isVideo: media[2].toString().endsWith('.mp4')),
+            ),
+          if (bottomText != null)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                width: double.infinity,
+                padding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.6),
+                  borderRadius: const BorderRadius.vertical(
+                      bottom: Radius.circular(12)),
+                ),
+                child: Text(
+                  bottomText!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ],
-          ),
-        ];
-      }
-      return [];
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          controversy,
-          style: TextStyle(
-              fontSize: 14,
-              color: widget.defaultTextColor,
-              fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: Icon(Icons.arrow_left, color: widget.defaultTextColor),
-              onPressed: widget.controversyMedia.length > 1 ? _goLeft : null,
             ),
-            // Correctly spread the list of widgets returned by buildGrid()
-            ...buildGrid(),
-            IconButton(
-              icon: Icon(Icons.arrow_right, color: widget.defaultTextColor),
-              onPressed: widget.controversyMedia.length > 1 ? _goRight : null,
-            ),
-          ],
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

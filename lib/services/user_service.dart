@@ -32,6 +32,7 @@ class UserService {
       password: user.password,
       email: user.email,
       role: user.role,
+      dob: DateTime(1990, 1, 1),
       fullName: user.fullName,
       profileImage: user.profileImage,
       createdAt: DateTime.now(),
@@ -49,6 +50,7 @@ class UserService {
           username: 'fan_1',
           password: '',
           email: 'fan1@example.com',
+          dob: DateTime(1990, 1, 1),
           role: 'User',
           fullName: 'Fan One',
         ),
@@ -60,6 +62,7 @@ class UserService {
             user: User(
               id: 4,
               username: 'reply_guy',
+              dob: DateTime(1990, 1, 1),
               password: '',
               email: 'reply@example.com',
               role: 'User',
@@ -77,6 +80,7 @@ class UserService {
           id: 3,
           username: 'fan_2',
           password: '',
+          dob: DateTime(1990, 1, 1),
           email: 'fan2@example.com',
           role: 'User',
           fullName: 'Fan Two',
@@ -94,6 +98,7 @@ class UserService {
         content: 'This is my first post! Excited to share with you all.',
         from: User(
           id: int.tryParse(userId) ?? 1,
+          dob: DateTime(1990, 1, 1),
           username: isCelebrity ? 'celeb_user' : 'dummy_user',
           fullName: isCelebrity ? 'Celebrity User' : 'Dummy User',
           profileImageUrl: isCelebrity
@@ -123,6 +128,7 @@ class UserService {
         from: User(
           id: int.tryParse(userId) ?? 1,
           username: isCelebrity ? 'celeb_user' : 'dummy_user',
+          dob: DateTime(1990, 1, 1),
           fullName: isCelebrity ? 'Celebrity User' : 'Dummy User',
           profileImageUrl: isCelebrity
               ? 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&facepad=2&q=80'
@@ -149,6 +155,7 @@ class UserService {
         content: 'Thank you all for the amazing support at last night’s concert!',
         from: User(
           id: int.tryParse(userId) ?? 1,
+          dob: DateTime(1990, 1, 1),
           username: isCelebrity ? 'celeb_user' : 'dummy_user',
           fullName: isCelebrity ? 'Celebrity User' : 'Dummy User',
           profileImageUrl: isCelebrity
@@ -175,6 +182,7 @@ class UserService {
         id: '4',
         content: 'Behind the scenes: prepping for the next big event!',
         from: User(
+          dob: DateTime(1990, 1, 1),
           id: int.tryParse(userId) ?? 1,
           username: isCelebrity ? 'celeb_user' : 'dummy_user',
           fullName: isCelebrity ? 'Celebrity User' : 'Dummy User',
@@ -202,6 +210,7 @@ class UserService {
         from: User(
           id: int.tryParse(userId) ?? 1,
           username: isCelebrity ? 'celeb_user' : 'dummy_user',
+          dob: DateTime(1990, 1, 1),
           fullName: isCelebrity ? 'Celebrity User' : 'Dummy User',
           profileImageUrl: isCelebrity
               ? 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&facepad=2&q=80'
@@ -229,6 +238,7 @@ class UserService {
         from: User(
           id: int.tryParse(userId) ?? 1,
           username: isCelebrity ? 'celeb_user' : 'dummy_user',
+          dob: DateTime(1990, 1, 1),
           fullName: isCelebrity ? 'Celebrity User' : 'Dummy User',
           profileImageUrl: isCelebrity
               ? 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&facepad=2&q=80'
@@ -255,6 +265,7 @@ class UserService {
         content: 'Announcing my next tour dates soon. Stay tuned!',
         from: User(
           id: int.tryParse(userId) ?? 1,
+          dob: DateTime(1990, 1, 1),
           username: isCelebrity ? 'celeb_user' : 'dummy_user',
           fullName: isCelebrity ? 'Celebrity User' : 'Dummy User',
           profileImageUrl: isCelebrity
@@ -284,6 +295,7 @@ class UserService {
         username: 'dummy_user',
         fullName: 'Dummy User',
         profileImageUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&h=200&fit=crop&auto=format',
+        dob: DateTime(1990, 1, 1),
         password: 'dummy_password',
         email: 'dummy@example.com',
         role: 'User',
@@ -472,9 +484,11 @@ class UserService {
         profileImageUrl: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&facepad=2&q=80',
         password: 'celeb_password',
         email: 'celeb@example.com',
+        hometown: 'Rongo, Migori',
         role: 'Celebrity',
         createdAt: DateTime.now(),
         occupation: 'Musician, Public Speaker',
+        dob: DateTime(1990, 1, 1), 
         nationality: 'Kenyan',
         bio: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
         website: 'https://www.lpsum.com/',

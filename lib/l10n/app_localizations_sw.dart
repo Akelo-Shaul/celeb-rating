@@ -140,6 +140,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get roleRequired => 'Nafasi inahitajika';
 
   @override
+  String get celebrityField => 'Eneo la umaarufu';
+
+  @override
   String get signUpForAccount => 'Jisajili kwa akaunti';
 
   @override
@@ -503,7 +506,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get addDegree => 'Ongeza Shahada';
 
   @override
-  String get pleaseFillAllFieldsToAddDegree => 'Tafadhali jaza sehemu zote kuongeza shahada.';
+  String get pleaseFillAllFieldsToAddQualification => 'Tafadhali jaza sehemu zote kuongeza shahada.';
 
   @override
   String get finish => 'Maliza';
@@ -512,13 +515,13 @@ class AppLocalizationsSw extends AppLocalizations {
   String get add => 'Ongeza';
 
   @override
-  String get degreeLabel => 'Shahada (km. BSc, MSc, PhD, Masters)';
+  String get qualificationLabel => 'Shahada (km. BSc, MSc, PhD, Masters)';
 
   @override
   String get enterDegree => 'Weka shahada';
 
   @override
-  String get certifyingUniversity => 'Chuo Kikuu Kinachothibitisha';
+  String get certifyingInstitution => 'Chuo Kinachothibitisha';
 
   @override
   String get enterUniversity => 'Weka chuo kikuu';
@@ -705,4 +708,40 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get tagPeople => 'Weka Watu';
+
+  @override
+  String get socialMediaPresence => 'Uwepo wa Mitandao ya Kijamii';
+
+  @override
+  String get publicImageReputation => 'Taswira na Sifa za Umma';
+
+  @override
+  String get redCarpetMoments => 'Matukio ya Zulia Jekundu';
+
+  @override
+  String get quotesPublicStatements => 'Maneno na Tamko za Umma';
+
+  @override
+  String get favoriteThings => 'Vitu Vipendwa';
+
+  @override
+  String get hiddenTalents => 'Vipaji Vilivyofichika';
+
+  @override
+  String get selectTypePrompt => 'Tafadhali chagua aina ya maudhui unayotaka kuongeza';
+
+  @override
+  String get selectPersonaType => 'Chagua Aina ya Persona';
+
+  @override
+  String get selectTypeValidation => 'Tafadhali chagua aina ili kuendelea';
+
+  @override
+  String get takePhoto => 'Piga Picha';
+
+  @override
+  String get dateOfBirth => 'Tarehe ya Kuzaliwa';
+
+  @override
+  String get dobRequired => 'Tarehe ya kuzaliwa inahitajika';
 }

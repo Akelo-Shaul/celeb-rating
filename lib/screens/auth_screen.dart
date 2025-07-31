@@ -15,6 +15,7 @@ import '../widgets/app_buttons.dart';
 import '../widgets/app_dropdown.dart';
 import '../widgets/app_text_fields.dart';
 import '../widgets/error_message.dart';
+import '../widgets/app_date_picker.dart'; // Import AppDatePicker
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -37,6 +38,7 @@ class _AuthScreenState extends State<AuthScreen> {
   String? _registerConfirmPassword;
   String? _registerRole;
   XFile? _selectedImage;
+  DateTime? _registerDob; // Added for Date of Birth
   String? errorMessage;
   bool isSubmitting = false;
   final PageController _pageController = PageController();
@@ -117,7 +119,8 @@ class _AuthScreenState extends State<AuthScreen> {
         _registerEmail == null || _registerEmail!.isEmpty ||
         _registerUsername == null || _registerUsername!.isEmpty ||
         _registerPassword == null || _registerPassword!.isEmpty ||
-        _registerConfirmPassword == null || _registerConfirmPassword!.isEmpty) {
+        _registerConfirmPassword == null || _registerConfirmPassword!.isEmpty ||
+        _registerDob == null) { // Added _registerDob to validation
       setState(() {
         errorMessage = 'Please fill in all required fields.';
       });
@@ -158,6 +161,7 @@ class _AuthScreenState extends State<AuthScreen> {
           role: _registerRole ?? 'user',
           fullName: '${_registerFirstName ?? ''} ${_registerLastName ?? ''}',
           profileImage: _selectedImage?.path,
+          dob: _registerDob!, // Pass the DOB here
         ),
       );
       print("#########################%%%%%%%%%%%%%%%*************%%%%%%#####");
@@ -309,6 +313,16 @@ class _AuthScreenState extends State<AuthScreen> {
               validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.usernameRequired : null,
             ),
             const SizedBox(height: 16),
+            AppDatePicker(
+              labelText: AppLocalizations.of(context)!.dateOfBirth,
+              onDateSelected: (date) {
+                setState(() {
+                  _registerDob = date;
+                });
+              },
+              validator: (v) => _registerDob == null ? AppLocalizations.of(context)!.dobRequired : null,
+            ),
+            const SizedBox(height: 16),
             AppTextFormField(
               labelText: AppLocalizations.of(context)!.password,
               icon: Icons.lock_outline,
@@ -324,6 +338,7 @@ class _AuthScreenState extends State<AuthScreen> {
               onSaved: (v) => _registerConfirmPassword = v,
               validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.confirmPasswordRequired : null,
             ),
+
             const SizedBox(height: 24),
             AppButton(
               text: AppLocalizations.of(context)!.signUp,

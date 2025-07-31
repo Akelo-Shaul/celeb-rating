@@ -14,6 +14,7 @@ class FeedService{
     // Dummy Users
     final User user1 = User(
       id: 1,
+      dob: DateTime(1990, 1, 1),
       username: 'brumm_h',
       fullName: 'Brumm Halaberry',
       profileImageUrl: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&facepad=2&q=80',
@@ -24,6 +25,7 @@ class FeedService{
     );
 
     final User user2 = User(
+      dob: DateTime(1990, 1, 1),
       id: 2,
       username: 'jane_d',
       fullName: 'Jane Doe',
@@ -35,6 +37,7 @@ class FeedService{
     );
 
     final User user3 = User(
+      dob: DateTime(1990, 1, 1),
       id: 3,
       username: 'code_m',
       fullName: 'Code Master',
@@ -47,6 +50,7 @@ class FeedService{
 
     final User user4 = User(
       id: 4,
+      dob: DateTime(1990, 1, 1),
       username: 'whiteLotis',
       fullName: 'White Lotis Z',
       profileImageUrl: null,

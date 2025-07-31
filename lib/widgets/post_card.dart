@@ -474,22 +474,27 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                child: Row(
+                child: Column(
                   children: [
-                    Image.asset(
-                      _isSaluted ? 'assets/icons/saluted.png' : 'assets/icons/salute.png',
-                      width: 24,
-                      height: 24,
+                    Row(
+                      children: [
+                        Image.asset(
+                          _isSaluted ? 'assets/icons/saluted.png' : 'assets/icons/salute.png',
+                          width: 24,
+                          height: 24,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          widget.post.likes.length.toString(),
+                          style: TextStyle(
+                            color: Color(0xFF9A9A9A),
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 6),
-                    Text(
-                      widget.post.likes.length.toString(),
-                      style: TextStyle(
-                        color: isDark ? Colors.white : Colors.black,
-                        fontSize: 19,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    Text('Salute', style: TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF9A9A9A)),)
                   ],
                 ),
               ),
@@ -500,28 +505,33 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                child: Row(
+                child: Column(
                   children: [
-                    GestureDetector(
-                      onTap: (){
-                        _showCommentsModal(context, widget.post.comments);
-                      },
-                      child: SvgPicture.asset(
-                        'assets/icons/message.svg', // Replace with your icon's path
-                        height: 22,
-                        width: 22,
-                        colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
-                      ),
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: (){
+                            _showCommentsModal(context, widget.post.comments);
+                          },
+                          child: SvgPicture.asset(
+                            'assets/icons/message.svg', // Replace with your icon's path
+                            height: 22,
+                            width: 22,
+                            colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          widget.post.comments.length.toString(),
+                          style: TextStyle(
+                            color: Color(0xFF9A9A9A),
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 6),
-                    Text(
-                      widget.post.comments.length.toString(),
-                      style: TextStyle(
-                        color: isDark ? Colors.white : Colors.black,
-                        fontSize: 19,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    Text('Comment', style: TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF9A9A9A)),)
                   ],
                 ),
               ),
@@ -535,11 +545,16 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
               onTap: (){
                 //TODO: Implement recelebrating
               },
-              child: SvgPicture.asset(
-                'assets/icons/recelebrate.svg', // Replace with your icon's path
-                height: 20,
-                width: 22,
-                colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
+              child: Column(
+                children: [
+                  SvgPicture.asset(
+                    'assets/icons/recelebrate.svg', // Replace with your icon's path
+                    height: 20,
+                    width: 22,
+                    colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
+                  ),
+                  Text('Recelebrate', style: TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF9A9A9A)),)
+                ],
               ),
             ),
             // Send Button
@@ -548,11 +563,16 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
               onTap: (){
                 //TODO: Show share functionality and modal
               },
-              child: SvgPicture.asset(
-                'assets/icons/share.svg', // Replace with your icon's path
-                height: 20,
-                width: 22,
-                colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
+              child: Column(
+                children: [
+                  SvgPicture.asset(
+                    'assets/icons/share.svg', // Replace with your icon's path
+                    height: 20,
+                    width: 22,
+                    colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
+                  ),
+                  Text('Share', style: TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF9A9A9A)),)
+                ],
               ),
             ),
             const SizedBox(width: 8,),

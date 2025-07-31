@@ -5,7 +5,7 @@ class CustomDatePicker {
     final now = DateTime.now();
     final DateTime start = firstDate ?? DateTime(now.year - 100, 1, 1);
     final DateTime end = lastDate ?? now;
-    DateTime selected = initialDate ?? DateTime(now.year - 20, now.month, now.day);
+    DateTime selected = initialDate ?? DateTime(now.year, now.month, now.day);
 
     return await showDialog<DateTime>(
       context: context,

@@ -140,6 +140,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get roleRequired => 'Role required';
 
   @override
+  String get celebrityField => 'Celebrity Field';
+
+  @override
   String get signUpForAccount => 'Sign Up for an Account';
 
   @override
@@ -503,7 +506,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addDegree => 'Add Degree';
 
   @override
-  String get pleaseFillAllFieldsToAddDegree => 'Please fill all fields to add a degree.';
+  String get pleaseFillAllFieldsToAddQualification => 'Please fill all fields to add a qualification.';
 
   @override
   String get finish => 'Finish';
@@ -512,13 +515,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get add => 'Add';
 
   @override
-  String get degreeLabel => 'Degree (e.g. BSc, MSc, PhD, Masters)';
+  String get qualificationLabel => 'Qualification (e.g. BSc, MSc, PhD, Masters)';
 
   @override
   String get enterDegree => 'Enter degree';
 
   @override
-  String get certifyingUniversity => 'Certifying University';
+  String get certifyingInstitution => 'Certifying Institution';
 
   @override
   String get enterUniversity => 'Enter university';
@@ -705,4 +708,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tagPeople => 'Tag People';
+
+  @override
+  String get socialMediaPresence => 'Social Media Presence';
+
+  @override
+  String get publicImageReputation => 'Public Image & Reputation';
+
+  @override
+  String get redCarpetMoments => 'Red Carpet Moments';
+
+  @override
+  String get quotesPublicStatements => 'Quotes & Public Statements';
+
+  @override
+  String get favoriteThings => 'Favorite Things';
+
+  @override
+  String get hiddenTalents => 'Hidden Talents';
+
+  @override
+  String get selectTypePrompt => 'Please select the type of content you want to add';
+
+  @override
+  String get selectPersonaType => 'Select Persona Type';
+
+  @override
+  String get selectTypeValidation => 'Please select a type to continue';
+
+  @override
+  String get takePhoto => 'Take Photo';
+
+  @override
+  String get dateOfBirth => 'Date of Birth';
+
+  @override
+  String get dobRequired => 'Date of birth is required';
 }

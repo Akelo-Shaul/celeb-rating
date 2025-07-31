@@ -1,6 +1,7 @@
 import 'package:celebrating/l10n/app_localizations.dart';
 import 'package:celebrating/services/feed_service.dart';
 import 'package:celebrating/models/user.dart';
+import 'package:celebrating/widgets/add_persona_modal.dart';
 import 'package:celebrating/widgets/app_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -55,6 +56,11 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
   final TextEditingController _qualificationController = TextEditingController();
   final TextEditingController _institutionController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
+
+
+  // Add Socials
+  // final TextEditingController _socialPlatformController = TextEditingController();
+  // final TextEditingController _socialLinkController = TextEditingController();
 
   // --- Profile Variables ---
   final GlobalKey<FormState> _formKeyUpdateProfile = GlobalKey<FormState>();
@@ -178,7 +184,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
             if (_currentIndex == 2)
               Column(
                 children: [
-                  Expanded(child: _addFamily()),
+                  Expanded(child: _addSocials()),
                   // Family summary (example, you may want to store added family in state)
                   // if (_addedFamily.isNotEmpty) ...
                 ],
@@ -186,12 +192,20 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
             if (_currentIndex == 3)
               Column(
                 children: [
+                  Expanded(child: _addFamily()),
+                  // Family summary (example, you may want to store added family in state)
+                  // if (_addedFamily.isNotEmpty) ...
+                ],
+              ),
+            if (_currentIndex == 4)
+              Column(
+                children: [
                   Expanded(child: _addWealth()),
                   // Wealth summary (example, you may want to store added wealth in state)
                   // if (_addedWealth.isNotEmpty) ...
                 ],
               ),
-            if (_currentIndex == 4)
+            if (_currentIndex == 5)
               Column(
                 children: [
                   Expanded(child: _addEducation()),
@@ -199,7 +213,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                     SizedBox.shrink(),
                 ],
               ),
-            if (_currentIndex == 5)
+            if (_currentIndex == 6)
               Column(
                 children: [
                   Expanded(child: _addSocials()),
@@ -286,7 +300,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(5, (index) {
+                  children: List.generate(6, (index) {
                     return _currentIndex == index
                         ? Container(
                       margin: const EdgeInsetsDirectional.all(10),
@@ -386,6 +400,14 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                   const SizedBox(height: 16),
                   TextFormField(
                     decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.celebrityField,
+                      prefixIcon: Icon(Icons.military_tech),
+                    ),
+                    onSaved: (v) => _updateCelebrityField = v,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    decoration: InputDecoration(
                       labelText: AppLocalizations.of(context)!.religion,
                       prefixIcon: Icon(Icons.back_hand_outlined),
                     ),
@@ -408,6 +430,57 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
               text: AppLocalizations.of(context)!.submit,
               isLoading: _isSubmitting,
               onPressed: _submitUpdates,
+            ),
+            secondaryButton: AppTextButton(
+              text: AppLocalizations.of(context)!.skip,
+              onPressed: _goToNextTab,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _addSocials() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              children: [
+                const SizedBox(height: 40),
+                Text(
+                  'Add Social Media',
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                Text('Add your social media platforms and links.', textAlign: TextAlign.center),
+                const SizedBox(height: 24),
+              ],
+            ),
+          ),
+          _BottomActions(
+            mainButton: AppButton(
+              text: AppLocalizations.of(context)!.addManually,
+              icon: Icons.group_add,
+              onPressed: () async {
+                final result = await showModalBottomSheet<Map<String, dynamic>>(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => AddPersonaModal(
+                    sectionTitle: AppLocalizations.of(context)!.socials,
+                    onAdd: (social) {
+                      // TODO: Add logic to update dummy data
+                    },
+                  ),
+                );
+                if (result != null) {
+                  // Optionally update your state with the new member
+                }
+              },
             ),
             secondaryButton: AppTextButton(
               text: AppLocalizations.of(context)!.skip,
@@ -617,7 +690,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                 TextFormField(
                   controller: _institutionController,
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.certifyingUniversity,
+                    labelText: AppLocalizations.of(context)!.certifyingInstitution,
                     prefixIcon: Icon(Icons.account_balance),
                   ),
                   validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterUniversity : null,
@@ -628,7 +701,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                 TextFormField(
                   controller: _qualificationController,
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.degreeLabel,
+                    labelText: AppLocalizations.of(context)!.qualificationLabel,
                     prefixIcon: Icon(Icons.school),
                   ),
                   validator: (v) => v == null || v.trim().isEmpty ? AppLocalizations.of(context)!.enterDegree : null,
@@ -661,7 +734,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                     final year = _yearController.text.trim();
                     if (degree.isEmpty || institution.isEmpty || year.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseFillAllFieldsToAddDegree)),
+                        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseFillAllFieldsToAddQualification)),
                       );
                       return;
                     }
@@ -725,75 +798,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
     );
   }
 
-  // Add Socials
-  final TextEditingController _socialPlatformController = TextEditingController();
-  final TextEditingController _socialLinkController = TextEditingController();
 
-  Widget _addSocials() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              children: [
-                const SizedBox(height: 40),
-                Text(
-                  'Add Social Media',
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                Text('Add your social media platforms and links.', textAlign: TextAlign.center),
-                const SizedBox(height: 24),
-                TextFormField(
-                  controller: _socialPlatformController,
-                  decoration: const InputDecoration(
-                    labelText: 'Platform (e.g. Instagram)',
-                    prefixIcon: Icon(Icons.alternate_email),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _socialLinkController,
-                  decoration: const InputDecoration(
-                    labelText: 'Link',
-                    prefixIcon: Icon(Icons.link),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                AppButton(
-                  text: 'Add Social',
-                  icon: Icons.add_link,
-                  onPressed: () {
-                    final platform = _socialPlatformController.text.trim();
-                    final link = _socialLinkController.text.trim();
-                    if (platform.isNotEmpty && link.isNotEmpty) {
-                      setState(() {
-                        _socialsList.add({'platform': platform, 'link': link});
-                        _socialPlatformController.clear();
-                        _socialLinkController.clear();
-                      });
-                    }
-                  },
-                  backgroundColor: const Color(0xFFD6AF0C),
-                  textColor: Colors.white,
-                ),
-                const SizedBox(height: 8),
-              ],
-            ),
-          ),
-          _BottomActions(
-            mainButton: AppButton(
-              text: 'Skip',
-              icon: Icons.skip_next,
-              onPressed: _goToNextTab,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _BottomActions extends StatelessWidget {

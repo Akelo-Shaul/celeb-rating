@@ -353,6 +353,12 @@ abstract class AppLocalizations {
   /// **'Role required'**
   String get roleRequired;
 
+  /// No description provided for @celebrityField.
+  ///
+  /// In en, this message translates to:
+  /// **'Celebrity Field'**
+  String get celebrityField;
+
   /// No description provided for @signUpForAccount.
   ///
   /// In en, this message translates to:
@@ -1067,11 +1073,11 @@ abstract class AppLocalizations {
   /// **'Add Degree'**
   String get addDegree;
 
-  /// No description provided for @pleaseFillAllFieldsToAddDegree.
+  /// No description provided for @pleaseFillAllFieldsToAddQualification.
   ///
   /// In en, this message translates to:
-  /// **'Please fill all fields to add a degree.'**
-  String get pleaseFillAllFieldsToAddDegree;
+  /// **'Please fill all fields to add a qualification.'**
+  String get pleaseFillAllFieldsToAddQualification;
 
   /// No description provided for @finish.
   ///
@@ -1085,11 +1091,11 @@ abstract class AppLocalizations {
   /// **'Add'**
   String get add;
 
-  /// No description provided for @degreeLabel.
+  /// No description provided for @qualificationLabel.
   ///
   /// In en, this message translates to:
-  /// **'Degree (e.g. BSc, MSc, PhD, Masters)'**
-  String get degreeLabel;
+  /// **'Qualification (e.g. BSc, MSc, PhD, Masters)'**
+  String get qualificationLabel;
 
   /// No description provided for @enterDegree.
   ///
@@ -1097,11 +1103,11 @@ abstract class AppLocalizations {
   /// **'Enter degree'**
   String get enterDegree;
 
-  /// No description provided for @certifyingUniversity.
+  /// No description provided for @certifyingInstitution.
   ///
   /// In en, this message translates to:
-  /// **'Certifying University'**
-  String get certifyingUniversity;
+  /// **'Certifying Institution'**
+  String get certifyingInstitution;
 
   /// No description provided for @enterUniversity.
   ///
@@ -1462,6 +1468,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tag People'**
   String get tagPeople;
+
+  /// No description provided for @socialMediaPresence.
+  ///
+  /// In en, this message translates to:
+  /// **'Social Media Presence'**
+  String get socialMediaPresence;
+
+  /// No description provided for @publicImageReputation.
+  ///
+  /// In en, this message translates to:
+  /// **'Public Image & Reputation'**
+  String get publicImageReputation;
+
+  /// No description provided for @redCarpetMoments.
+  ///
+  /// In en, this message translates to:
+  /// **'Red Carpet Moments'**
+  String get redCarpetMoments;
+
+  /// No description provided for @quotesPublicStatements.
+  ///
+  /// In en, this message translates to:
+  /// **'Quotes & Public Statements'**
+  String get quotesPublicStatements;
+
+  /// No description provided for @favoriteThings.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite Things'**
+  String get favoriteThings;
+
+  /// No description provided for @hiddenTalents.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden Talents'**
+  String get hiddenTalents;
+
+  /// No description provided for @selectTypePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select the type of content you want to add'**
+  String get selectTypePrompt;
+
+  /// No description provided for @selectPersonaType.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Persona Type'**
+  String get selectPersonaType;
+
+  /// No description provided for @selectTypeValidation.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a type to continue'**
+  String get selectTypeValidation;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take Photo'**
+  String get takePhoto;
+
+  /// No description provided for @dateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of Birth'**
+  String get dateOfBirth;
+
+  /// No description provided for @dobRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth is required'**
+  String get dobRequired;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
