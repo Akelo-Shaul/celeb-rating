@@ -115,8 +115,8 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
   @override
   void initState() {
     super.initState();
-    final isCelebrity = widget.user is CelebrityUser;
-    _tabController = TabController(length: isCelebrity ? 6 : 1, vsync: this);
+    // Initialize with length 6, regardless of user type, to match profile_page.dart
+    _tabController = TabController(length: 6, vsync: this);
     _loadUserData();
   }
 
@@ -429,8 +429,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
 
   Widget _buildTabBar(bool isDark) {
     final localizations = AppLocalizations.of(context)!;
-    final isCelebrity = widget.user is CelebrityUser;
-
+    // Removed isCelebrity check to always show all 6 tabs
     return TabBar(
       controller: _tabController,
       isScrollable: true,
@@ -448,44 +447,297 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
       ),
       indicatorSize: TabBarIndicatorSize.tab,
       dividerHeight: 0,
-      tabs: isCelebrity ? [
-        const Tab(text: 'Celebrations'), // Added const
-        Tab(text: localizations.personalTab),
-        Tab(text: localizations.wealthTab),
-        Tab(text: localizations.careerTab),
-        Tab(text: localizations.publicPersonaTab),
-        const Tab(text: 'Fun & Niche'), // New Tab
-      ] : const [ // Added const
+      tabs: const [ // Always show all 6 tabs
         Tab(text: 'Celebrations'),
+        Tab(text: 'Personal'), // Using hardcoded string as in profile_page.dart for personalTab
+        Tab(text: 'Wealth'), // Using hardcoded string as in profile_page.dart for wealthTab
+        Tab(text: 'Career'), // Using hardcoded string as in profile_page.dart for careerTab
+        Tab(text: 'Public Persona'), // Using hardcoded string as in profile_page.dart for publicPersonaTab
+        Tab(text: 'Fun & Niche'),
       ],
     );
   }
 
   Widget _buildTabs() {
-    final isCelebrity = widget.user is CelebrityUser;
-
+    // Removed isCelebrity check to always show all 6 TabBarView children
     return TabBarView(
       controller: _tabController,
-      children: isCelebrity ? [
+      children: [
         _buildPostsTab(),
         _buildPersonalTab(),
         _buildWealthTab(),
         _buildCareerTab(),
         _buildPublicPersonaTab(),
         _buildFunNicheTab()
-      ] : [
-        _buildPostsTab(),
       ],
     );
   }
 
   Widget _buildPostsTab(){
     if (posts.isEmpty) {
-      return const Center(child: Text('No celebrations to display'));
+      return const Center(child: Text('No celebrations to display.'));
     }
     return ListView.builder(
       itemCount: posts.length,
       itemBuilder: (context, i) => PostCard(post: posts[i], showFollowButton: false),
+    );
+  }
+
+  Widget _buildPersonalTab() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultTextColor = isDark ? Colors.white : Colors.black;
+    final iconColor = isDark ? Colors.orange[300] : Colors.brown[300];
+
+    // Check if the user is a CelebrityUser and has personal entries
+    if (widget.user is! CelebrityUser) {
+      return const Center(child: Text("No personal data available."));
+    }
+
+    final celeb = widget.user as CelebrityUser;
+    // Dummy personal data
+    final Map<String, List<Map<String, String>>> personalData = {
+      'Relationships': [
+        {'name': 'Jane Doe', 'type': 'Friend', 'description': 'Best friend from college.'},
+        {'name': 'John Smith', 'type': 'Sibling', 'description': 'Older brother.'},
+      ],
+      'Education': [
+        {'institution': 'Harvard University', 'degree': 'B.A. in Music', 'period': '2010-2014'},
+      ],
+    };
+
+    // A map to define icons for each category, similar to careerCategoryIcons
+    final Map<String, IconData> personalCategoryIcons = {
+      'Relationships': Icons.favorite_outline,
+      'Education': Icons.school_outlined,
+      'Other': Icons.info_outline, // Default or for categories without specific icons
+    };
+
+    return ListView(
+      children: personalData.entries
+          .where((entry) => entry.value.isNotEmpty)
+          .map((entry) {
+        final category = entry.key;
+        final items = entry.value;
+        final icon = personalCategoryIcons[category] ?? Icons.info_outline;
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, size: 32, color: iconColor),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      category,
+                      style: TextStyle(
+                          fontSize: 13,
+                          color: isDark ? Colors.orange[300] : Colors.brown[300]),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: items.map((item) {
+                        if (category == 'Relationships') {
+                          final name = item['name'];
+                          final type = item['type'];
+                          final description = item['description'];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (name != null)
+                                  Text(
+                                    name,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: defaultTextColor),
+                                  ),
+                                if (type != null)
+                                  Text(
+                                    type,
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        color: defaultTextColor.withOpacity(0.8)),
+                                  ),
+                                if (description != null)
+                                  Text(
+                                    description,
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: defaultTextColor.withOpacity(0.7)),
+                                  ),
+                              ],
+                            ),
+                          );
+                        } else if (category == 'Education') {
+                          final institution = item['institution'];
+                          final degree = item['degree'];
+                          final period = item['period'];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (institution != null)
+                                  Text(
+                                    institution,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: defaultTextColor),
+                                  ),
+                                if (degree != null)
+                                  Text(
+                                    degree,
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        color: defaultTextColor.withOpacity(0.8)),
+                                  ),
+                                if (period != null)
+                                  Text(
+                                    period,
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: defaultTextColor.withOpacity(0.7)),
+                                  ),
+                              ],
+                            ),
+                          );
+                        } else {
+                          // General structure for other personal items
+                          final title = item['title'];
+                          final description = item['description'];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (title != null)
+                                  Text(
+                                    title,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: defaultTextColor),
+                                  ),
+                                if (description != null)
+                                  Text(
+                                    description,
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: defaultTextColor.withOpacity(0.7)),
+                                  ),
+                              ],
+                            ),
+                          );
+                        }
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildWealthTab(){
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultTextColor = isDark ? Colors.white : Colors.black;
+    final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    if (widget.user is! CelebrityUser) { // Simplified null check
+      return const Center(child: Text("No wealth data available."));
+    }
+    final celeb = widget.user as CelebrityUser;
+    final Map<String, List<Map<String, String>>> wealthData = celeb.wealthEntries;
+    final localizations = AppLocalizations.of(context)!;
+    // Check if there are any items in any category
+    bool hasAnyItems = false;
+    for (var category in _wealthCategories) {
+      if ((wealthData[category] ?? []).isNotEmpty) {
+        hasAnyItems = true;
+        break;
+      }
+    }
+    if (!hasAnyItems) {
+      return const Center(child: Text("No wealth items to display"));
+    }
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  '${localizations.netWorth} : ',
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: defaultTextColor),
+                ),
+                Text(
+                  celeb.netWorth, // Assuming netWorth is a String or formatted as such
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: secondaryTextColor),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ..._wealthCategories.map((category) {
+              final items = wealthData[category] ?? [];
+              if (items.isEmpty) return const SizedBox.shrink(); // Hide if no items
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionHeader(category, Icons.category, defaultTextColor), // Generic icon for now
+                  const SizedBox(height: 10),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 0.8, // Adjust as needed
+                    ),
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      return GestureDetector(
+                        onTap: () => _showItemPopupModal(
+                          context: context,
+                          imageUrl: item['imageUrl'],
+                          title: item['title']!,
+                          description: item['description']!,
+                        ),
+                        child: ImageWithOptionalText(
+                          width: 150,
+                          height: 150,
+                          imageUrl: item['imageUrl'],
+                          bottomText: item['title'],
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              );
+            }).toList(),
+          ],
+        ),
+      ),
     );
   }
 
@@ -500,14 +752,13 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
     final Map<String, List<Map<String, String>>> careerData = celeb.careerEntries;
 
     // Check if there are any career items with actual content
-    bool hasAnyCareerItems = careerData.values.any((list) =>
-        list.any((item) {
-          if (item.containsKey('title') && item['title']?.isNotEmpty == true) return true;
-          if (item.containsKey('award') && item['award']?.isNotEmpty == true) return true;
-          if (item.containsKey('subtitle') && item['subtitle']?.isNotEmpty == true) return true;
-          if (item.containsKey('type') && item['type']?.isNotEmpty == true) return true;
-          return false;
-        })
+    bool hasAnyCareerItems = careerData.values.any((list) => list.any((item) {
+      if (item.containsKey('title') && item['title']?.isNotEmpty == true) return true;
+      if (item.containsKey('award') && item['award']?.isNotEmpty == true) return true;
+      if (item.containsKey('subtitle') && item['subtitle']?.isNotEmpty == true) return true;
+      if (item.containsKey('type') && item['type']?.isNotEmpty == true) return true;
+      return false;
+    })
     );
 
     if (!hasAnyCareerItems) {
@@ -522,9 +773,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
           if (entry.key == 'Awards') {
             return (item['title']?.isNotEmpty ?? false) || (item['award']?.isNotEmpty ?? false);
           } else if (entry.key == 'Collaborations') {
-            return (item['title']?.isNotEmpty ?? false) ||
-                (item['subtitle']?.isNotEmpty ?? false) ||
-                (item['type']?.isNotEmpty ?? false);
+            return (item['title']?.isNotEmpty ?? false) || (item['subtitle']?.isNotEmpty ?? false) || (item['type']?.isNotEmpty ?? false);
           } else if (entry.key == 'Debut Work') {
             return (item['title']?.isNotEmpty ?? false) || (item['subtitle']?.isNotEmpty ?? false);
           } else {
@@ -624,862 +873,158 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
     );
   }
 
-  Widget _buildWealthTab(){
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
-    if (widget.user is! CelebrityUser) { // Simplified null check
-      return const Center(child: Text("No wealth data available."));
-    }
-    final celeb = widget.user as CelebrityUser;
-    final Map<String, List<Map<String, String>>> wealthData = celeb.wealthEntries;
-    final localizations = AppLocalizations.of(context)!;
-
-    // Check if there are any items in any category
-    bool hasAnyItems = false;
-    for (var category in _wealthCategories) {
-      if ((wealthData[category] ?? []).isNotEmpty) {
-        hasAnyItems = true;
-        break;
-      }
-    }
-
-    if (!hasAnyItems) {
-      return const Center(child: Text("No wealth items to display"));
-    }
-
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  '${localizations.netWorth} : ',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: defaultTextColor,
-                  ),
-                ),
-                Text(
-                  celeb.netWorth,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: secondaryTextColor,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 25),
-            ..._wealthCategories.map((categoryKey) {
-              final items = wealthData[categoryKey] ?? [];
-              if (items.isEmpty) return const SizedBox.shrink();
-              String localizedCategory;
-              switch (categoryKey) {
-                case 'Cars':
-                  localizedCategory = localizations.categoryValueCar;
-                  break;
-                case 'Houses':
-                  localizedCategory = localizations.categoryValueHouse;
-                  break;
-                case 'Art Collection':
-                  localizedCategory = localizations.categoryValueArt;
-                  break;
-                case 'Watch Collection':
-                  localizedCategory = localizations.categoryValueJewelry;
-                  break;
-                default:
-                  localizedCategory = categoryKey;
-              }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    localizedCategory,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    height: 170,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: items.length,
-                      itemBuilder: (context, index) {
-                        final item = items[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 12.0),
-                          child: GestureDetector(
-                            onTapDown: (details) {
-                              showProfileActionPopup(
-                                context: context,
-                                globalPosition: details.globalPosition,
-                                onReview: () {
-                                  // Use empty list and dummy postId if not available
-                                  _showCommentsModal(context, [], postId: 'profile');
-                                },
-                                onPreview: () {},
-                                onSalute: () {},
-                                onRate: (rating) {},
-                                currentRating: 0,
-                              );
-                            },
-                            child: ImageWithOptionalText(
-                              width: 100,
-                              height: 150,
-                              imageUrl: item['imageUrl'],
-                              bottomText: item['name'],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              );
-            }).toList(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPersonalTab(){
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
-    if (widget.user is! CelebrityUser) { // Simplified null check
-      return const Center(child: Text("No personal data available."));
-    }
-    final celeb = widget.user as CelebrityUser;
-
-    // Check if there's any personal information to display
-    bool hasAnyContent = celeb.zodiacSign.isNotEmpty ||
-        celeb.relationships.isNotEmpty ||
-        celeb.educationEntries.isNotEmpty ||
-        celeb.hobbies.isNotEmpty ||
-        celeb.diet.isNotEmpty ||
-        celeb.spirituality.isNotEmpty ||
-        celeb.involvedCauses.isNotEmpty ||
-        celeb.pets.isNotEmpty ||
-        celeb.tattoos.isNotEmpty ||
-        celeb.favouritePlaces.isNotEmpty;
-
-    if (!hasAnyContent) {
-      return const Center(child: Text("No personal information to display"));
-    }
-
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Family Section
-              if (celeb.relationships.isNotEmpty) ...[
-                Text(
-                  'Family',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: defaultTextColor,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 60,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: celeb.relationships.length,
-                    itemBuilder: (context, index) {
-                      final relationship = celeb.relationships[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 12.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            _showProfilePreviewModal(
-                              context: context,
-                              userName: "Relationship ${index + 1}", // Replace with actual name if available
-                              userProfession: "Friend", // Replace with actual relationship type if available
-                              userProfileImageUrl: relationship,
-                              onViewProfile: () {
-                                // Add navigation to profile view here
-                              },
-                            );
-                          },
-                          child: ProfileAvatar(
-                            radius: 30,
-                            imageUrl: relationship,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ], // Closing bracket for Relationships Section if
-              // Relationships Section
-              if (celeb.relationships.isNotEmpty) ...[
-                Text(
-                  'Relationship',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: defaultTextColor,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 60,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: celeb.relationships.length,
-                    itemBuilder: (context, index) {
-                      final relationship = celeb.relationships[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 12.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            _showProfilePreviewModal(
-                              context: context,
-                              userName: "Relationship ${index + 1}", // Replace with actual name if available
-                              userProfession: "Friend", // Replace with actual relationship type if available
-                              userProfileImageUrl: relationship,
-                              onViewProfile: () {
-                                // Add navigation to profile view here
-                              },
-                            );
-                          },
-                          child: ProfileAvatar(
-                            radius: 30,
-                            imageUrl: relationship,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ], // Closing bracket for Relationships Section if
-              // Pets Section
-              if (celeb.pets.isNotEmpty) ...[
-                Text(
-                  AppLocalizations.of(context)!.pets,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: defaultTextColor,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 60,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: celeb.pets.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 12.0),
-                        child: GestureDetector(
-                          onTapDown: (details) {
-                            showProfileActionPopup(
-                              context: context,
-                              globalPosition: details.globalPosition,
-                              onReview: () {
-                                // Use empty list and dummy postId if not available
-                                _showCommentsModal(context, [], postId: 'profile');
-                              },
-                              onPreview: () {},
-                              onSalute: () {},
-                              onRate: (rating) {},
-                              currentRating: 0,
-                            );
-                          },
-                          child: ProfileAvatar(
-                            radius: 30,
-                            imageUrl: celeb.pets[index],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ], // Closing bracket for Pets Section
-              // Education Section
-              if (celeb.educationEntries.isNotEmpty) ...[
-                Text(
-                  AppLocalizations.of(context)!.education,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: defaultTextColor,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                ...celeb.educationEntries.map((entry) {
-                  final institution = entry['institution'] ?? '';
-                  final qualifications = (entry['qualifications'] as List?) ?.cast<Map<String, String>>() ?? [];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: Row(
-                      // This is the main Row for the icon and text content
-                      crossAxisAlignment: CrossAxisAlignment.start, // Align content to the top
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(Icons.school_outlined, size: 35, color: Color(0xFFD6AF0C)),
-                        ),
-                        const SizedBox(width: 12), // Add spacing between icon and text
-                        Expanded(
-                          // This Expanded widget ensures the text content takes up remaining space
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                institution,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: defaultTextColor,
-                                ),
-                              ),
-                              ...qualifications.map<Widget>((deg) {
-                                return Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 4.0, left: 2.0),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            deg['title'] ?? '',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w400,
-                                              color: defaultTextColor
-                                                  .withOpacity(0.85),
-                                            ),
-                                          ),
-                                          if (deg['year'] != null)
-                                            Padding(
-                                              padding: const EdgeInsets.only(top: 2.0),
-                                              child: Text(
-                                                deg['year']!,
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  color: secondaryTextColor
-                                                      .withOpacity(0.7),
-                                                ),
-                                              ),
-                                            ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }).toList(),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-                const SizedBox(height: 20),
-              ], // Closing bracket for Education Section if
-
-              // Hobbies Section
-              if (celeb.hobbies.isNotEmpty) ...[
-                Text(
-                  AppLocalizations.of(context)!.hobbies,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: defaultTextColor,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 180,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: celeb.hobbies.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 12.0),
-                        child: GestureDetector(
-                          onTapDown: (details) {
-                            showProfileActionPopup(
-                              context: context,
-                              globalPosition: details.globalPosition,
-                              onReview: () {
-                                // Use empty list and dummy postId if not available
-                                _showCommentsModal(context, [], postId: 'profile');
-                              },
-                              onPreview: () {},
-                              onSalute: () {},
-                              onRate: (rating) {},
-                              currentRating: 0,
-                            );
-                          },
-                          child: ImageWithOptionalText(
-                            width: 100,
-                            height: 150,
-                            imageUrl: celeb.hobbies[index]['imageUrl'],
-                            bottomText: celeb.hobbies[index]['name'],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ], // Closing bracket for Hobbies Section if
-
-              // Lifestyle Section
-              if (celeb.diet.isNotEmpty || celeb.spirituality.isNotEmpty) ...[
-                Text(
-                  AppLocalizations.of(context)!.lifestyle,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: defaultTextColor,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                if (celeb.diet.isNotEmpty)
-                  Text(
-                    'Diet: ${celeb.diet}',
-                    style: TextStyle(fontSize: 14, color: defaultTextColor),
-                  ),
-                if (celeb.spirituality.isNotEmpty)
-                  Text(
-                    'Spirituality: ${celeb.spirituality}',
-                    style: TextStyle(fontSize: 14, color: defaultTextColor),
-                  ),
-                const SizedBox(height: 20),
-              ], // Closing bracket for Lifestyle Section if
-
-              // Involved Causes Section
-              if (celeb.involvedCauses.isNotEmpty) ...[
-                Text(
-                  AppLocalizations.of(context)!.involvedCauses,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: defaultTextColor,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                ...celeb.involvedCauses.map((cause) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(Icons.volunteer_activism, size: 30, color: const Color(0xFFD6AF0C)), // Added a placeholder icon
-                        ),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              cause['name'] ?? '',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: defaultTextColor,
-                              ),
-                            ),
-                            Text(
-                              cause['role'] ?? '',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: secondaryTextColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-                const SizedBox(height: 20),
-              ], // Closing bracket for Involved Causes Section if
-
-              // Tattoos Section
-              if (celeb.tattoos.isNotEmpty) ...[
-                Text(
-                  AppLocalizations.of(context)!.tattoos,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: defaultTextColor,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 150,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: celeb.tattoos.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 12.0),
-                        child: GestureDetector(
-                          onTapDown: (details) {
-                            showProfileActionPopup(
-                              context: context,
-                              globalPosition: details.globalPosition,
-                              onReview: () {
-                                // Use empty list and dummy postId if not available
-                                _showCommentsModal(context, [], postId: 'profile');
-                              },
-                              onSalute: () {},
-                              onPreview: () {},
-                              onRate: (rating) {},
-                              currentRating: 0,
-                            );
-                          },
-                          child: ImageWithOptionalText(
-                            width: 100,
-                            height: 150,
-                            imageUrl: celeb.tattoos[index],
-                            bottomText: null,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ], // Closing bracket for Tattoos Section if
-
-              // Favourites Section
-              Text(
-                AppLocalizations.of(context)!.favourites,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: defaultTextColor,
-                ),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 180,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: celeb.favouritePlaces.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 12.0),
-                      child: GestureDetector(
-                        onTapDown: (details) {
-                          showProfileActionPopup(
-                            context: context,
-                            globalPosition: details.globalPosition,
-                            onReview: () {
-                              // Use empty list and dummy postId if not available
-                              _showCommentsModal(context, [], postId: 'profile');
-                            },
-                            onSalute: () {},
-                            onPreview: () {},
-                            onRate: (rating) {},
-                            currentRating: 0,
-                          );
-                        },
-                        child: ImageWithOptionalText(
-                          width: 100,
-                          height: 150,
-                          imageUrl: celeb.favouritePlaces[index]['imageUrl'],
-                          bottomText: celeb.favouritePlaces[index]['name'],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Talents Section
-              Text(
-                AppLocalizations.of(context)!.talents,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: defaultTextColor,
-                ),
-              ),
-
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 180,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: celeb.talents.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 12.0),
-                      child: GestureDetector(
-                        onTapDown: (details) {
-                          showProfileActionPopup(
-                            context: context,
-                            globalPosition: details.globalPosition,
-                            onReview: () {
-                              // Use empty list and dummy postId if not available
-                              _showCommentsModal(context, [], postId: 'profile');
-                            },
-                            onSalute: () {},
-                            onPreview: () {},
-                            onRate: (rating) {},
-                            currentRating: 0,
-                          );
-                        },
-                        child: ImageWithOptionalText(
-                          width: 100,
-                          height: 150,
-                          imageUrl: celeb.talents[index]['imageUrl'],
-                          bottomText: celeb.talents[index]['name'],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-
-  Widget _buildSectionHeader(String title, IconData icon, Color textColor) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            Icon(icon, size: 24, color: textColor),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: textColor,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   Widget _buildPublicPersonaTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final appPrimaryColor = Theme.of(context).primaryColor;
+    final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
 
     if (widget.user is! CelebrityUser) {
-      return const Center(child: Text("No public persona data available"));
+      return const Center(child: Text("No public persona data available."));
     }
+
     final celeb = widget.user as CelebrityUser;
+    // Dummy public persona data
+    final Map<String, List<Map<String, String>>> publicPersonaData = {
+      'Personas': [
+        {'title': 'The Charmer', 'description': 'Known for a charismatic stage presence.'},
+        {'title': 'The Philanthropist', 'description': 'Active in charity events.'},
+      ],
+      'Relationships': [
+        {'name': 'Jane Doe', 'type': 'Manager', 'description': 'Longtime manager and friend.'},
+      ],
+    };
 
-    // Check if there's any public persona information to display
-    bool hasAnyContent =
-        celeb.socials.any((social) =>
-        (social['title']?.isNotEmpty ?? false) ||
-            (social['link']?.isNotEmpty ?? false)) ||
-            celeb.publicImageDescription.isNotEmpty ||
-            celeb.fashionStyle.entries.any((entry) =>
-                entry.value.any((item) =>
-                (item['imageUrl']?.isNotEmpty ?? false)));
-
-    if (!hasAnyContent) {
-      return const Center(child: Text("No persona entries"));
+    // Check if there are any public persona items
+    bool hasPublicPersonaItems = publicPersonaData.values.any((list) => list.isNotEmpty);
+    if (!hasPublicPersonaItems) {
+      return const Center(child: Text("No public persona items to display."));
     }
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Socials Section
-            if (celeb.socials.isNotEmpty) ...[
-              Text(
-                AppLocalizations.of(context)!.socials,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: defaultTextColor,
-                ),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 60,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: celeb.socials.length,
-                  itemBuilder: (context, index) {
-                    final social = celeb.socials[index];
-                    final iconPath = 'assets/icons/socials/${social['title']?.toLowerCase()}.png';
+    // A map to define icons for each category
+    final Map<String, IconData> publicPersonaCategoryIcons = {
+      'Personas': Icons.masks_outlined,
+      'Relationships': Icons.people_alt_outlined,
+      'Other': Icons.info_outline, // Default or for categories without specific icons
+    };
 
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 16.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          if (social['link'] != null) {
-                            // Add url_launcher implementation here
-                            print('Opening: ${social['link']}');
-                          }
-                        },
-                        child: Image.asset(
-                          iconPath,
-                          height: 40,
-                          width: 40,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(Icons.error_outline, size: 24, color: Colors.grey);
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
 
-            // Public Image Description
-            if (celeb.publicImageDescription.isNotEmpty) ...[
-              Text(
-                'Public Image',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: defaultTextColor,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                celeb.publicImageDescription,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: defaultTextColor,
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
+    return ListView(
+      children: publicPersonaData.entries
+          .where((entry) => entry.value.isNotEmpty)
+          .map((entry) {
+        final category = entry.key;
+        final items = entry.value;
+        final icon = publicPersonaCategoryIcons[category] ?? Icons.info_outline;
 
-            // Fashion Style Section
-            if (celeb.fashionStyle.isNotEmpty) ...[
-              _buildSectionHeader(
-                AppLocalizations.of(context)!.fashionStyle,
-                Icons.whatshot,
-                defaultTextColor,),
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionHeader(category, icon, defaultTextColor),
               const SizedBox(height: 10),
-              ...celeb.fashionStyle.entries.map((entry) {
-                if (entry.value.isEmpty) return const SizedBox.shrink();
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      entry.key[0].toUpperCase() + entry.key.substring(1),
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: defaultTextColor,
-                      ),
+              ...items.map((item) {
+                if (category == 'Personas') {
+                  final title = item['title'];
+                  final description = item['description'];
+                  final imageUrl = item['imageUrl'];
+
+                  return GestureDetector(
+                    onTap: () => _showItemPopupModal(
+                      context: context,
+                      imageUrl: imageUrl,
+                      title: title!,
+                      description: description!,
                     ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      height: 150,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: entry.value.length,
-                        itemBuilder: (context, idx) {
-                          final img = entry.value[idx]['imageUrl'];
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 12.0),
-                            child: ImageWithOptionalText(
-                              width: 100,
-                              height: 150,
-                              imageUrl: img,
-                              bottomText: null,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (title != null)
+                            Text(
+                              title,
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: defaultTextColor),
                             ),
-                          );
-                        },
+                          if (description != null)
+                            Text(
+                              description,
+                              style: TextStyle(fontSize: 14, color: secondaryTextColor),
+                            ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 20),
-                  ],
-                );
+                  );
+                } else if (category == 'Relationships') {
+                  final name = item['name'];
+                  final type = item['type'];
+                  final description = item['description'];
+
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (name != null)
+                          Text(
+                            name,
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: defaultTextColor),
+                          ),
+                        if (type != null)
+                          Text(
+                            type,
+                            style: TextStyle(fontSize: 14, color: secondaryTextColor),
+                          ),
+                        if (description != null)
+                          Text(
+                            description,
+                            style: TextStyle(fontSize: 14, color: secondaryTextColor),
+                          ),
+                      ],
+                    ),
+                  );
+                }
+                return const SizedBox.shrink(); // Fallback for unhandled categories
               }).toList(),
             ],
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
+          ),
+        );
+      }).toList(),
     );
   }
-
 
   Widget _buildFunNicheTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final secondaryTextColor =
-    isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
 
     if (widget.user is! CelebrityUser) {
       return const Center(child: Text("No fun & niche data available."));
     }
-    final celeb = widget.user as CelebrityUser;
 
-    // Dummy data for Fun or Niche Details sections (MODIFIED with image URLs)
+    final celeb = widget.user as CelebrityUser;
+    // Dummy fun & niche data
     final Map<String, List<Map<String, String>>> funNicheData = {
-      'Tattoos or Unique Physical Traits': [
-        {'title': 'Anchor Tattoo', 'description': 'Small anchor on left wrist, symbolizing stability.', 'imageUrl': 'https://i.ibb.co/Zc01k23/tattoo1.jpg'},
-        {'title': 'Birthmark', 'description': 'Star-shaped birthmark on right shoulder.', 'imageUrl': 'https://i.ibb.co/pLg0L67/tattoo2.jpg'},
-        {'title': 'Dragon Sleeve', 'description': 'Intricate dragon design covering the entire left arm.', 'imageUrl': 'https://i.ibb.co/6y45sKq/tattoo3.jpg'},
-      ],
       'Favorite Things': [
-        {'category': 'Food', 'item': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.', 'imageUrl': 'https://i.ibb.co/y423n5P/fave-sushi.jpg'},
-        {'category': 'Place', 'item': 'Kyoto, Japan', 'description': 'Enjoys the tranquility and cultural richness.', 'imageUrl': 'https://i.ibb.co/c123h1j/fave-kyoto.jpg'},
-        {'category': 'Music Genre', 'item': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.', 'imageUrl': 'https://i.ibb.co/9y56g7F/fave-jazz.jpg'},
-      ],
-      'Hidden Talents': [
-        {'title': 'Juggling', 'description': 'Can juggle up to five objects simultaneously.', 'imageUrl': 'https://i.ibb.co/C0f11Kk/talent-juggling.jpg'}, // Placeholder image
-        {'title': 'Amateur Chef', 'description': 'Known among friends for cooking gourmet meals.', 'imageUrl': 'https://i.ibb.co/y4L2k2n/talent-chef.jpg'}, // Placeholder image
+        {'item': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.'},
+        {'item': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.'},
       ],
       'Fan Theories or Fan Interactions': [
         {'theory': 'Secret Album Theory', 'description': 'Fans speculate about a hidden album to be released on a specific date.'},
         {'interaction': 'Surprise Fan Meetup', 'description': 'Known for organizing spontaneous meetups with fans in different cities.'},
       ],
-      // 'Pets' section removed from here and moved to personal tab
     };
+
+    bool hasFunNicheItems = funNicheData.values.any((list) => list.isNotEmpty);
+    if (!hasFunNicheItems) {
+      return const Center(child: Text("No fun & niche items to display."));
+    }
 
     return SingleChildScrollView(
       child: Padding(
@@ -1487,122 +1032,35 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Tattoos or Unique Physical Traits (MODIFIED to horizontal list with images)
             _buildSectionHeader(
-                AppLocalizations.of(context)!.tattoos,
-                Icons.brush,
-                defaultTextColor,),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 170, // Height for horizontal list
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: (funNicheData['Tattoos or Unique Physical Traits'] ?? []).length,
-                itemBuilder: (context, index) {
-                  final item = funNicheData['Tattoos or Unique Physical Traits']![index];
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        _showItemPopupModal(
-                          context: context,
-                          imageUrl: item['imageUrl'],
-                          title: item['title']!,
-                          description: item['description']!,
-                        );
-                      },
-                      child: ImageWithOptionalText(
-                        width: 100,
-                        height: 150,
-                        imageUrl: item['imageUrl'],
-                        bottomText: item['title'],
-                      ),
-                    ),
-                  );
-                },
-              ),
+              'Favorite Things',
+              Icons.favorite_border,
+              defaultTextColor,
             ),
-            const SizedBox(height: 20),
-
-            // Favorite Things (MODIFIED to horizontal list with images)
-            _buildSectionHeader(
-                AppLocalizations.of(context)!.favoriteThings,
-                Icons.favorite_border,
-                defaultTextColor,),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 170, // Height for horizontal list
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: (funNicheData['Favorite Things'] ?? []).length,
-                itemBuilder: (context, index) {
-                  final item = funNicheData['Favorite Things']![index];
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        _showItemPopupModal(
-                          context: context,
-                          imageUrl: item['imageUrl'],
-                          title: '${item['category']}: ${item['item']}',
-                          description: item['description']!,
-                        );
-                      },
-                      child: ImageWithOptionalText(
-                        width: 100,
-                        height: 150,
-                        imageUrl: item['imageUrl'],
-                        bottomText: item['item'],
-                      ),
+            ... (funNicheData['Favorite Things'] ?? []).map((item) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item['item'] ?? '',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: defaultTextColor),
                     ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Hidden Talents (MODIFIED to horizontal list with images)
-            _buildSectionHeader(
-                AppLocalizations.of(context)!.hiddenTalents,
-                Icons.star_outline,
-                defaultTextColor),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 170, // Height for horizontal list
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: (funNicheData['Hidden Talents'] ?? []).length,
-                itemBuilder: (context, index) {
-                  final item = funNicheData['Hidden Talents']![index];
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        _showItemPopupModal(
-                          context: context,
-                          imageUrl: item['imageUrl'],
-                          title: item['title']!,
-                          description: item['description']!,
-                        );
-                      },
-                      child: ImageWithOptionalText(
-                        width: 100,
-                        height: 150,
-                        imageUrl: item['imageUrl'],
-                        bottomText: item['title'],
-                      ),
+                    Text(
+                      item['description'] ?? '',
+                      style: TextStyle(fontSize: 14, color: secondaryTextColor),
                     ),
-                  );
-                },
-              ),
-            ),
+                  ],
+                ),
+              );
+            }).toList(),
             const SizedBox(height: 20),
-
-            // Fan Theories or Fan Interactions
             _buildSectionHeader(
-                AppLocalizations.of(context)!.fanTheoriesInteractions,
-                Icons.people_outline,
-                defaultTextColor,),
+              AppLocalizations.of(context)!.fanTheoriesInteractions,
+              Icons.people_outline,
+              defaultTextColor,
+            ),
             ... (funNicheData['Fan Theories or Fan Interactions'] ?? []).map((item) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
@@ -1610,14 +1068,14 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      item['theory'] ?? item['interaction']!,
+                      item['theory'] ?? item['interaction'] ?? '',
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                           color: defaultTextColor),
                     ),
                     Text(
-                      item['description']!,
+                      item['description'] ?? '',
                       style: TextStyle(fontSize: 14, color: secondaryTextColor),
                     ),
                   ],
@@ -1630,5 +1088,38 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
       ),
     );
   }
-}
 
+  Widget _buildSectionHeader(
+      String title, IconData icon, Color defaultTextColor) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        children: [
+          Icon(icon, size: 24, color: defaultTextColor),
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: defaultTextColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getSocialIconPath(String platform) {
+    switch (platform) {
+      case 'Instagram':
+        return 'assets/icons/instagram_icon.png';
+      case 'Facebook':
+        return 'assets/icons/facebook_icon.png';
+      case 'TikTok':
+        return 'assets/icons/tiktok_icon.png';
+      default:
+        return '';
+    }
+  }
+}

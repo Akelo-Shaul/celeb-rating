@@ -146,6 +146,7 @@ class _ProfilePageState extends State<ProfilePage>
       borderRadius: BorderRadius.circular(20),
       backgroundColor: Theme.of(context).cardColor,
       child: ItemPopupModal(
+        isOwnProfile: isOwnProfile,
         imageUrl: imageUrl,
         title: title,
         description: description,
