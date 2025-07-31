@@ -869,6 +869,51 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                 ),
                 const SizedBox(height: 20),
               ], // Closing bracket for Relationships Section if
+              // Pets Section
+              if (celeb.pets.isNotEmpty) ...[
+                Text(
+                  AppLocalizations.of(context)!.pets,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: defaultTextColor,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 60,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: celeb.pets.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 12.0),
+                        child: GestureDetector(
+                          onTapDown: (details) {
+                            showProfileActionPopup(
+                              context: context,
+                              globalPosition: details.globalPosition,
+                              onReview: () {
+                                // Use empty list and dummy postId if not available
+                                _showCommentsModal(context, [], postId: 'profile');
+                              },
+                              onPreview: () {},
+                              onSalute: () {},
+                              onRate: (rating) {},
+                              currentRating: 0,
+                            );
+                          },
+                          child: ProfileAvatar(
+                            radius: 30,
+                            imageUrl: celeb.pets[index],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ], // Closing bracket for Pets Section
               // Education Section
               if (celeb.educationEntries.isNotEmpty) ...[
                 Text(
@@ -881,80 +926,68 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                 ),
                 const SizedBox(height: 10),
                 ...celeb.educationEntries.map((entry) {
-                  // entry: {'university': 'Princeton University', 'degrees': [ {title, year}, ... ] }
-                  final university = entry['university'] ?? '';
-                  final degrees = (entry['degrees'] as List?)?.cast<Map<String, String>>() ?? []; // Cast to correct type
+                  final institution = entry['institution'] ?? '';
+                  final qualifications = (entry['qualifications'] as List?) ?.cast<Map<String, String>>() ?? [];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      // This is the main Row for the icon and text content
+                      crossAxisAlignment: CrossAxisAlignment.start, // Align content to the top
                       children: [
-                        const SizedBox(width: 12),
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(Icons.school_outlined, size: 35, color: Color(0xFFD6AF0C)),
+                        ),
+                        const SizedBox(width: 12), // Add spacing between icon and text
                         Expanded(
+                          // This Expanded widget ensures the text content takes up remaining space
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                university,
+                                institution,
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: defaultTextColor,
                                 ),
                               ),
-                              ...degrees.map<Widget>((deg) {
+                              ...qualifications.map<Widget>((deg) {
                                 return Row(
                                   children: [
-                                    Container(
-                                      width: 40,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).cardColor,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: const Icon(Icons.school_outlined, size: 35, color: const Color(0xFFD6AF0C)), // Added const
-                                    ),
                                     Padding(
-                                      padding: const EdgeInsets.only(top: 4.0, left: 2.0),
-                                      child: GestureDetector(
-                                        onTapDown: (details) {
-                                          showProfileActionPopup(
-                                            context: context,
-                                            globalPosition: details.globalPosition,
-                                            onReview: () {
-                                              // Use empty list and dummy postId if not available
-                                              _showCommentsModal(context, [], postId: 'profile');
-                                            },
-                                            onPreview: () {},
-                                            onSalute: () {},
-                                            onRate: (rating) {},
-                                            currentRating: 0,
-                                          );
-                                        },
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              deg['title'] ?? '',
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w400,
-                                                color: defaultTextColor.withOpacity(0.85),
-                                              ),
+                                      padding: const EdgeInsets.only(
+                                          top: 4.0, left: 2.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            deg['title'] ?? '',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400,
+                                              color: defaultTextColor
+                                                  .withOpacity(0.85),
                                             ),
-                                            if (deg['year'] != null)
-                                              Padding(
-                                                padding: const EdgeInsets.only(top: 2.0),
-                                                child: Text(
-                                                  deg['year']!, // Use ! as checked for null
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    color: secondaryTextColor.withOpacity(0.7),
-                                                  ),
+                                          ),
+                                          if (deg['year'] != null)
+                                            Padding(
+                                              padding: const EdgeInsets.only(top: 2.0),
+                                              child: Text(
+                                                deg['year']!,
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: secondaryTextColor
+                                                      .withOpacity(0.7),
                                                 ),
                                               ),
-                                          ],
-                                        ),
+                                            ),
+                                        ],
                                       ),
                                     ),
                                   ],
@@ -1094,52 +1127,6 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                 }).toList(),
                 const SizedBox(height: 20),
               ], // Closing bracket for Involved Causes Section if
-
-              // Pets Section
-              if (celeb.pets.isNotEmpty) ...[
-                Text(
-                  AppLocalizations.of(context)!.pets,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: defaultTextColor,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 60,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: celeb.pets.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 12.0),
-                        child: GestureDetector(
-                          onTapDown: (details) {
-                            showProfileActionPopup(
-                              context: context,
-                              globalPosition: details.globalPosition,
-                              onReview: () {
-                                // Use empty list and dummy postId if not available
-                                _showCommentsModal(context, [], postId: 'profile');
-                              },
-                              onPreview: () {},
-                              onSalute: () {},
-                              onRate: (rating) {},
-                              currentRating: 0,
-                            );
-                          },
-                          child: ProfileAvatar(
-                            radius: 30,
-                            imageUrl: celeb.pets[index],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ], // Closing bracket for Pets Section if
 
               // Tattoos Section
               if (celeb.tattoos.isNotEmpty) ...[

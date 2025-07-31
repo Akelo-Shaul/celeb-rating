@@ -606,106 +606,115 @@ class _ProfilePageState extends State<ProfilePage>
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: items.map((item) {
-                          if (category == 'Awards') {
-                            final title = item['title'];
-                            final award = item['award'];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 2.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (title != null)
-                                    Text(title,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                            color: defaultTextColor)),
-                                  if (award != null)
-                                    Text(award,
-                                        style: TextStyle(
-                                            fontSize: 15,
-                                            color: defaultTextColor.withOpacity(0.8))),
-                                ],
-                              ),
-                            );
-                          } else if (category == 'Collaborations') {
-                            final title = item['title'];
-                            final subtitle = item['subtitle'];
-                            final type = item['type'];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 2.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (title != null)
-                                    Text(title,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                            color: defaultTextColor)),
-                                  if (subtitle != null)
-                                    Text(subtitle,
-                                        style: TextStyle(
-                                            fontSize: 15,
-                                            color: defaultTextColor.withOpacity(0.8))),
-                                  if (type != null)
-                                    Text(type,
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            color: defaultTextColor.withOpacity(0.7))),
-                                ],
-                              ),
-                            );
-                          } else if (category == 'Debut Work') {
-                            final title = item['title'];
-                            final subtitle = item['subtitle'];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (title != null)
-                                    Text(title,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                            color: defaultTextColor)),
-                                  if (subtitle != null) ...[
-                                    const SizedBox(height: 2),
-                                    Text(subtitle,
-                                        style: TextStyle(
-                                            fontSize: 15,
-                                            color: defaultTextColor.withOpacity(0.8))),
-                                  ],
-                                ],
-                              ),
-                            );
-                          } else {
-                            // Covers 'Profession' and any other general categories
-                            final title = item['title'];
-                            final subtitle = item['subtitle'];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 2.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (title != null)
-                                    Text(title,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                            color: defaultTextColor)),
-                                  if (subtitle != null)
-                                    Text(subtitle,
-                                        style: TextStyle(
-                                            fontSize: 15,
-                                            color: defaultTextColor.withOpacity(0.8))),
-                                ],
-                              ),
-                            );
-                          }
-                        }).toList(),
+                        children: [
+                          Text(
+                            category, // Use ! as celeb is non-null if isCelebrity is true
+                            style: TextStyle( fontSize: 13,color: isDark ? Colors.orange[300] : Colors.brown[300]),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: items.map((item) {
+                              if (category == 'Awards') {
+                                final title = item['title'];
+                                final award = item['award'];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 2.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      if (title != null)
+                                        Text(title,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: defaultTextColor)),
+                                      if (award != null)
+                                        Text(award,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: defaultTextColor.withOpacity(0.8))),
+                                    ],
+                                  ),
+                                );
+                              } else if (category == 'Collaborations') {
+                                final title = item['title'];
+                                final subtitle = item['subtitle'];
+                                final type = item['type'];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 2.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      if (title != null)
+                                        Text(title,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: defaultTextColor)),
+                                      if (subtitle != null)
+                                        Text(subtitle,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: defaultTextColor.withOpacity(0.8))),
+                                      if (type != null)
+                                        Text(type,
+                                            style: TextStyle(
+                                                fontSize: 13,
+                                                color: defaultTextColor.withOpacity(0.7))),
+                                    ],
+                                  ),
+                                );
+                              } else if (category == 'Debut Work') {
+                                final title = item['title'];
+                                final subtitle = item['subtitle'];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      if (title != null)
+                                        Text(title,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: defaultTextColor)),
+                                      if (subtitle != null) ...[
+                                        const SizedBox(height: 2),
+                                        Text(subtitle,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: defaultTextColor.withOpacity(0.8))),
+                                      ],
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                // Covers 'Profession' and any other general categories
+                                final title = item['title'];
+                                final subtitle = item['subtitle'];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 2.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      if (title != null)
+                                        Text(title,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: defaultTextColor)),
+                                      if (subtitle != null)
+                                        Text(subtitle,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: defaultTextColor.withOpacity(0.8))),
+                                    ],
+                                  ),
+                                );
+                              }
+                            }).toList(),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -1500,8 +1509,8 @@ class _ProfilePageState extends State<ProfilePage>
               ),
               const SizedBox(height: 10),
               ...celeb.educationEntries.map((entry) {
-                final university = entry['university'] ?? '';
-                final degrees = (entry['degrees'] as List?) ?.cast<Map<String, String>>() ?? [];
+                final institution = entry['institution'] ?? '';
+                final qualifications = (entry['qualifications'] as List?) ?.cast<Map<String, String>>() ?? [];
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: Row(
@@ -1524,14 +1533,14 @@ class _ProfilePageState extends State<ProfilePage>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              university,
+                              institution,
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: defaultTextColor,
                               ),
                             ),
-                            ...degrees.map<Widget>((deg) {
+                            ...qualifications.map<Widget>((deg) {
                               return Row(
                                 children: [
                                   Padding(
