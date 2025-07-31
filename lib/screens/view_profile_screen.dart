@@ -21,6 +21,7 @@ import '../widgets/post_card.dart';
 import '../widgets/profile_avatar.dart';
 import '../widgets/image_optional_text.dart';
 import '../utils/profile_action_popup.dart';
+import '../widgets/profile_preview_modal_content.dart';
 
 class ViewProfilePage extends StatefulWidget {
   final User user;
@@ -74,7 +75,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
 
     showSlideUpDialog(
       context: context,
-      height: MediaQuery.of(context).size.height * 0.45,
+      height:460,
       width: MediaQuery.of(context).size.width * 0.9,
       borderRadius: BorderRadius.circular(20),
       backgroundColor: Theme.of(context).cardColor,
@@ -244,59 +245,49 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                   const SizedBox(height: 5),
                   Text(
                     'Profession', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
                   ),
                   Text(
                     isCelebrity ? celeb!.occupation : '', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
                   const SizedBox(height: 5),
                   Text(
                     'Nationality', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
                   ),
                   Text(
                     isCelebrity ? celeb!.nationality : '', // Use !
-                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
                   const SizedBox(height: 5),
                   Text(
                     'Place of Birth', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
                   ),
                   Text(
                     isCelebrity && celeb != null ? celeb.hometown : '',
-                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
                   const SizedBox(height: 5),
                   Text(
                     'Date Of Birth', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
                   ),
                   Text(
                     user.dob != null
                         ? DateFormat('MMMM d, y').format(user.dob) // Format as "July 31, 2025"
                         : '',
-                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
                   const SizedBox(height: 5),
                   Text(
                     'Zodiac Sign', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
                   ),
                   Text(
                     isCelebrity ? celeb!.zodiacSign : '', // Use !
-                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: List.generate(5, (index) {
-                      return Icon(
-                        index < 4 ? Icons.star : Icons.star_border,
-                        color: const Color(0xFFD6AF0C),
-                        size: 20,
-                      );
-                    }),
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
                 ],
               ),
@@ -319,10 +310,21 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                       ],
                     ],
                   ),
+                  const SizedBox(height: 6,),
+                  Row(
+                    children: List.generate(5, (index) {
+                      return Icon(
+                        index < 4 ? Icons.star : Icons.star_border,
+                        color: const Color(0xFFD6AF0C),
+                        size: 20,
+                      );
+                    }),
+                  ),
                 ],
               ),
             ],
           ),
+          const SizedBox(height: 10,),
           Text(
             isCelebrity ? celeb!.bio : '', // Use !
             style: TextStyle(color: defaultTextColor),
@@ -781,20 +783,10 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Sign
-              Text(
-                '${AppLocalizations.of(context)!.sign}: ${celeb.zodiacSign}',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: defaultTextColor,
-                ),
-              ),
-              const SizedBox(height: 20),
-              // Relationships Section
+              // Family Section
               if (celeb.relationships.isNotEmpty) ...[
                 Text(
-                  'Family and relationships',
+                  'Family',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -808,39 +800,67 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                     scrollDirection: Axis.horizontal,
                     itemCount: celeb.relationships.length,
                     itemBuilder: (context, index) {
+                      final relationship = celeb.relationships[index];
                       return Padding(
                         padding: const EdgeInsets.only(right: 12.0),
                         child: GestureDetector(
-                          onTapDown: (details) {
-                            showProfileActionPopup(
+                          onTap: () {
+                            _showProfilePreviewModal(
                               context: context,
-                              globalPosition: details.globalPosition,
-                              onReview: () {
-                                // Use empty list and dummy postId if not available
-                                _showCommentsModal(context, [], postId: 'profile');
+                              userName: "Relationship ${index + 1}", // Replace with actual name if available
+                              userProfession: "Friend", // Replace with actual relationship type if available
+                              userProfileImageUrl: relationship,
+                              onViewProfile: () {
+                                // Add navigation to profile view here
                               },
-                              onSalute: () {},
-                              onPreview: () {
-                                // Check for null before accessing user properties
-                                if (widget.user != null) {
-                                  _showProfilePreviewModal(
-                                    context: context,
-                                    userName: widget.user.fullName, // Removed !
-                                    userProfession: widget.user is CelebrityUser ? (widget.user as CelebrityUser).occupation : '',
-                                    userProfileImageUrl: widget.user.profileImageUrl, // Removed !
-                                    onViewProfile: () {
-                                      // Optionally handle view profile action
-                                    },
-                                  );
-                                }
-                              },
-                              onRate: (rating) {},
-                              currentRating: 0,
                             );
                           },
                           child: ProfileAvatar(
                             radius: 30,
-                            imageUrl: celeb.relationships[index],
+                            imageUrl: relationship,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ], // Closing bracket for Relationships Section if
+              // Relationships Section
+              if (celeb.relationships.isNotEmpty) ...[
+                Text(
+                  'Relationship',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: defaultTextColor,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 60,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: celeb.relationships.length,
+                    itemBuilder: (context, index) {
+                      final relationship = celeb.relationships[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 12.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            _showProfilePreviewModal(
+                              context: context,
+                              userName: "Relationship ${index + 1}", // Replace with actual name if available
+                              userProfession: "Friend", // Replace with actual relationship type if available
+                              userProfileImageUrl: relationship,
+                              onViewProfile: () {
+                                // Add navigation to profile view here
+                              },
+                            );
+                          },
+                          child: ProfileAvatar(
+                            radius: 30,
+                            imageUrl: relationship,
                           ),
                         ),
                       );
@@ -1711,256 +1731,3 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
   }
 }
 
-class ProfilePreviewModalContent extends StatelessWidget {
-  final String userName;
-  final String userProfession;
-  final String? userProfileImageUrl;
-  final VoidCallback? onViewProfile;
-  final Color? defaultTextColor;
-  final Color? secondaryTextColor;
-  final Color? appPrimaryColor;
-
-  const ProfilePreviewModalContent({
-    Key? key,
-    required this.userName,
-    required this.userProfession,
-    this.userProfileImageUrl,
-    this.onViewProfile,
-    this.defaultTextColor,
-    this.secondaryTextColor,
-    this.appPrimaryColor,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final Color _defaultTextColor = defaultTextColor ?? (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black);
-    final Color _secondaryTextColor = secondaryTextColor ?? (Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600);
-    final Color _appPrimaryColor = appPrimaryColor ?? Theme.of(context).primaryColor;
-    final localizations = AppLocalizations.of(context)!;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            ProfileAvatar(radius: 30, imageUrl: userProfileImageUrl ?? 'https://via.placeholder.com/150'),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        userName,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: _defaultTextColor,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      const Icon(Icons.verified, color: Colors.orange, size: 18), // Added const
-                    ],
-                  ),
-                  Text(
-                    userProfession,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: _secondaryTextColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            ElevatedButton(
-              onPressed: onViewProfile ?? () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _appPrimaryColor,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              child: Text(
-                localizations.viewProfile,
-                style: const TextStyle(color: Colors.white, fontSize: 12),
-              ),
-            ),
-          ],
-        ),
-        // This Expanded SizedBox was preventing the lower content from rendering if the modal height was constrained.
-        // It's usually not needed unless you specifically want the content to push down.
-        // For a modal with Column, minAxisSize: MainAxisSize.min is better.
-        // const Expanded(
-        //   child: SizedBox(),
-        // ),
-        const SizedBox(height: 20), // Add some spacing here instead
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          decoration: BoxDecoration(
-            color: _defaultTextColor.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            userName, // This seems to be a placeholder, you might want a bio or description here
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: _defaultTextColor,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ControversyCarousel extends StatefulWidget {
-  final List<Map<String, dynamic>> controversyMedia;
-  final Color defaultTextColor;
-  final Color cardColor;
-  const _ControversyCarousel({
-    required this.controversyMedia,
-    required this.defaultTextColor,
-    required this.cardColor,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<_ControversyCarousel> createState() => _ControversyCarouselState();
-}
-
-class _ControversyCarouselState extends State<_ControversyCarousel> {
-  int _currentIndex = 0;
-
-  void _goLeft() {
-    setState(() {
-      _currentIndex = (_currentIndex - 1 + widget.controversyMedia.length) % widget.controversyMedia.length;
-    });
-  }
-
-  void _goRight() {
-    setState(() {
-      _currentIndex = (_currentIndex + 1) % widget.controversyMedia.length;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (widget.controversyMedia.isEmpty) {
-      return const SizedBox.shrink(); // Don't build if no media
-    }
-
-    final cont = widget.controversyMedia[_currentIndex];
-    final List media = cont['media'] ?? [];
-    final String controversy = cont['controversy'] ?? '';
-    const double cardWidth = 120; // Added const
-    const double cardHeight = 100; // Added const
-    const double spacing = 8; // Added const
-
-    Widget buildMediaBox(String url, {bool isVideo = false}) {
-      return Container(
-        width: cardWidth,
-        height: cardHeight,
-        decoration: BoxDecoration(
-          color: widget.cardColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: widget.defaultTextColor.withOpacity(0.2)),
-        ),
-        child: isVideo
-            ? Center(child: Icon(Icons.play_circle_fill, size: 50, color: Colors.grey[400])) // Adjusted icon color
-            : ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.network(
-            url,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 50, color: Colors.grey),
-          ),
-        ),
-      );
-    }
-
-    List<Widget> buildGrid() {
-      if (media.length == 1) {
-        final url = media[0].toString(); // Ensure it's a string
-        final isVideo = url.endsWith('.mp4');
-        return [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              buildMediaBox(url, isVideo: isVideo),
-            ],
-          ),
-        ];
-      } else if (media.length == 2) {
-        return [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              buildMediaBox(media[0].toString(), isVideo: media[0].toString().endsWith('.mp4')),
-              const SizedBox(width: spacing), // Added const
-              buildMediaBox(media[1].toString(), isVideo: media[1].toString().endsWith('.mp4')),
-            ],
-          ),
-        ];
-      } else if (media.length >= 3) {
-        // 2x2 grid: left column (2 rows), right column (1 row, full height)
-        return [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Left column (2 rows)
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  buildMediaBox(media[0].toString(), isVideo: media[0].toString().endsWith('.mp4')),
-                  const SizedBox(height: spacing), // Added const
-                  buildMediaBox(media[1].toString(), isVideo: media[1].toString().endsWith('.mp4')),
-                ],
-              ),
-              const SizedBox(width: spacing), // Added const
-              // Right column (one media, full height)
-              // Ensure this Container correctly wraps the media box and fits its content
-              SizedBox( // Changed to SizedBox for explicit dimensions
-                width: cardWidth,
-                height: cardHeight * 2 + spacing,
-                child: buildMediaBox(media[2].toString(), isVideo: media[2].toString().endsWith('.mp4')),
-              ),
-            ],
-          ),
-        ];
-      }
-      return [];
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          controversy,
-          style: TextStyle(fontSize: 14, color: widget.defaultTextColor, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: Icon(Icons.arrow_left, color: widget.defaultTextColor),
-              onPressed: widget.controversyMedia.length > 1 ? _goLeft : null,
-            ),
-            // Correctly spread the list of widgets returned by buildGrid()
-            ...buildGrid(),
-            IconButton(
-              icon: Icon(Icons.arrow_right, color: widget.defaultTextColor),
-              onPressed: widget.controversyMedia.length > 1 ? _goRight : null,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}

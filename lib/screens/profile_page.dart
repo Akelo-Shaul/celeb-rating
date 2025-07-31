@@ -20,6 +20,7 @@ import '../widgets/comments_modal.dart';
 import '../widgets/item_popup_modal.dart';
 import '../widgets/post_card.dart';
 import '../widgets/profile_avatar.dart';
+import '../widgets/profile_preview_modal_content.dart';
 
 class ProfilePage extends StatefulWidget {
   // Added userId parameter to enable viewing other user profiles
@@ -108,17 +109,17 @@ class _ProfilePageState extends State<ProfilePage>
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultTextColor = isDark ? Colors.white : Colors.black;
-    final secondaryTextColor =
-    isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
     final appPrimaryColor = Theme.of(context).primaryColor;
 
     showSlideUpDialog(
       context: context,
-      height: MediaQuery.of(context).size.height * 0.45,
+      height:460,
       width: MediaQuery.of(context).size.width * 0.9,
       borderRadius: BorderRadius.circular(20),
       backgroundColor: Theme.of(context).cardColor,
       child: ProfilePreviewModalContent(
+        isOwnProfile: isOwnProfile,
         userName: userName,
         userProfession: userProfession,
         userProfileImageUrl: userProfileImageUrl,
@@ -281,59 +282,49 @@ class _ProfilePageState extends State<ProfilePage>
                   const SizedBox(height: 5),
                   Text(
                     'Profession', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
                   ),
                   Text(
                     isCelebrity && celeb != null ? celeb.occupation : '',
-                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
                   const SizedBox(height: 5),
                   Text(
                     'Nationality', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
                   ),
                   Text(
                     isCelebrity && celeb != null ? celeb.nationality : '',
-                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
                   const SizedBox(height: 5),
                   Text(
                     'Place of Birth', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
                   ),
                   Text(
                     isCelebrity && celeb != null ? celeb.hometown : '',
-                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
                   const SizedBox(height: 5),
                   Text(
                     'Date Of Birth', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
                   ),
                   Text(
                     isCelebrity && celeb?.dob != null 
                         ? DateFormat('MMMM d, y').format(celeb!.dob) // Format as "July 31, 2025"
                         : '',
-                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
                   const SizedBox(height: 5),
                   Text(
                     'Zodiac Sign', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
                   ),
                   Text(
                     isCelebrity && celeb != null ? celeb.zodiacSign : '',
-                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: List.generate(5, (index) {
-                      return Icon(
-                        index < 4 ? Icons.star : Icons.star_border,
-                        color: const Color(0xFFD6AF0C),
-                        size: 20,
-                      );
-                    }),
+                    style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
                 ],
               ),
@@ -397,10 +388,21 @@ class _ProfilePageState extends State<ProfilePage>
                       ],
                     ),
                   ),
+                  const SizedBox(height: 6,),
+                  Row(
+                    children: List.generate(5, (index) {
+                      return Icon(
+                        index < 4 ? Icons.star : Icons.star_border,
+                        color: const Color(0xFFD6AF0C),
+                        size: 20,
+                      );
+                    }),
+                  ),
                 ],
               ),
             ],
           ),
+          const SizedBox(height: 10,),
           Text(
             isCelebrity && celeb != null ? celeb.bio : '',
             style: TextStyle(color: defaultTextColor),
@@ -1226,13 +1228,78 @@ class _ProfilePageState extends State<ProfilePage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Sign
-              Text(
-                '${AppLocalizations.of(context)!.zodiacSign}: ${celeb.zodiacSign}',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: defaultTextColor,
+              // Relationships Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Family',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: defaultTextColor,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add_circle_outline,
+                        color: Color(0xFFD6AF0C)),
+                    tooltip: 'Add Family',
+                    onPressed: () async {
+                      await showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        isDismissible: true,
+                        enableDrag: true,
+                        useSafeArea: true,
+                        builder: (context) => PopScope(
+                          canPop: true,
+                          onPopInvoked: (didPop) {
+                            if (!didPop) {
+                              Navigator.pop(context);
+                            }
+                          },
+                          child: AddRelationshipModal(
+                            onAdd: (family) {
+                              // TODO: Add logic to update dummy data
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 60,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: celeb.relationships.length,
+                  itemBuilder: (context, index) {
+                    final relationship = celeb.relationships[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          _showProfilePreviewModal(
+                            context: context,
+                            userName: "Relationship ${index + 1}", // Replace with actual name if available
+                            userProfession: "Friend", // Replace with actual relationship type if available
+                            userProfileImageUrl: relationship,
+                            onViewProfile: () {
+                              // Add navigation to profile view here
+                            },
+                          );
+                        },
+                        child: ProfileAvatar(
+                          radius: 30,
+                          imageUrl: celeb.relationships[index],
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
               const SizedBox(height: 20),
@@ -1241,7 +1308,7 @@ class _ProfilePageState extends State<ProfilePage>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Family and relationships',
+                    'Relationships',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -1286,22 +1353,20 @@ class _ProfilePageState extends State<ProfilePage>
                   scrollDirection: Axis.horizontal,
                   itemCount: celeb.relationships.length,
                   itemBuilder: (context, index) {
+                    final relationship = celeb.relationships[index];
                     return Padding(
                       padding: const EdgeInsets.only(right: 12.0),
                       child: GestureDetector(
-                        onTapDown: (details) {
-                          // Existing _showProfilePreviewModal for relationships
-                          if (user != null) {
-                            _showProfilePreviewModal(
-                              context: context,
-                              userName: user!.fullName, // Placeholder, should be the relationship's name
-                              userProfession: 'Relation', // Placeholder
-                              userProfileImageUrl: celeb.relationships[index], // The relationship image URL
-                              onViewProfile: () {
-                                // Optionally handle view profile action
-                              },
-                            );
-                          }
+                        onTap: () {
+                          _showProfilePreviewModal(
+                            context: context,
+                            userName: "Relationship ${index + 1}", // Replace with actual name if available
+                            userProfession: "Friend", // Replace with actual relationship type if available
+                            userProfileImageUrl: relationship,
+                            onViewProfile: () {
+                              // Add navigation to profile view here
+                            },
+                          );
                         },
                         child: ProfileAvatar(
                           radius: 30,
@@ -1928,110 +1993,6 @@ class _ProfilePageState extends State<ProfilePage>
   }
 }
 
-// Dummy classes for demonstration purposes
-class ProfilePreviewModalContent extends StatelessWidget {
-  final String userName;
-  final String userProfession;
-  final String? userProfileImageUrl;
-  final VoidCallback? onViewProfile;
-  final Color defaultTextColor;
-  final Color secondaryTextColor;
-  final Color appPrimaryColor;
-
-  const ProfilePreviewModalContent({
-    super.key,
-    required this.userName,
-    required this.userProfession,
-    this.userProfileImageUrl,
-    this.onViewProfile,
-    required this.defaultTextColor,
-    required this.secondaryTextColor,
-    required this.appPrimaryColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              ProfileAvatar(imageUrl: userProfileImageUrl, radius: 40),
-              const SizedBox(height: 10),
-              Text(
-                userName,
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: defaultTextColor),
-              ),
-              Text(
-                userProfession,
-                style: TextStyle(fontSize: 14, color: secondaryTextColor),
-              ),
-              const SizedBox(height: 20),
-              // NEW: Action buttons for Profile Preview Modal
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.favorite_border, color: defaultTextColor),
-                        onPressed: () {
-                          // Handle like for profile
-                        },
-                      ),
-                      Text('Salute', style: TextStyle(color: secondaryTextColor)),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.comment_outlined, color: defaultTextColor),
-                        onPressed: () {
-                          // Handle comment for profile
-                        },
-                      ),
-                      Text('comment', style: TextStyle(color: secondaryTextColor)),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.share, color: defaultTextColor),
-                        onPressed: () {
-                          // Handle share for profile
-                        },
-                      ),
-                      Text('share', style: TextStyle(color: secondaryTextColor)),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: onViewProfile,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: appPrimaryColor,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                ),
-                child: Text(AppLocalizations.of(context)!.viewProfile),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 // Dummy class for ImageWithOptionalText (assuming it's a shared widget)
 class ImageWithOptionalText extends StatelessWidget {
