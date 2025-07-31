@@ -17,6 +17,7 @@ import '../widgets/add_relationship_modal.dart';
 import '../widgets/add_fun_niche_modal.dart';
 import '../widgets/app_buttons.dart';
 import '../widgets/comments_modal.dart';
+import '../widgets/image_optional_text.dart';
 import '../widgets/item_popup_modal.dart';
 import '../widgets/post_card.dart';
 import '../widgets/profile_avatar.dart';
@@ -857,7 +858,14 @@ class _ProfilePageState extends State<ProfilePage>
                         return Padding(
                           padding: const EdgeInsets.only(right: 12.0),
                           child: GestureDetector(
-                            onTapDown: (details) {}, // Wealth items don't trigger item_popup
+                            onTap: () {
+                              _showItemPopupModal(
+                                context: context,
+                                imageUrl: item['imageUrl'],
+                                title: item['title']!,
+                                description: item['description']!,
+                              );
+                            }, // Wealth items don't trigger item_popup
                             child: ImageWithOptionalText(
                               width: 100,
                               height: 150,
@@ -1997,76 +2005,6 @@ class _ProfilePageState extends State<ProfilePage>
             const SizedBox(height: 20),
           ],
         ),
-      ),
-    );
-  }
-}
-
-
-// Dummy class for ImageWithOptionalText (assuming it's a shared widget)
-class ImageWithOptionalText extends StatelessWidget {
-  final double width;
-  final double height;
-  final String? imageUrl;
-  final String? bottomText;
-  final bool isVideo; // New parameter to indicate if the media is a video
-
-  const ImageWithOptionalText({
-    super.key,
-    required this.width,
-    required this.height,
-    this.imageUrl,
-    this.bottomText,
-    this.isVideo = false, // Default to false
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: BorderRadius.circular(12),
-        image: imageUrl != null && imageUrl!.isNotEmpty && !isVideo
-            ? DecorationImage(
-          image: NetworkImage(imageUrl!),
-          fit: BoxFit.cover,
-        )
-            : null,
-      ),
-      child: Stack(
-        children: [
-          if (imageUrl == null || imageUrl!.isEmpty)
-            Center(
-              child: Icon(
-                isVideo ? Icons.videocam : Icons.image,
-                size: 50,
-                color: Colors.grey[600],
-              ),
-            ),
-          if (bottomText != null)
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                width: double.infinity,
-                padding:
-                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.6),
-                  borderRadius: const BorderRadius.vertical(
-                      bottom: Radius.circular(12)),
-                ),
-                child: Text(
-                  bottomText!,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-        ],
       ),
     );
   }

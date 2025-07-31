@@ -98,7 +98,6 @@ class CelebrityUser extends User {
   final List<Map<String, dynamic>> talents;
   final List<Map<String, dynamic>> socials;
   final String publicImageDescription;
-  final List<Map<String, dynamic>> controversyMedia;
   final Map<String, List<Map<String, dynamic>>> fashionStyle;
   final String hometown; // Added hometown field
 
@@ -138,7 +137,6 @@ class CelebrityUser extends User {
     required this.talents,
     required this.socials,
     required this.publicImageDescription,
-    required this.controversyMedia,
     required this.fashionStyle,
     required DateTime dob, // dob is passed correctly here
     required this.hometown, // Added hometown to constructor

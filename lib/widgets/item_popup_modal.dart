@@ -1,17 +1,32 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 
-class ItemPopupModal extends StatelessWidget {
+class ItemPopupModal extends StatefulWidget {
   final String? imageUrl;
   final String title;
   final String description;
+  final Function()? onReview;
+  final Function()? onShare;
+  final Function()? onSalute;
+  final bool isOwnProfile;
 
   const ItemPopupModal({
     super.key,
     this.imageUrl,
     required this.title,
-    required this.description,
+    required this.description, this.onReview, this.onShare, this.onSalute,
+    this.isOwnProfile = false,
   });
+
+  @override
+  State<ItemPopupModal> createState() => _ItemPopupModalState();
+}
+
+class _ItemPopupModalState extends State<ItemPopupModal> {
+
+  bool _isSaluted = false;
+  int _currentRating = 0;
+  bool _hasRated = false;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +57,7 @@ class ItemPopupModal extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            title,
+            widget.title,
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -50,69 +65,203 @@ class ItemPopupModal extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          if (imageUrl != null && imageUrl!.isNotEmpty)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                imageUrl!,
-                height: 200,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  height: 200,
-                  color: Colors.grey[300],
-                  child: Icon(Icons.broken_image, size: 50, color: Colors.grey[600]),
+          Expanded(
+            child: SizedBox(
+              width: double.infinity,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: defaultTextColor.withOpacity(0.05),
+                    image: DecorationImage(
+                      image: NetworkImage(widget.imageUrl ?? 'https://via.placeholder.com/150'),
+                      fit: BoxFit.cover,
+                      onError: (exception, stackTrace) => const AssetImage('assets/images/profile_placeholder.png'),
+                    ),
+                  ),
                 ),
               ),
             ),
+          ),
           const SizedBox(height: 10),
           Text(
-            description,
+            widget.description,
             style: TextStyle(
               fontSize: 16,
               color: secondaryTextColor,
             ),
           ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
+          const SizedBox(height: 16),
+          if (!widget.isOwnProfile) ...[
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: defaultTextColor.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(5, (index) {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _currentRating = index + 1;
+                        _hasRated = true;
+                        widget.onReview?.call();
+                      });
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('You rated ${widget.title} ${index + 1} stars!'),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: Icon(
+                        Icons.star_rounded,
+                        color: index < _currentRating ? const Color(0xFFD6AF0C) : Colors.grey[400],
+                        size: 30,
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              decoration: BoxDecoration(
+                color: defaultTextColor.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  IconButton(
-                    icon: Icon(Icons.favorite_border, color: defaultTextColor),
-                    onPressed: () {
-                      // Handle like
+                  _ActionButton(
+                    onTap: (){},
+                    icon: Icons.rate_review_outlined,
+                    label: _hasRated ? '$_currentRating ★' : 'Review',
+                    isActive: _hasRated,
+                  ),
+                  _ActionButton(
+                    imageAsset: _isSaluted ? 'assets/icons/saluted.png' : 'assets/icons/salute.png',
+                    label: _isSaluted ? 'Saluted' : 'Salute',
+                    isActive: _isSaluted,
+                    onTap: () {
+                      setState(() {
+                        _isSaluted = !_isSaluted;
+                      });
+                      widget.onSalute?.call();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(_isSaluted ? 'Saluted ${widget.title}' : 'Removed salute'),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
                     },
                   ),
-                  Text('salute', style: TextStyle(color: secondaryTextColor)),
-                ],
-              ),
-              Column(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.comment_outlined, color: defaultTextColor),
-                    onPressed: () {
-                      // Handle comment
+                  _ActionButton(
+                    icon: Icons.share_outlined,
+                    label: 'Share',
+                    onTap: () {
+                      widget.onShare?.call();
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) => Container(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ListTile(
+                                leading: const Icon(Icons.copy),
+                                title: const Text('Copy Link'),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Link copied to clipboard')),
+                                  );
+                                },
+                              ),
+                              ListTile(
+                                leading: const Icon(Icons.share),
+                                title: const Text('Share Profile'),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  // Implement system share
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
                     },
                   ),
-                  Text('comment', style: TextStyle(color: secondaryTextColor)),
                 ],
               ),
-              Column(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.share, color: defaultTextColor),
-                    onPressed: () {
-                      // Handle share
-                    },
-                  ),
-                  Text('share', style: TextStyle(color: secondaryTextColor)),
-                ],
-              ),
-            ],
-          ),
+            ),
+          ],
         ],
+      ),
+    );
+  }
+}
+
+
+class _ActionButton extends StatelessWidget {
+  final IconData? icon;
+  final String? imageAsset;
+  final String label;
+  final VoidCallback onTap;
+  final bool isActive;
+
+  const _ActionButton({
+    Key? key,
+    this.icon,
+    this.imageAsset,
+    required this.label,
+    required this.onTap,
+    this.isActive = false,
+  }) : assert(icon != null || imageAsset != null, 'Either icon or imageAsset must be provided'),
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultColor = isDark ? Colors.white : Colors.black87;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null)
+              Icon(
+                icon,
+                color: isActive ? const Color(0xFFD6AF0C) : defaultColor,
+                size: 24,
+              )
+            else if (imageAsset != null)
+              Image.asset(
+                imageAsset!,
+                width: 24,
+                height: 24,
+              ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: isActive ? const Color(0xFFD6AF0C) : defaultColor,
+                fontSize: 12,
+                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

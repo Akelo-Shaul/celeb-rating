@@ -365,39 +365,6 @@ class UserService {
 
       final String publicImageDescription = 'Known for philanthropy and well spoken. A public Icon with a great following and fans';
 
-      final List<Map<String, dynamic>> controversyMedia = [
-        {
-          'controversy': 'Beef with Richard Holgrain',
-          'media': [
-            'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
-            'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-          ],
-        },
-        {
-          'controversy': 'Dispute with Label XYZ',
-          'media': [
-            'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
-            'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-            'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-            'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-          ],
-        },
-        {
-          'controversy': 'Scammed users',
-          'media': [
-            'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
-            'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-            'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-          ],
-        },
-        {
-          'controversy': 'Fraud',
-          'media': [
-            'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
-          ],
-        },
-      ];
-
       final Map<String, List<Map<String, dynamic>>> fashionStyle = {
         'vintage': [
           {'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
@@ -512,7 +479,6 @@ class UserService {
         talents: talents,
         socials: socials,
         publicImageDescription: publicImageDescription,
-        controversyMedia: controversyMedia,
         fashionStyle: fashionStyle,
       );
     }

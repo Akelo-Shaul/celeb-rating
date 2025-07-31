@@ -1276,7 +1276,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
   }
 
 
-  Widget _buildSectionHeader(String title, IconData icon, Color textColor, VoidCallback onAddPressed) {
+  Widget _buildSectionHeader(String title, IconData icon, Color textColor) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -1293,11 +1293,6 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
               ),
             ),
           ],
-        ),
-        IconButton(
-          icon: const Icon(Icons.add_circle_outline, color: Color(0xFFD6AF0C)),
-          tooltip: 'Add $title',
-          onPressed: onAddPressed,
         ),
       ],
     );
@@ -1319,9 +1314,6 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
         (social['title']?.isNotEmpty ?? false) ||
             (social['link']?.isNotEmpty ?? false)) ||
             celeb.publicImageDescription.isNotEmpty ||
-            celeb.controversyMedia.any((controversy) =>
-            (controversy['controversy']?.isNotEmpty ?? false) ||
-                ((controversy['media'] as List?)?.isNotEmpty == true)) ||
             celeb.fashionStyle.entries.any((entry) =>
                 entry.value.any((item) =>
                 (item['imageUrl']?.isNotEmpty ?? false)));
@@ -1404,14 +1396,10 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
 
             // Fashion Style Section
             if (celeb.fashionStyle.isNotEmpty) ...[
-              Text(
+              _buildSectionHeader(
                 AppLocalizations.of(context)!.fashionStyle,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: defaultTextColor,
-                ),
-              ),
+                Icons.whatshot,
+                defaultTextColor,),
               const SizedBox(height: 10),
               ...celeb.fashionStyle.entries.map((entry) {
                 if (entry.value.isEmpty) return const SizedBox.shrink();
@@ -1451,28 +1439,6 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                 );
               }).toList(),
             ],
-
-            // Fan Theories & Interactions Button
-            Center(
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: appPrimaryColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-                child: Text(
-                  AppLocalizations.of(context)!.fanTheoriesInteractions,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
             const SizedBox(height: 20),
           ],
         ),
@@ -1525,20 +1491,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
             _buildSectionHeader(
                 AppLocalizations.of(context)!.tattoos,
                 Icons.brush,
-                defaultTextColor,
-                    () async {
-                  await showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => AddFunNicheModal(
-                      sectionTitle: AppLocalizations.of(context)!.tattoos,
-                      onAdd: (item) {
-                        // TODO: Add logic to update dummy data
-                      },
-                    ),
-                  );
-                }),
+                defaultTextColor,),
             const SizedBox(height: 10),
             SizedBox(
               height: 170, // Height for horizontal list
@@ -1575,20 +1528,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
             _buildSectionHeader(
                 AppLocalizations.of(context)!.favoriteThings,
                 Icons.favorite_border,
-                defaultTextColor,
-                    () async {
-                  await showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => AddFunNicheModal(
-                      sectionTitle: AppLocalizations.of(context)!.favoriteThings,
-                      onAdd: (item) {
-                        // TODO: Add logic to update dummy data
-                      },
-                    ),
-                  );
-                }),
+                defaultTextColor,),
             const SizedBox(height: 10),
             SizedBox(
               height: 170, // Height for horizontal list
@@ -1625,20 +1565,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
             _buildSectionHeader(
                 AppLocalizations.of(context)!.hiddenTalents,
                 Icons.star_outline,
-                defaultTextColor,
-                    () async {
-                  await showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => AddFunNicheModal(
-                      sectionTitle: AppLocalizations.of(context)!.hiddenTalents,
-                      onAdd: (item) {
-                        // TODO: Add logic to update dummy data
-                      },
-                    ),
-                  );
-                }),
+                defaultTextColor),
             const SizedBox(height: 10),
             SizedBox(
               height: 170, // Height for horizontal list
@@ -1675,20 +1602,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
             _buildSectionHeader(
                 AppLocalizations.of(context)!.fanTheoriesInteractions,
                 Icons.people_outline,
-                defaultTextColor,
-                    () async {
-                  await showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => AddFunNicheModal(
-                      sectionTitle: AppLocalizations.of(context)!.fanTheoriesInteractions,
-                      onAdd: (item) {
-                        // TODO: Add logic to update dummy data
-                      },
-                    ),
-                  );
-                }),
+                defaultTextColor,),
             ... (funNicheData['Fan Theories or Fan Interactions'] ?? []).map((item) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),

@@ -48,7 +48,6 @@ class SearchService {
       favouritePlaces: [{'name': 'Paris', 'reason': 'First concert'}],
       talents: [{'talent': 'Singing', 'details': 'Five octave range'}],
       socials: [{'title': 'reddit', 'link': 'https://www.reddit.com/user/celeb'}],
-      controversyMedia: [{'title': 'None', 'year': '2025'}],
       fashionStyle: {
         'casual': [{'style': 'Bohemian', 'description': 'Earth tones'}]
       },
@@ -103,7 +102,6 @@ class SearchService {
       favouritePlaces: [{'name': 'New Orleans', 'reason': 'Jazz roots'}],
       talents: [{'talent': 'Saxophone', 'details': 'Jazz improvisation'}],
       socials: [{'title': 'tiktok', 'link': 'https://www.tiktok.com/@celeb'}],
-      controversyMedia: [{'title': 'None', 'year': '2025'}],
       fashionStyle: {
         'formal': [{'style': 'Classic', 'description': 'Suits and fedoras'}]
       },
@@ -146,7 +144,6 @@ class SearchService {
       favouritePlaces: [{'name': 'London', 'reason': 'First gig'}],
       talents: [{'talent': 'Guitar', 'details': 'Lead guitarist'}],
       socials: [{'title': 'reddit', 'link': 'https://www.reddit.com/user/celeb'}],
-      controversyMedia: [{'title': 'Hotel incident', 'year': '2020'}],
       fashionStyle: {
         'stage': [{'style': 'Rock', 'description': 'Leather and studs'}]
       },

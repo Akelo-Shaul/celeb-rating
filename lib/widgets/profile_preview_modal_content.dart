@@ -278,7 +278,6 @@ class _ActionButton extends StatelessWidget {
                 imageAsset!,
                 width: 24,
                 height: 24,
-                color: isActive ? const Color(0xFFD6AF0C) : defaultColor,
               ),
             const SizedBox(height: 4),
             Text(
