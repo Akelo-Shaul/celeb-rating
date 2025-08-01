@@ -756,4 +756,10 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get nationality => 'Uraia';
+
+  @override
+  String get edit => 'Hariri';
+
+  @override
+  String get delete => 'Futa';
 }

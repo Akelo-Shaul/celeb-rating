@@ -202,6 +202,49 @@ class _ItemPopupModalState extends State<ItemPopupModal> {
               ),
             ),
           ],
+
+          if (widget.isOwnProfile) ...[
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // TODO: Implement edit profile logic or navigation
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Edit profile tapped')),
+                    );
+                  },
+                  icon: const Icon(Icons.edit, size: 18),
+                  label: Text(AppLocalizations.of(context)!.edit ?? 'Edit'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // TODO: Implement delete profile logic
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Delete profile tapped')),
+                    );
+                  },
+                  icon: const Icon(Icons.delete_outline, size: 18),
+                  label: Text(AppLocalizations.of(context)!.delete ?? 'Delete'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );

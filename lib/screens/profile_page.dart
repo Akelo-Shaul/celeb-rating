@@ -612,21 +612,37 @@ class _ProfilePageState extends State<ProfilePage>
                                 final award = item['award'];
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 2.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      if (title != null)
-                                        Text(title,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
-                                                color: defaultTextColor)),
-                                      if (award != null)
-                                        Text(award,
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                color: defaultTextColor.withOpacity(0.8))),
-                                    ],
+                                  child: Expanded(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            if (title != null)
+                                              Text(title,
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 16,
+                                                      color: defaultTextColor)),
+                                            if (award != null)
+                                              Text(award,
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: defaultTextColor.withOpacity(0.8))),
+                                          ],
+                                        ),
+
+                                        IconButton(
+                                          icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
+                                          tooltip: 'Edit Awards',
+                                          onPressed: (){
+                                            //TODO: Add edit lifestyle
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 );
                               } else if (category == 'Collaborations') {
@@ -635,26 +651,41 @@ class _ProfilePageState extends State<ProfilePage>
                                 final type = item['type'];
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 2.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      if (title != null)
-                                        Text(title,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
-                                                color: defaultTextColor)),
-                                      if (subtitle != null)
-                                        Text(subtitle,
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                color: defaultTextColor.withOpacity(0.8))),
-                                      if (type != null)
-                                        Text(type,
-                                            style: TextStyle(
-                                                fontSize: 13,
-                                                color: defaultTextColor.withOpacity(0.7))),
-                                    ],
+                                  child: Expanded(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            if (title != null)
+                                              Text(title,
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 16,
+                                                      color: defaultTextColor)),
+                                            if (subtitle != null)
+                                              Text(subtitle,
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: defaultTextColor.withOpacity(0.8))),
+                                            if (type != null)
+                                              Text(type,
+                                                  style: TextStyle(
+                                                      fontSize: 13,
+                                                      color: defaultTextColor.withOpacity(0.7))),
+                                          ],
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
+                                          tooltip: 'Edit lifestyle',
+                                          onPressed: (){
+                                            //TODO: Add edit lifestyle
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 );
                               } else if (category == 'Debut Work') {
@@ -662,23 +693,38 @@ class _ProfilePageState extends State<ProfilePage>
                                 final subtitle = item['subtitle'];
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      if (title != null)
-                                        Text(title,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
-                                                color: defaultTextColor)),
-                                      if (subtitle != null) ...[
-                                        const SizedBox(height: 2),
-                                        Text(subtitle,
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                color: defaultTextColor.withOpacity(0.8))),
+                                  child: Expanded(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            if (title != null)
+                                              Text(title,
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 16,
+                                                      color: defaultTextColor)),
+                                            if (subtitle != null) ...[
+                                              const SizedBox(height: 2),
+                                              Text(subtitle,
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: defaultTextColor.withOpacity(0.8))),
+                                            ],
+                                          ],
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
+                                          tooltip: 'Edit lifestyle',
+                                          onPressed: (){
+                                            //TODO: Add edit lifestyle
+                                          },
+                                        ),
                                       ],
-                                    ],
+                                    ),
                                   ),
                                 );
                               } else {
@@ -846,8 +892,8 @@ class _ProfilePageState extends State<ProfilePage>
                               _showItemPopupModal(
                                 context: context,
                                 imageUrl: item['imageUrl'],
-                                title: item['title']!,
-                                description: item['description']!,
+                                title: item['name']!,
+                                description: item['name']!,
                               );
                             }, // Wealth items don't trigger item_popup
                             child: ImageWithOptionalText(
@@ -954,36 +1000,49 @@ class _ProfilePageState extends State<ProfilePage>
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Image.asset(
-                      _getSocialIconPath(item['platform']!),
-                      height: 30,
-                      width: 30,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Icon(Icons.public, size: 24, color: Colors.grey);
-                      },
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
                       children: [
-                        Text(
-                          '${item['platform']}: ${item['followers']}',
-                          style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: defaultTextColor),
+                        Image.asset(
+                          _getSocialIconPath(item['platform']!),
+                          height: 30,
+                          width: 30,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(Icons.public, size: 24, color: Colors.grey);
+                          },
                         ),
-                        if (item['link'] != null)
-                          GestureDetector(
-                            onTap: () => _launchSocialLink(item['link']!),
-                            child: Text(
-                              item['link']!,
-                              style: const TextStyle(
-                                  color: Colors.blue, decoration: TextDecoration.underline),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${item['platform']}: ${item['followers']}',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: defaultTextColor),
                             ),
-                          ),
+                            if (item['link'] != null)
+                              GestureDetector(
+                                onTap: () => _launchSocialLink(item['link']!),
+                                child: Text(
+                                  item['link']!,
+                                  style: const TextStyle(
+                                      color: Colors.blue, decoration: TextDecoration.underline),
+                                ),
+                              ),
+                          ],
+                        ),
                       ],
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
+                      tooltip: 'Edit lifestyle',
+                      onPressed: (){
+                        //TODO: Add edit lifestyle
+                      },
                     ),
                   ],
                 ),
@@ -1012,19 +1071,32 @@ class _ProfilePageState extends State<ProfilePage>
             ... (publicPersonaData['Public Image / Reputation'] ?? []).map((item) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
-                child: Column(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      item['title']!,
-                      style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: defaultTextColor),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item['title']!,
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: defaultTextColor),
+                        ),
+                        Text(
+                          item['description']!,
+                          style: TextStyle(fontSize: 14, color: secondaryTextColor),
+                        ),
+                      ],
                     ),
-                    Text(
-                      item['description']!,
-                      style: TextStyle(fontSize: 14, color: secondaryTextColor),
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
+                      tooltip: 'Edit lifestyle',
+                      onPressed: (){
+                        //TODO: Add edit lifestyle
+                      },
                     ),
                   ],
                 ),
@@ -1153,19 +1225,32 @@ class _ProfilePageState extends State<ProfilePage>
             ... (publicPersonaData['Quotes or Public Statements'] ?? []).map((item) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
-                child: Column(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      item['quote'] ?? item['interaction']!,
-                      style: TextStyle(
-                          fontSize: 15,
-                          fontStyle: FontStyle.italic,
-                          color: defaultTextColor),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item['quote'] ?? item['interaction']!,
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontStyle: FontStyle.italic,
+                              color: defaultTextColor),
+                        ),
+                        Text(
+                          '- ${item['context']}',
+                          style: TextStyle(fontSize: 13, color: secondaryTextColor),
+                        ),
+                      ],
                     ),
-                    Text(
-                      '- ${item['context']}',
-                      style: TextStyle(fontSize: 13, color: secondaryTextColor),
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
+                      tooltip: 'Edit lifestyle',
+                      onPressed: (){
+                        //TODO: Add edit lifestyle
+                      },
                     ),
                   ],
                 ),
@@ -1413,53 +1498,66 @@ class _ProfilePageState extends State<ProfilePage>
                       const SizedBox(width: 12), // Add spacing between icon and text
                       Expanded(
                         // This Expanded widget ensures the text content takes up remaining space
-                        child: Column(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              institution,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: defaultTextColor,
-                              ),
-                            ),
-                            ...qualifications.map<Widget>((deg) {
-                              return Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 4.0, left: 2.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          deg['title'] ?? '',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w400,
-                                            color: defaultTextColor
-                                                .withOpacity(0.85),
-                                          ),
-                                        ),
-                                        if (deg['year'] != null)
-                                          Padding(
-                                            padding: const EdgeInsets.only(top: 2.0),
-                                            child: Text(
-                                              deg['year']!,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  institution,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: defaultTextColor,
+                                  ),
+                                ),
+                                ...qualifications.map<Widget>((deg) {
+                                  return Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 4.0, left: 2.0),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              deg['title'] ?? '',
                                               style: TextStyle(
-                                                fontSize: 13,
-                                                color: secondaryTextColor
-                                                    .withOpacity(0.7),
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400,
+                                                color: defaultTextColor
+                                                    .withOpacity(0.85),
                                               ),
                                             ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }).toList(),
+                                            if (deg['year'] != null)
+                                              Padding(
+                                                padding: const EdgeInsets.only(top: 2.0),
+                                                child: Text(
+                                                  deg['year']!,
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: secondaryTextColor
+                                                        .withOpacity(0.7),
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                              ],
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
+                              tooltip: 'Edit Education',
+                              onPressed: (){
+                                //TODO: Add edit lifestyle
+                              },
+                            ),
                           ],
                         ),
                       ),
@@ -1572,49 +1670,6 @@ class _ProfilePageState extends State<ProfilePage>
                       ),
                     );
                   }),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.involvedCauses,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle_outline,
-                        color: Color(0xFFD6AF0C)),
-                    tooltip: 'Add Involved Causes',
-                    onPressed: () async {
-                      await showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        isDismissible: true,
-                        enableDrag: true,
-                        useSafeArea: true,
-                        builder: (context) => PopScope(
-                          canPop: true,
-                          onPopInvoked: (didPop) {
-                            if (!didPop) {
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: AddPersonaModal(
-                            sectionTitle: AppLocalizations.of(context)!.involvedCauses,
-                            onAdd: (cause) {
-                              // TODO: Add logic to update dummy data
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
               const SizedBox(height: 10),
               ...celeb.involvedCauses.map((cause) {
                 return Padding(
@@ -1631,22 +1686,37 @@ class _ProfilePageState extends State<ProfilePage>
                         // Icon here if needed
                       ),
                       const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            cause['name'] ?? '',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: defaultTextColor,
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  cause['name'] ?? '',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: defaultTextColor,
+                                  ),
+                                ),
+                                Text(
+                                  cause['role'] ?? '',
+                                  style: TextStyle(fontSize: 14, color: secondaryTextColor),
+                                ),
+                              ],
                             ),
-                          ),
-                          Text(
-                            cause['role'] ?? '',
-                            style: TextStyle(fontSize: 14, color: secondaryTextColor),
-                          ),
-                        ],
+                            IconButton(
+                              icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
+                              tooltip: 'Edit lifestyle',
+                              onPressed: (){
+                                //TODO: Add edit lifestyle
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -1849,19 +1919,34 @@ class _ProfilePageState extends State<ProfilePage>
             ... celeb.fanTheoriesOrInteractions.map((item) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
-                child: Column(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      item['theory'] ?? item['interaction']!,
-                      style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: defaultTextColor),
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item['theory'] ?? item['interaction']!,
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: defaultTextColor),
+                          ),
+                          Text(
+                            item['description']!,
+                            style: TextStyle(fontSize: 14, color: secondaryTextColor),
+                          ),
+                        ],
+                      ),
                     ),
-                    Text(
-                      item['description']!,
-                      style: TextStyle(fontSize: 14, color: secondaryTextColor),
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
+                      tooltip: 'Edit lifestyle',
+                      onPressed: (){
+                        //TODO: Add edit lifestyle
+                      },
                     ),
                   ],
                 ),

@@ -282,5 +282,7 @@
   "next": "Next",
   "bio": "Bio",
   "website": "Website",
-  "nationality": "Nationality"
+  "nationality": "Nationality",
+  "edit": "Edit",
+  "delete": "Delete"
 }

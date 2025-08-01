@@ -913,8 +913,8 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                               _showItemPopupModal(
                                 context: context,
                                 imageUrl: item['imageUrl'],
-                                title: item['title']!,
-                                description: item['description']!,
+                                title: item['name']!,
+                                description: item['name']!,
                               );
                             }, // Wealth items don't trigger item_popup
                             child: ImageWithOptionalText(
