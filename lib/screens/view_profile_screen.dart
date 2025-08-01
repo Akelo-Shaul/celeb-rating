@@ -22,6 +22,7 @@ import '../widgets/profile_avatar.dart';
 import '../widgets/image_optional_text.dart';
 import '../utils/profile_action_popup.dart';
 import '../widgets/profile_preview_modal_content.dart';
+import '../widgets/share_modal.dart';
 
 class ViewProfilePage extends StatefulWidget {
   final User user;
@@ -177,7 +178,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
-                expandedHeight: 430.0, // Estimated height of header content
+                expandedHeight: 400.0, // Estimated height of header content
                 floating: true,
                 pinned: true,
                 automaticallyImplyLeading: false,
@@ -242,37 +243,37 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                       color: secondaryTextColor,
                     ),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 2),
                   Text(
                     'Profession', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 12),
                   ),
                   Text(
                     isCelebrity ? celeb!.occupation : '', // Use ! as celeb is non-null if isCelebrity is true
                     style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 2),
                   Text(
                     'Nationality', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 12),
                   ),
                   Text(
                     isCelebrity ? celeb!.nationality : '', // Use !
                     style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 2),
                   Text(
                     'Place of Birth', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 12),
                   ),
                   Text(
                     isCelebrity && celeb != null ? celeb.hometown : '',
                     style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 2),
                   Text(
                     'Date Of Birth', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 12),
                   ),
                   Text(
                     user.dob != null
@@ -280,10 +281,10 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                         : '',
                     style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 2),
                   Text(
                     'Zodiac Sign', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 12),
                   ),
                   Text(
                     isCelebrity ? celeb!.zodiacSign : '', // Use !
@@ -479,7 +480,13 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
     }
     return ListView.builder(
       itemCount: posts.length,
-      itemBuilder: (context, i) => PostCard(post: posts[i], showFollowButton: false),
+      itemBuilder: (context, i) => PostCard(
+        post: posts[i],
+        showFollowButton: false,
+        onSharePressed: (post){
+          showShareModal(context, post);
+        },
+      ),
     );
   }
 
@@ -890,7 +897,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                   _buildSectionHeader(
                     localizedCategory,
                     icon,
-                    defaultTextColor,),
+                    Color(0xFFD6AF0C),),
                   const SizedBox(height: 10),
                   SizedBox(
                     height: 170,
@@ -1117,7 +1124,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
             _buildSectionHeader(
                 AppLocalizations.of(context)!.socialMediaPresence,
                 Icons.public,
-                defaultTextColor,),
+              Color(0xFFD6AF0C),),
 
             _buildSocialIcons(),
             const SizedBox(height: 20),
@@ -1126,7 +1133,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
             _buildSectionHeader(
                 AppLocalizations.of(context)!.publicImageReputation,
                 Icons.stars,
-                defaultTextColor,),
+              Color(0xFFD6AF0C),),
             ... celeb.publicImageDescription.map((item) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
@@ -1154,7 +1161,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
             _buildSectionHeader(
                 AppLocalizations.of(context)!.fashionStyle,
                 Icons.whatshot,
-                defaultTextColor,),
+              Color(0xFFD6AF0C),),
             const SizedBox(height: 10),
             ...celeb.fashionStyle.entries.map((entry) {
               return Column(
@@ -1198,7 +1205,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
             _buildSectionHeader(
                 AppLocalizations.of(context)!.redCarpetMoments,
                 Icons.movie_filter,
-                defaultTextColor,),
+              Color(0xFFD6AF0C),),
             const SizedBox(height: 10),
             SizedBox(
               height: 170, // Height for horizontal list
@@ -1235,7 +1242,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
             _buildSectionHeader(
                 AppLocalizations.of(context)!.quotesPublicStatements,
                 Icons.format_quote,
-                defaultTextColor,),
+              Color(0xFFD6AF0C),),
             ... celeb.quotesAndPublicStatements.map((item) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),

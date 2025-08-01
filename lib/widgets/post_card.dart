@@ -18,7 +18,8 @@ class PostCard extends StatefulWidget {
   final Post post;
   final ValueNotifier<bool>? feedMuteNotifier; // Add this for feed mute state
   final bool showFollowButton;
-  const PostCard({super.key, required this.post, this.feedMuteNotifier, this.showFollowButton = true});
+  final Function(Post) onSharePressed;
+  const PostCard({super.key, required this.post, this.feedMuteNotifier, this.showFollowButton = true, required this.onSharePressed});
 
   @override
   State<PostCard> createState() => _PostCardState();
@@ -562,6 +563,7 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
             GestureDetector(
               onTap: (){
                 //TODO: Show share functionality and modal
+                widget.onSharePressed(widget.post);
               },
               child: Column(
                 children: [

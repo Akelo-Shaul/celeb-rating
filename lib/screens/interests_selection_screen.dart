@@ -78,48 +78,14 @@ class _InterestsSelectionScreenState extends State<InterestsSelectionScreen> wit
   }
 
   Future<bool> _handleSwipe(int index, int? previousIndex, CardSwiperDirection direction) {
-    // This callback is triggered when a card is swiped away by the user or programmatically.
-    // `previousIndex` is the index of the card that was *just swiped*.
-    // We can use this to perform actions related to that card before it's gone.
-
-    // If you need to log or perform an action based on *which* card was swiped,
-    // and what the intent was (e.g., if a right swipe explicitly means "like"),
-    // you would do that here using `_celebrities[previousIndex]`.
-    // However, the current request is for *any* swipe to just advance.
-    // So, no specific action based on direction here, just letting the card disappear.
-
-    // The core logic for navigating to FeedScreen when all cards are gone:
-    // When a card is swiped, `cardsCount` in `CardSwiper` automatically decreases.
-    // The `_celebrities` list is also being managed by _toggleFollow.
-    // A more robust check for the "last card" scenario is to check the *next* current index.
-    // If the next index is the same as the total count of cards (meaning no more cards),
-    // then navigate.
-    if (index == _celebrities.length -1 && previousIndex == _celebrities.length -1 ) {
-      // This means the last available card (previousIndex) was just swiped,
-      // and now the 'current' index would technically point beyond the list.
-      // We navigate if there are no more celebrities *after* this swipe.
-      if (_celebrities.isEmpty || (previousIndex != null && previousIndex == _celebrities.length -1 && index >= _celebrities.length - 1)) {
-        // Delay to allow swipe animation to finish
-        Future.delayed(const Duration(milliseconds: 300), () {
-          if (mounted) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const FeedScreen()),
-            );
-          }
-        });
-        return Future.value(true);
-      }
+    // When all cards are swiped, trigger skip functionality (navigate to feed)
+    if (index == _celebrities.length - 1) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          _onSkipCelebritiesTab();
+        }
+      });
     }
-    // Simplest way: if the list becomes empty after a swipe, navigate.
-    // This assumes _toggleFollow or other logic correctly removes items from _celebrities.
-    Future.delayed(const Duration(milliseconds: 200), () {
-      if (mounted && _celebrities.isEmpty) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const FeedScreen()),
-        );
-      }
-    });
-
     return Future.value(true); // Always allow the swipe to complete
   }
 
@@ -128,9 +94,6 @@ class _InterestsSelectionScreenState extends State<InterestsSelectionScreen> wit
     if (id == null) return;
     setState(() {
       _following[id] = true;
-      // Remove followed celebrity from the list to update the card stack
-      // This will cause `cardsCount` in CardSwiper to decrease.
-      _celebrities.removeWhere((celeb) => celeb.id == id);
     });
   }
 
@@ -138,24 +101,24 @@ class _InterestsSelectionScreenState extends State<InterestsSelectionScreen> wit
   // The 'last card' navigation is handled by `_handleSwipe` after the programmatic swipe.
 
   void _onFollow(int index) {
-    // Explicitly follow the user
-    if (index < _celebrities.length) { // Ensure index is valid before accessing
-      _toggleFollow(_celebrities[index].id);
+    // Mark as followed and advance to next card
+    if (index < _celebrities.length) {
+      final id = _celebrities[index].id;
+      _toggleFollow(id);
+      _cardController.swipe(CardSwiperDirection.right);
     }
-    // Then simulate a swipe to remove the card and advance
-    _cardController.swipe(CardSwiperDirection.right); // Simulate a right swipe for follow
   }
 
   void _onLike(int index) {
-    // Implement like logic here
+    // Optionally mark as liked, then advance
     print('User liked celebrity: ${_celebrities[index].fullName}');
-    _cardController.swipe(CardSwiperDirection.top); // Simulate a swipe up for like/dismiss
+    _cardController.swipe(CardSwiperDirection.top);
   }
 
   void _onDislike(int index) {
-    // Implement dislike logic here
+    // Optionally mark as disliked, then advance
     print('User disliked celebrity: ${_celebrities[index].fullName}');
-    _cardController.swipe(CardSwiperDirection.bottom); // Simulate a swipe down for dislike/dismiss
+    _cardController.swipe(CardSwiperDirection.bottom);
   }
 
   void _onSkipCelebritiesTab() {
@@ -290,7 +253,7 @@ class _InterestsSelectionScreenState extends State<InterestsSelectionScreen> wit
                                 style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 28, fontWeight: FontWeight.w900),
                               ),
                             ),
-                            const SizedBox(height: 8,),
+                            const SizedBox(height: 30,),
                             Expanded(
                               child: CardSwiper(
                                 controller: _cardController,

@@ -36,6 +36,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
     'Business',
     'Technology'
   ];
+  
   String? _selectedCelebrityField;
 
   // Socials list

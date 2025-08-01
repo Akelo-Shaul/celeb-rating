@@ -171,7 +171,7 @@ class _ProfilePreviewModalContentState extends State<ProfilePreviewModalContent>
                 _ActionButton(
                   onTap: (){},
                   icon: Icons.rate_review_outlined,
-                  label: _hasRated ? '$_currentRating ★' : 'Review',
+                  label: _hasRated ? '$_currentRating ★' : 'Comment',
                   isActive: _hasRated,
                 ),
                 _ActionButton(

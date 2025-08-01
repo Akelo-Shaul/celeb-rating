@@ -12,6 +12,7 @@ import '../widgets/app_dropdown.dart';
 import '../widgets/notification_button.dart';
 import '../widgets/post_card.dart';
 import '../widgets/profile_avatar.dart';
+import '../widgets/share_modal.dart';
 import '../widgets/video_player_widget.dart';
 
 class FeedScreen extends StatefulWidget {
@@ -263,6 +264,9 @@ class _FeedScreenState extends State<FeedScreen> {
           post: posts[i],
           feedMuteNotifier: feedMuteNotifier,
           showFollowButton: true,
+          onSharePressed: (post){
+            showShareModal(context, post);
+          },
         ),
       ),
     );

@@ -303,6 +303,7 @@ class _CelebratePostTab extends StatefulWidget {
 }
 
 class _CelebratePostTabState extends State<_CelebratePostTab> {
+  late final String _randomHintText;
   final TextEditingController _captionController = TextEditingController();
   final TextEditingController _categorySearchController = TextEditingController();
   String _categorySearch = '';
@@ -320,6 +321,16 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
   void initState() {
     super.initState();
     _captionController.addListener(_onCaptionChanged);
+
+    // Set a random hint text for the caption field
+    final hintOptions = [
+      'Celebrate the moment — who’s caught your eye?',
+      'Raise the curtain — let’s celebrate greatness!',
+      'Give a standing ovation — who’s earned it?',
+      'Start a conversation with someone who inspires you.'
+    ];
+    hintOptions.shuffle();
+    _randomHintText = hintOptions.first;
   }
 
   void _onSearchChanged(String query) async {
@@ -587,19 +598,19 @@ class _CelebratePostTabState extends State<_CelebratePostTab> {
               ),
             ),
             Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               child: TextField(
                 controller: _captionController,
                 decoration: InputDecoration(
                   border: InputBorder.none,
-                  hintText: localizations.captionHint ?? 'What is on your mind?',
-                          hintStyle: const TextStyle(fontSize: 18, color: Colors.black87, fontWeight: FontWeight.w500),
-                          contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                  hintText: _randomHintText,
+                  hintStyle: const TextStyle(fontSize: 18, color: Colors.black87, fontWeight: FontWeight.w500),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                 ),
                 style: const TextStyle(fontSize: 18, color: Colors.black),
-                        maxLines: 2,
-                      ),
-                    ),
+                maxLines: 2,
+              ),
+            ),
                   ],
                 ),
               ),

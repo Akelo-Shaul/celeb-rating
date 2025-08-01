@@ -113,7 +113,12 @@ class _AppDatePickerState extends State<AppDatePicker> {
         _selectedDate = picked;
         _dateController.text = DateFormat.yMMMd().format(_selectedDate!);
       });
-      // widget.onDateSelected(_selectedDate);
+      widget.onDateSelected(_selectedDate);
+      // After selecting, trigger validation
+      Future.delayed(Duration(milliseconds: 50), () {
+        final form = Form.of(context);
+        if (form != null) form.validate();
+      });
     }
   }
 
@@ -126,7 +131,7 @@ class _AppDatePickerState extends State<AppDatePicker> {
         child: TextFormField(
           controller: _dateController,
           readOnly: true, // Make it read-only
-          validator: widget.validator,
+          validator: (_) => widget.validator?.call(_selectedDate?.toIso8601String()),
           style: TextStyle(color: isDark ? Colors.white : Colors.black),
           decoration: InputDecoration(
             hintText: widget.labelText,

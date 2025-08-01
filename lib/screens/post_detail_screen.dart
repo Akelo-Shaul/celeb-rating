@@ -1,3 +1,4 @@
+import 'package:celebrating/widgets/share_modal.dart';
 import 'package:flutter/material.dart';
 import '../models/post.dart';
 import '../widgets/post_card.dart';
@@ -16,7 +17,12 @@ class PostDetailScreen extends StatelessWidget {
       body: ListView.builder(
         itemCount: allPosts.length,
         itemBuilder: (context, i) {
-          return PostCard(post: allPosts[i]);
+          return PostCard(
+              post: allPosts[i],
+            onSharePressed: (post){
+                showShareModal(context, post);
+            },
+          );
         },
       ),
     );

@@ -22,6 +22,7 @@ import '../widgets/item_popup_modal.dart';
 import '../widgets/post_card.dart';
 import '../widgets/profile_avatar.dart';
 import '../widgets/profile_preview_modal_content.dart';
+import '../widgets/share_modal.dart';
 
 class ProfilePage extends StatefulWidget {
   // Added userId parameter to enable viewing other user profiles
@@ -203,7 +204,7 @@ class _ProfilePageState extends State<ProfilePage>
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
-                expandedHeight: 450.0, // Estimated height of header content
+                expandedHeight: 430.0, // Estimated height of header content
                 floating: true,
                 pinned: true,
                 snap: true, // Optional: for snapping effect
@@ -265,37 +266,37 @@ class _ProfilePageState extends State<ProfilePage>
                       color: secondaryTextColor,
                     ),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 2),
                   Text(
                     'Profession', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 12),
                   ),
                   Text(
                     isCelebrity && celeb != null ? celeb.occupation : '',
                     style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 2),
                   Text(
                     'Nationality', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 12),
                   ),
                   Text(
                     isCelebrity && celeb != null ? celeb.nationality : '',
                     style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 2),
                   Text(
                     'Place of Birth', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 12),
                   ),
                   Text(
                     isCelebrity && celeb != null ? celeb.hometown : '',
                     style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 2),
                   Text(
                     'Date Of Birth', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 12),
                   ),
                   Text(
                     isCelebrity && celeb?.dob != null 
@@ -303,10 +304,10 @@ class _ProfilePageState extends State<ProfilePage>
                         : '',
                     style: TextStyle(color: defaultTextColor, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 2),
                   Text(
                     'Zodiac Sign', // Use ! as celeb is non-null if isCelebrity is true
-                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 12),
                   ),
                   Text(
                     isCelebrity && celeb != null ? celeb.zodiacSign : '',
@@ -555,7 +556,13 @@ class _ProfilePageState extends State<ProfilePage>
     return ListView.builder(
       itemCount: posts.length,
       itemBuilder: (context, i) =>
-          PostCard(post: posts[i], showFollowButton: false),
+          PostCard(
+            post: posts[i],
+            showFollowButton: false,
+            onSharePressed: (post){
+              showShareModal(context, post);
+            },
+          ),
     );
   }
 
@@ -782,56 +789,48 @@ class _ProfilePageState extends State<ProfilePage>
               final items = wealthData[categoryKey] ?? [];
               if (items.isEmpty) return const SizedBox.shrink();
               String localizedCategory;
+              IconData icon;
               switch (categoryKey) {
                 case 'Cars':
                   localizedCategory = localizations.categoryValueCar;
+                  icon = Icons.directions_car_sharp;
                   break;
                 case 'Houses':
                   localizedCategory = localizations.categoryValueHouse;
+                  icon = Icons.house;
                   break;
                 case 'Art Collection':
                   localizedCategory = localizations.categoryValueArt;
+                  icon = Icons.brush_outlined;
                   break;
                 case 'Watch Collection':
                   localizedCategory = localizations.categoryValueJewelry;
+                  icon = Icons.watch;
                   break;
                 default:
                   localizedCategory = categoryKey;
+                  icon = Icons.category_outlined;
               }
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        localizedCategory,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: defaultTextColor,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.add_circle_outline,
-                            color: Color(0xFFD6AF0C)),
-                        tooltip: 'Add Wealth',
-                        onPressed: () async {
-                          await showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            builder: (context) => AddWealthItemModal(
-                              sectionTitle: localizedCategory,
-                              onAdd: (item) {
-                                // TODO: Add logic to update data
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                  _buildSectionHeader(
+                      localizedCategory,
+                      icon,
+                      Color(0xFFD6AF0C),
+                          () async {
+                        await showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => AddWealthItemModal(
+                            sectionTitle: localizedCategory,
+                            onAdd: (item) {
+                              // TODO: Add logic to update data
+                            },
+                          ),
+                        );
+                      }),
                   const SizedBox(height: 10),
                   SizedBox(
                     height: 170,
@@ -937,7 +936,7 @@ class _ProfilePageState extends State<ProfilePage>
             _buildSectionHeader(
                 AppLocalizations.of(context)!.socialMediaPresence,
                 Icons.public,
-                defaultTextColor,
+                Color(0xFFD6AF0C),
                     () async {
                   await showModalBottomSheet(
                     context: context,
@@ -996,7 +995,7 @@ class _ProfilePageState extends State<ProfilePage>
             _buildSectionHeader(
                 AppLocalizations.of(context)!.publicImageReputation,
                 Icons.stars,
-                defaultTextColor,
+                Color(0xFFD6AF0C),
                     () async {
                   await showModalBottomSheet(
                     context: context,
@@ -1037,7 +1036,7 @@ class _ProfilePageState extends State<ProfilePage>
             _buildSectionHeader(
                 AppLocalizations.of(context)!.fashionStyle,
                 Icons.whatshot,
-                defaultTextColor,
+                Color(0xFFD6AF0C),
                     () async {
                   await showModalBottomSheet(
                     context: context,
@@ -1087,7 +1086,7 @@ class _ProfilePageState extends State<ProfilePage>
             _buildSectionHeader(
                 AppLocalizations.of(context)!.redCarpetMoments,
                 Icons.movie_filter,
-                defaultTextColor,
+                Color(0xFFD6AF0C),
                     () async {
                   await showModalBottomSheet(
                     context: context,
@@ -1137,7 +1136,7 @@ class _ProfilePageState extends State<ProfilePage>
             _buildSectionHeader(
                 AppLocalizations.of(context)!.quotesPublicStatements,
                 Icons.format_quote,
-                defaultTextColor,
+                Color(0xFFD6AF0C),
                     () async {
                   await showModalBottomSheet(
                     context: context,
@@ -1558,7 +1557,7 @@ class _ProfilePageState extends State<ProfilePage>
               _buildSectionHeader(
                   AppLocalizations.of(context)!.involvedCauses,
                   Icons.volunteer_activism,
-                  defaultTextColor,
+                  Color(0xFFD6AF0C),
                       () async {
                     await showModalBottomSheet(
                       context: context,
@@ -1683,7 +1682,7 @@ class _ProfilePageState extends State<ProfilePage>
             _buildSectionHeader(
                 AppLocalizations.of(context)!.tattoos,
                 Icons.brush,
-                defaultTextColor,
+                Color(0xFFD6AF0C),
                     () async {
                   await showModalBottomSheet(
                     context: context,
@@ -1733,7 +1732,7 @@ class _ProfilePageState extends State<ProfilePage>
             _buildSectionHeader(
                 AppLocalizations.of(context)!.favoriteThings,
                 Icons.favorite_border,
-                defaultTextColor,
+                Color(0xFFD6AF0C),
                     () async {
                   await showModalBottomSheet(
                     context: context,
@@ -1783,7 +1782,7 @@ class _ProfilePageState extends State<ProfilePage>
             _buildSectionHeader(
                 AppLocalizations.of(context)!.hiddenTalents,
                 Icons.star_outline,
-                defaultTextColor,
+                Color(0xFFD6AF0C),
                     () async {
                   await showModalBottomSheet(
                     context: context,
@@ -1833,7 +1832,7 @@ class _ProfilePageState extends State<ProfilePage>
             _buildSectionHeader(
                 AppLocalizations.of(context)!.fanTheoriesInteractions,
                 Icons.people_outline,
-                defaultTextColor,
+                Color(0xFFD6AF0C),
                     () async {
                   await showModalBottomSheet(
                     context: context,
