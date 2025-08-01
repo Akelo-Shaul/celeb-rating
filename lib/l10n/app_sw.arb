@@ -280,5 +280,9 @@
   "selectTypeValidation": "Tafadhali chagua aina ili kuendelea",
   "takePhoto": "Piga Picha",
   "dateOfBirth": "Tarehe ya Kuzaliwa",
-  "dobRequired": "Tarehe ya kuzaliwa inahitajika"
+  "dobRequired": "Tarehe ya kuzaliwa inahitajika",
+  "next": "Ifuatayo",
+  "bio": "Wasifu",
+  "website": "Tovuti",
+  "nationality": "Uraia"
 }

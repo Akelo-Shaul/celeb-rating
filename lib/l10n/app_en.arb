@@ -278,5 +278,9 @@
   "selectTypeValidation": "Please select a type to continue",
   "takePhoto": "Take Photo",
   "dateOfBirth": "Date of Birth",
-  "dobRequired": "Date of birth is required"
+  "dobRequired": "Date of birth is required",
+  "next": "Next",
+  "bio": "Bio",
+  "website": "Website",
+  "nationality": "Nationality"
 }

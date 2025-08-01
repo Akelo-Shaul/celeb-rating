@@ -744,4 +744,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dobRequired => 'Date of birth is required';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get bio => 'Bio';
+
+  @override
+  String get website => 'Website';
+
+  @override
+  String get nationality => 'Nationality';
 }

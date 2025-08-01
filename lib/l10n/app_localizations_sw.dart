@@ -744,4 +744,16 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get dobRequired => 'Tarehe ya kuzaliwa inahitajika';
+
+  @override
+  String get next => 'Ifuatayo';
+
+  @override
+  String get bio => 'Wasifu';
+
+  @override
+  String get website => 'Tovuti';
+
+  @override
+  String get nationality => 'Uraia';
 }

@@ -16,16 +16,24 @@ class SettingsScreen extends StatelessWidget {
     final currentLocale = appState.locale;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings', style: const TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        title: Text(
+          'Settings',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            // Color of the title text will adapt automatically
+            color: Theme.of(context).appBarTheme.foregroundColor ?? Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        // Use the theme's AppBar background color
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        // Use the theme's AppBar foreground color for icons and text
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      backgroundColor: Colors.white,
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
@@ -33,7 +41,9 @@ class SettingsScreen extends StatelessWidget {
           SettingsButton(
             icon: Icons.person_outline,
             label: 'Account Settings',
-            onTap: () {},
+            onTap: () {
+              context.pushNamed('editProfile');
+            },
           ),
           SettingsButton(
             icon: Icons.notifications_none,
@@ -120,7 +130,6 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 }
-
 class SettingsButton extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -139,8 +148,18 @@ class SettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Access the current theme
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Determine colors based on theme
+    final backgroundColor = isDark ? theme.colorScheme.surfaceContainer : Colors.grey.shade200; // A suitable background for dark mode
+    final textColor = theme.colorScheme.onSurface; // Text and icon color adapts to background
+    final arrowColor = isDark ? Colors.grey.shade400 : Colors.black; // A slightly subdued color for the arrow
+
     return Material(
-      color: Colors.grey.shade200,
+      // Use theme-adapted background color
+      color: backgroundColor,
       child: InkWell(
         onTap: onTap,
         child: Container(
@@ -148,12 +167,14 @@ class SettingsButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(
             children: [
-              Icon(icon, size: 24, color: Colors.black),
+              // Use theme-adapted icon color
+              Icon(icon, size: 24, color: textColor),
               const SizedBox(width: 16),
               Expanded(
                 child: Text(
                   label,
-                  style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w500),
+                  // Use theme-adapted text color
+                  style: TextStyle(fontSize: 16, color: textColor, fontWeight: FontWeight.w500),
                 ),
               ),
               if (trailing != null) ...[
@@ -163,7 +184,8 @@ class SettingsButton extends StatelessWidget {
               Icon(
                   showDownArrow ? Icons.keyboard_arrow_down : Icons.arrow_forward_ios,
                   size: 18,
-                  color: Colors.black
+                  // Use theme-adapted arrow color
+                  color: arrowColor
               ),
             ],
           ),

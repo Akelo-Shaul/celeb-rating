@@ -67,7 +67,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
   final GlobalKey<FormState> _formKeyUpdateProfile = GlobalKey<FormState>();
   String? _updateStageName;
   String? _updateSign;
-  String? _updateReligion;
+  String? _updateSpirituality;
   String? _updateNetWorth;
   String? _updateCelebrityField;
   bool _isSubmitting = false;
@@ -159,7 +159,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                 children: [
                   Expanded(child: _updateProfile()),
                   // Profile summary
-                  if (_updateStageName != null || _updateSign != null || _updateReligion != null || _updateNetWorth != null)
+                  if (_updateStageName != null || _updateSign != null || _updateSpirituality != null || _updateNetWorth != null)
                     Card(
                       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       child: ListTile(
@@ -172,8 +172,8 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                               Text('${AppLocalizations.of(context)!.stageName}: $_updateStageName'),
                             if (_updateSign != null && _updateSign!.isNotEmpty)
                               Text('${AppLocalizations.of(context)!.zodiacSign}: $_updateSign'),
-                            if (_updateReligion != null && _updateReligion!.isNotEmpty)
-                              Text('${AppLocalizations.of(context)!.religion}: $_updateReligion'),
+                            if (_updateSpirituality != null && _updateSpirituality!.isNotEmpty)
+                              Text('${AppLocalizations.of(context)!.spirituality}: $_updateSpirituality'),
                             if (_updateNetWorth != null && _updateNetWorth!.isNotEmpty)
                               Text('${AppLocalizations.of(context)!.netWorth}: $_updateNetWorth'),
                           ],
@@ -409,10 +409,10 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                   const SizedBox(height: 16),
                   TextFormField(
                     decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context)!.religion,
+                      labelText: AppLocalizations.of(context)!.spirituality,
                       prefixIcon: Icon(Icons.back_hand_outlined),
                     ),
-                    onSaved: (v) => _updateReligion = v,
+                    onSaved: (v) => _updateSpirituality = v,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(

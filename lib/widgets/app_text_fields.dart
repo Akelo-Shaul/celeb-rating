@@ -96,7 +96,9 @@ class _AppDatePickerState extends State<AppDatePicker> {
     super.initState();
     _selectedDate = widget.initialDate;
     if (_selectedDate != null) {
-      _dateController.text = DateFormat.yMMMd().format(_selectedDate!);
+      setState(() {
+        _dateController.text = DateFormat.yMMMd().format(_selectedDate!);
+      });
     }
   }
 
@@ -114,11 +116,6 @@ class _AppDatePickerState extends State<AppDatePicker> {
         _dateController.text = DateFormat.yMMMd().format(_selectedDate!);
       });
       widget.onDateSelected(_selectedDate);
-      // After selecting, trigger validation
-      Future.delayed(Duration(milliseconds: 50), () {
-        final form = Form.of(context);
-        if (form != null) form.validate();
-      });
     }
   }
 

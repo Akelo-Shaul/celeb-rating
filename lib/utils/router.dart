@@ -37,6 +37,8 @@ import 'package:celebrating/services/user_service.dart';
 import '../models/versus_user.dart'; // For fetching user
 import 'package:celebrating/screens/interests_selection_screen.dart';
 
+import '../screens/edit_profile.dart';
+
 class AppRouter {
   final AuthService _authService;
 
@@ -115,6 +117,13 @@ class AppRouter {
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+        routes: [
+          GoRoute(
+            path: 'edit-profile',
+            name: 'editProfile',
+            builder: (context, state) => const EditProfile(),
+          ),
+        ]
       ),
       GoRoute(
         path: '/notifications',

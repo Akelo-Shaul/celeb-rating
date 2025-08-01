@@ -458,7 +458,7 @@ class _InterestsSelectionScreenState extends State<InterestsSelectionScreen> wit
               bottom: 16,
               right: 16,
               child: AppTextButton(
-                text: AppLocalizations.of(context)!.skip,
+                text: AppLocalizations.of(context)!.next,
                 onPressed: _tabIndex == 0 ? _onSkipInterestsTab : _onSkipCelebritiesTab,
               ),
             ),
