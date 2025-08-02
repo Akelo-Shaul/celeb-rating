@@ -2,12 +2,14 @@ import 'package:celebrating/widgets/add_wealth_item_modal.dart';
 import 'package:celebrating/widgets/slideup_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/comment.dart';
 import '../models/post.dart';
 import '../models/user.dart';
+import '../services/chat_service.dart';
 import '../services/user_service.dart';
 import '../utils/constants.dart';
 import '../widgets/add_education_modal.dart';
@@ -65,7 +67,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
   void _showProfilePreviewModal({
     required BuildContext context,
     required String userName,
-    required String userProfession,
+    required String relationshipDesc,
     String? userProfileImageUrl,
     VoidCallback? onViewProfile,
   }) {
@@ -82,7 +84,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
       backgroundColor: Theme.of(context).cardColor,
       child: ProfilePreviewModalContent(
         userName: userName,
-        userProfession: userProfession,
+        relationshipDesc: relationshipDesc,
         userProfileImageUrl: userProfileImageUrl,
         onViewProfile: onViewProfile,
         defaultTextColor: defaultTextColor,
@@ -94,9 +96,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
 
   void _showItemPopupModal({
     required BuildContext context,
-    String? imageUrl,
-    required String title,
-    required String description,
+    required String sectionTitle,
+    required String sectionType,
+    required Map<String, dynamic> itemData,
   }) {
     showSlideUpDialog(
       context: context,
@@ -105,9 +107,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
       borderRadius: BorderRadius.circular(20),
       backgroundColor: Theme.of(context).cardColor,
       child: ItemPopupModal(
-        imageUrl: imageUrl,
-        title: title,
-        description: description,
+        itemData: itemData,
+        sectionType: sectionType,
+        sectionTitle: sectionTitle,
       ),
     );
   }
@@ -228,22 +230,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    user.fullName, // Removed `user != null ?` as user is always non-null here
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                      color: defaultTextColor,
-                    ),
-                  ),
-                  Text(
-                    '@${user.username}', // Removed `user != null ?`
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: secondaryTextColor,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 30,),
                   Text(
                     'Profession', // Use ! as celeb is non-null if isCelebrity is true
                     style: TextStyle(color: secondaryTextColor, fontSize: 12),
@@ -311,6 +298,21 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                       ],
                     ],
                   ),
+                  Text(
+                    user.fullName, // Removed `user != null ?` as user is always non-null here
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                      color: defaultTextColor,
+                    ),
+                  ),
+                  Text(
+                    '@${user.username}', // Removed `user != null ?`
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: secondaryTextColor,
+                    ),
+                  ),
                   const SizedBox(height: 6,),
                   Row(
                     children: List.generate(5, (index) {
@@ -367,12 +369,33 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
               ),
               const SizedBox(width: 16,),
               GestureDetector(
-                onTap: (){},
+                onTap: () async {
+                  // Get current user
+                  final currentUser = await UserService.fetchUser(UserService.currentUserId.toString(), isCelebrity: true);
+                  // Find or create chatId for current user and viewed user
+                  final otherUser = widget.user;
+                  // Try to find an existing chat between these users
+                  String? chatId;
+                  final allChats = await ChatService.getAllChats();
+                  for (final chat in allChats) {
+                    if ((chat.user.id == otherUser.id)) {
+                      chatId = chat.id;
+                      break;
+                    }
+                  }
+                  // If not found, create a new chatId (for demo, use a combination)
+                  chatId ??= '${currentUser.id}_${otherUser.id}';
+                  context.pushNamed(
+                    'chatMessage',
+                    pathParameters: {'chatId': chatId},
+                    extra: otherUser,
+                  );
+                },
                 child: SvgPicture.asset(
-                  'assets/icons/message.svg', // Replace with your icon's path
+                  'assets/icons/message.svg',
                   height: 32,
                   width: 35,
-                  colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
+                  colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn),
                 ),
               ),
             ],
@@ -531,7 +554,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                           _showProfilePreviewModal(
                             context: context,
                             userName: relationship['name'], // Replace with actual name if available
-                            userProfession: relationship['relation'], // Replace with actual relationship type if available
+                            relationshipDesc: relationship['relation'], // Replace with actual relationship type if available
                             userProfileImageUrl: relationship['imageUrl'],
                             onViewProfile: () {
                               // Add navigation to profile view here
@@ -568,7 +591,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                           _showProfilePreviewModal(
                             context: context,
                             userName: relationship['name'], // Replace with actual name if available
-                            userProfession: relationship['type'], // Replace with actual relationship type if available
+                            relationshipDesc: relationship['type'], // Replace with actual relationship type if available
                             userProfileImageUrl: relationship['imageUrl'],
                             onViewProfile: () {
                               // Add navigation to profile view here
@@ -606,7 +629,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                           _showProfilePreviewModal(
                             context: context,
                             userName: pet['name']!,
-                            userProfession: pet['type']!,
+                            relationshipDesc: pet['type']!,
                             userProfileImageUrl: pet['imageUrl'],
                             onViewProfile: () {
                               // Optionally handle view profile action
@@ -723,9 +746,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                         onTap: () {
                           _showItemPopupModal(
                             context: context,
-                            imageUrl: celeb.hobbies[index]['imageUrl'],
-                            title: celeb.hobbies[index]['name']!,
-                            description: celeb.hobbies[index]['description'] ?? '', // Assuming description may be empty
+                            sectionTitle: AppLocalizations.of(context)!.hobbies,
+                            itemData: celeb.hobbies[index],
+                            sectionType: celeb.hobbies[index]['name'], // Assuming description may be empty
                           );
                         },
                         child: ImageWithOptionalText(
@@ -912,9 +935,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                             onTap: () {
                               _showItemPopupModal(
                                 context: context,
-                                imageUrl: item['imageUrl'],
-                                title: item['name']!,
-                                description: item['name']!,
+                                sectionTitle: localizedCategory,
+                                itemData: item,
+                                sectionType: item['name']!, // Assuming description may be empty
                               );
                             }, // Wealth items don't trigger item_popup
                             child: ImageWithOptionalText(
@@ -1220,9 +1243,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                       onTap: () {
                         _showItemPopupModal(
                           context: context,
-                          imageUrl: item['imageUrl'],
-                          title: item['title'],
-                          description: item['description'],
+                          sectionTitle: AppLocalizations.of(context)!.redCarpetMoments,
+                          itemData: item,
+                          sectionType: item['title'], // Assuming description may be empty
                         );
                       },
                       child: ImageWithOptionalText(
@@ -1308,9 +1331,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                       onTap: () {
                         _showItemPopupModal(
                           context: context,
-                          imageUrl: tattoo['imageUrl'],
-                          title: tattoo['name'],
-                          description: tattoo['description'],
+                          sectionTitle: AppLocalizations.of(context)!.tattoos,
+                          itemData: tattoo,
+                          sectionType: tattoo['name'], // Assuming description may be empty
                         );
                       },
                       child: ImageWithOptionalText(
@@ -1345,9 +1368,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                       onTap: () {
                         _showItemPopupModal(
                           context: context,
-                          imageUrl: item['imageUrl'],
-                          title:item['item'],
-                          description: item['description'],
+                          sectionTitle: AppLocalizations.of(context)!.favoriteThings,
+                          itemData: item,
+                          sectionType: item['item'], // Assuming description may be empty
                         );
                       },
                       child: ImageWithOptionalText(
@@ -1382,9 +1405,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                       onTap: () {
                         _showItemPopupModal(
                           context: context,
-                          imageUrl: item['imageUrl'],
-                          title: item['name']!,
-                          description: item['name'],
+                          sectionTitle: AppLocalizations.of(context)!.hiddenTalents,
+                          itemData: item,
+                          sectionType: item['name'], // Assuming description may be empty
                         );
                       },
                       child: ImageWithOptionalText(

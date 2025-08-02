@@ -286,5 +286,10 @@
   "website": "Tovuti",
   "nationality": "Uraia",
   "edit": "Hariri",
-  "delete": "Futa"
+  "delete": "Futa",
+  "editEducation": "Hariri Elimu",
+  "addQualification": "Ongeza Sifa",
+  "editPublicPersona": "Hariri Umma",
+  "editWealth": "Hariri Utajiri",
+  "editHobbies": "Hariri Shughuli za ziada"
 }

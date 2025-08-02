@@ -762,4 +762,19 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get delete => 'Futa';
+
+  @override
+  String get editEducation => 'Hariri Elimu';
+
+  @override
+  String get addQualification => 'Ongeza Sifa';
+
+  @override
+  String get editPublicPersona => 'Hariri Umma';
+
+  @override
+  String get editWealth => 'Hariri Utajiri';
+
+  @override
+  String get editHobbies => 'Hariri Shughuli za ziada';
 }

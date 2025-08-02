@@ -11,7 +11,15 @@ import 'app_dropdown.dart';
 class AddFunNicheModal extends StatefulWidget {
   final void Function(Map<String, dynamic> funNicheItem) onAdd;
   final String sectionTitle;
-  const AddFunNicheModal({super.key, required this.onAdd, required this.sectionTitle});
+  final String sectionType;
+  final Map<String, dynamic>? initialData;
+  final bool isEdit;
+  const AddFunNicheModal({
+    super.key,
+    required this.onAdd,
+    required this.sectionType,
+    this.initialData,
+    this.isEdit = false, required this.sectionTitle,});
 
   @override
   State<AddFunNicheModal> createState() => _AddFunNicheModalState();
@@ -34,10 +42,71 @@ class _AddFunNicheModalState extends State<AddFunNicheModal> {
   XFile? _pickedImage;
   DateTime? _selectStartDate;
 
+  final TextEditingController _hobbyNameController = TextEditingController();
+  final TextEditingController _hobbyDescController = TextEditingController();
+  final TextEditingController _hobbyCategoryController = TextEditingController();
   final List<String> _funNicheTypes = [
-    'Tattoos or Unique Physical Traits', 'Pets', 'Favorite Things', 'Hidden Talents', 'Fan Theories or Fan Interactions'
+    'Tattoos or Unique Physical Traits', 'Pets', 'Favorite Things', 'Hidden Talents', 'Fan Theories or Fan Interactions', 'Hobbies'
   ];
   String? _selectedFunNicheType;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialData != null) {
+      final data = widget.initialData!;
+      print(data);
+      // Determine type from sectionType or initialData
+      _selectedFunNicheType = widget.sectionType.isNotEmpty
+          ? widget.sectionType
+          : (data['type'] ?? '');
+      if (data['imageUrl'] != null) {
+        // If photo is a file path or network url, handle accordingly
+        if (data['imageUrl'] is XFile) {
+          _pickedImage = data['imageUrl'];
+        } else if (data['imageUrl'] is String && (data['imageUrl'] as String).isNotEmpty) {
+          // For network image, you may want to show it in the picker
+          // For demo, ignore as picker only supports local file
+        }
+      }
+
+      // Prefill fields for each type using user_service.dart structure
+      switch (_selectedFunNicheType) {
+        case 'Tattoos or Unique Physical Traits':
+          _nameController.text = data['name'] ?? data['title'] ?? '';
+          _bodyPartController.text = data['bodyPart'] ?? '';
+          _descController.text = data['description'] ?? '';
+          break;
+        case 'Pets':
+          _nameController.text = data['name'] ?? '';
+          _speciesController.text = data['type'] ?? data['species'] ?? '';
+          _breedController.text = data['breed'] ?? '';
+          _descController.text = data['description'] ?? '';
+          break;
+        case 'Favorite Things':
+          _categoryController.text = data['category'] ?? '';
+          _nameController.text = data['item'] ?? data['name'] ?? '';
+          _reasonController.text = data['reason'] ?? '';
+          _descController.text = data['description'] ?? '';
+          break;
+        case 'Hidden Talents':
+          _nameController.text = data['name'] ?? '';
+          _descController.text = data['description'] ?? '';
+          _startYearController.text = data['startYear'] ?? '';
+          break;
+        case 'Fan Theories or Fan Interactions':
+          _fanTheoryTitleController.text = data['title'] ?? '';
+          _fanInteractionTypeController.text = data['interactionType'] ?? '';
+          _descController.text = data['description'] ?? '';
+          break;
+        case 'Hobbies':
+          _hobbyNameController.text = data['name'] ?? '';
+          _hobbyCategoryController.text = data['category'] ?? '';
+          _hobbyDescController.text = data['description'] ?? '';
+          break;
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -51,6 +120,9 @@ class _AddFunNicheModalState extends State<AddFunNicheModal> {
     _startYearController.dispose();
     _fanTheoryTitleController.dispose();
     _fanInteractionTypeController.dispose();
+    _hobbyNameController.dispose();
+    _hobbyDescController.dispose();
+    _hobbyCategoryController.dispose();
     super.dispose();
   }
 
@@ -93,6 +165,14 @@ class _AddFunNicheModalState extends State<AddFunNicheModal> {
           'title': _fanTheoryTitleController.text.trim(),
           'interactionType': _fanInteractionTypeController.text.trim(),
           'description': _descController.text.trim(),
+        });
+        break;
+      case 'Hobbies':
+        data.addAll({
+          'name': _hobbyNameController.text.trim(),
+          'category': _hobbyCategoryController.text.trim(),
+          'description': _hobbyDescController.text.trim(),
+          'image': _pickedImage?.path,
         });
         break;
     }
@@ -253,6 +333,36 @@ class _AddFunNicheModalState extends State<AddFunNicheModal> {
             },
           ),
         ];
+
+      case 'Hobbies':
+        return [
+          TextFormField(
+            controller: _hobbyNameController,
+            decoration: InputDecoration(
+              labelText: 'Hobby Name',
+              prefixIcon: Icon(Icons.sports_soccer),
+            ),
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter hobby name' : null,
+          ),
+          const SizedBox(height: 14),
+          TextFormField(
+            controller: _hobbyCategoryController,
+            decoration: InputDecoration(
+              labelText: 'Category (e.g., Sport, Art, Music)',
+              prefixIcon: Icon(Icons.category),
+            ),
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter category' : null,
+          ),
+          const SizedBox(height: 14),
+          TextFormField(
+            controller: _hobbyDescController,
+            decoration: InputDecoration(
+              labelText: 'Description',
+              prefixIcon: Icon(Icons.description),
+            ),
+            validator: (v) => v == null || v.trim().isEmpty ? 'Enter description' : null,
+          ),
+        ];
       case 'Fan Theories or Fan Interactions':
         return [
           TextFormField(
@@ -292,12 +402,12 @@ class _AddFunNicheModalState extends State<AddFunNicheModal> {
     final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
     final appPrimaryColor = const Color(0xFFD6AF0C); // Assuming this color is defined somewhere accessible
 
-    final bool hasSectionTitle = (widget.sectionTitle.isNotEmpty);
-    if (hasSectionTitle && _selectedFunNicheType != widget.sectionTitle) {
+    final bool hasSectionType = (widget.sectionType.isNotEmpty);
+    if (hasSectionType && _selectedFunNicheType != widget.sectionType) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_selectedFunNicheType != widget.sectionTitle) {
+        if (_selectedFunNicheType != widget.sectionType) {
           setState(() {
-            _selectedFunNicheType = widget.sectionTitle;
+            _selectedFunNicheType = widget.sectionType;
           });
         }
       });
@@ -352,7 +462,7 @@ class _AddFunNicheModalState extends State<AddFunNicheModal> {
                     ),
                   ),
                   // Fun Niche type dropdown
-                  if (!hasSectionTitle)
+                  if (!hasSectionType)
                     DropdownButtonFormField<String>(
                       value: _selectedFunNicheType,
                       decoration: InputDecoration(
@@ -366,7 +476,7 @@ class _AddFunNicheModalState extends State<AddFunNicheModal> {
                       onChanged: (val) => setState(() => _selectedFunNicheType = val),
                       validator: (v) => v == null || v.isEmpty ? 'Select type' : null,
                     ),
-                  if (hasSectionTitle)
+                  if (hasSectionType)
                     DropdownButtonFormField<String>(
                       value: _selectedFunNicheType,
                       decoration: InputDecoration(
@@ -374,8 +484,8 @@ class _AddFunNicheModalState extends State<AddFunNicheModal> {
                         prefixIcon: Icon(Icons.category),
                       ),
                       items: [DropdownMenuItem(
-                        value: widget.sectionTitle,
-                        child: Text(widget.sectionTitle),
+                        value: widget.sectionType,
+                        child: Text(widget.sectionType),
                       )],
                       onChanged: null,
                       validator: (v) => v == null || v.isEmpty ? 'Select type' : null,
@@ -392,16 +502,40 @@ class _AddFunNicheModalState extends State<AddFunNicheModal> {
                         color: Colors.grey[200],
                       ),
                       clipBehavior: Clip.antiAlias,
-                      child: _pickedImage != null
-                          ? Image.file(
-                        File(_pickedImage!.path),
-                        height: 100,
-                        width: 100,
-                        fit: BoxFit.cover,
-                      )
-                          : const Center(
-                        child: Icon(Icons.camera_alt, size: 36, color: Colors.grey),
-                      ),
+                      child: (() {
+                        if (_pickedImage != null) {
+                          return Image.file(
+                            File(_pickedImage!.path),
+                            height: 100,
+                            width: 100,
+                            fit: BoxFit.cover,
+                          );
+                        }
+                        // Prefer imageUrl, fallback to image, fallback to photo
+                        final imageUrl = widget.initialData != null
+                            ? (widget.initialData!['imageUrl'] ?? widget.initialData!['image'] ?? widget.initialData!['photo'])
+                            : null;
+                        if (imageUrl != null && imageUrl.toString().isNotEmpty) {
+                          final urlStr = imageUrl.toString();
+                          if (urlStr.startsWith('http')) {
+                            return Image.network(
+                              urlStr,
+                              height: 100,
+                              width: 100,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => const Center(child: Icon(Icons.broken_image, size: 36, color: Colors.grey)),
+                            );
+                          } else {
+                            return Image.file(
+                              File(urlStr),
+                              height: 100,
+                              width: 100,
+                              fit: BoxFit.cover,
+                            );
+                          }
+                        }
+                        return const Center(child: Icon(Icons.camera_alt, size: 36, color: Colors.grey));
+                      })(),
                     ),
                   ),
                   const SizedBox(height: 10,),
@@ -433,7 +567,9 @@ class _AddFunNicheModalState extends State<AddFunNicheModal> {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       icon: const Icon(Icons.check),
-                      label: Text(AppLocalizations.of(context)!.add),
+                      label: Text(widget.isEdit
+                          ? AppLocalizations.of(context)!.edit
+                          : AppLocalizations.of(context)!.add),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: appPrimaryColor,
                         foregroundColor: Colors.white,

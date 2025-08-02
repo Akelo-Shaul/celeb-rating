@@ -394,18 +394,18 @@ class UserService {
       // Additional dummy data for new fields
       final String zodiacSign = 'Libra';
       final List<Map<String, dynamic>> familyMembers = [
-        {'name': 'Father', 'imageUrl': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=facearea&w=200&h=200&q=80'},
-        {'name': 'Grand Father', 'imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
-        {'name': 'Mother', 'imageUrl': 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=facearea&w=200&h=200&q=80'},
-        {'name': 'Spouse', 'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=facearea&w=200&h=200&q=80'},
-        {'name': 'Brother', 'imageUrl': 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=facearea&w=200&h=200&q=80'},
-        {'name': 'Sister', 'imageUrl': 'https://images.unsplash.com/photo-1461632830798-3adb3034e4c8?auto=format&fit=facearea&w=200&h=200&q=80'},
+        {'title': 'Father', 'name': 'Hamk Mcoy', 'imageUrl': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=facearea&w=200&h=200&q=80'},
+        {'title': 'Grand Father', 'imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
+        {'title': 'Mother', 'imageUrl': 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=facearea&w=200&h=200&q=80'},
+        {'title': 'Spouse', 'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=facearea&w=200&h=200&q=80'},
+        {'title': 'Brother', 'imageUrl': 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=facearea&w=200&h=200&q=80'},
+        {'title': 'Sister', 'imageUrl': 'https://images.unsplash.com/photo-1461632830798-3adb3034e4c8?auto=format&fit=facearea&w=200&h=200&q=80'},
       ];
       final List<Map<String,String>> relationships = [
-        {'name': 'Jane Doe', 'type': 'Friend', 'description': 'Best friend from college.','imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
-        {'name': 'John Smith', 'type': 'Sibling', 'description': 'Older brother.','imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
-        {'name': 'Bund Smith', 'type': 'Sibling', 'description': 'Older brother.', 'imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
-        {'name': 'Hank Smith', 'type': 'Sibling', 'description': 'Older brother.', 'imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
+        {'name': 'Jane Doe', 'title': 'Friend', 'description': 'Best friend from college.','imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
+        {'name': 'John Smith', 'title': 'Sibling', 'description': 'Older brother.','imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
+        {'name': 'Bund Smith', 'title': 'Sibling', 'description': 'Older brother.', 'imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
+        {'name': 'Hank Smith', 'title': 'Sibling', 'description': 'Older brother.', 'imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
       ];
       final List<Map<String, dynamic>> hobbies = [
         {'name': 'Basketball', 'imageUrl': 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=200&q=80'},
@@ -427,8 +427,8 @@ class UserService {
         {'name': 'Kenya', 'imageUrl': 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=200&q=80'},
       ];
       final List<Map<String, dynamic>> favouriteThings = [
-        {'item': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
-        {'item': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
       ];
       final List<Map<String, dynamic>> talents = [
         {'name': 'Basketball', 'imageUrl': 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=200&q=80'},

@@ -89,7 +89,7 @@ class _ProfilePageState extends State<ProfilePage>
   void _showProfilePreviewModal({
     required BuildContext context,
     required String userName,
-    required String userProfession,
+    required String relationshipDesc,
     String? userProfileImageUrl,
     VoidCallback? onViewProfile,
   }) {
@@ -107,7 +107,7 @@ class _ProfilePageState extends State<ProfilePage>
       child: ProfilePreviewModalContent(
         isOwnProfile: isOwnProfile,
         userName: userName,
-        userProfession: userProfession,
+        relationshipDesc: relationshipDesc,
         userProfileImageUrl: userProfileImageUrl,
         onViewProfile: onViewProfile,
         defaultTextColor: defaultTextColor,
@@ -120,9 +120,9 @@ class _ProfilePageState extends State<ProfilePage>
   // NEW: _showItemPopupModal for image-enabled sections
   void _showItemPopupModal({
     required BuildContext context,
-    String? imageUrl,
-    required String title,
-    required String description,
+    required String sectionTitle,
+    required String sectionType,
+    required Map<String, dynamic> itemData,
   }) {
     showSlideUpDialog(
       context: context,
@@ -131,10 +131,10 @@ class _ProfilePageState extends State<ProfilePage>
       borderRadius: BorderRadius.circular(20),
       backgroundColor: Theme.of(context).cardColor,
       child: ItemPopupModal(
-        isOwnProfile: isOwnProfile,
-        imageUrl: imageUrl,
-        title: title,
-        description: description,
+        itemData: itemData,
+        sectionType: sectionType,
+        sectionTitle: sectionTitle,
+        isOwnProfile: true,
       ),
     );
   }
@@ -251,22 +251,7 @@ class _ProfilePageState extends State<ProfilePage>
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    user != null ? user!.fullName : '',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                      color: defaultTextColor,
-                    ),
-                  ),
-                  Text(
-                    user != null ? '@${user!.username}' : '',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: secondaryTextColor,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 30,),
                   Text(
                     'Profession', // Use ! as celeb is non-null if isCelebrity is true
                     style: TextStyle(color: secondaryTextColor, fontSize: 12),
@@ -342,39 +327,56 @@ class _ProfilePageState extends State<ProfilePage>
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          _getSocialIconPath('Instagram'),
-                          height: 30,
-                          width: 30,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(Icons.public, size: 24, color: Colors.grey);
-                          },
-                        ),
-                        const SizedBox(width: 12),
-                        Image.asset(
-                          _getSocialIconPath('Facebook'),
-                          height: 30,
-                          width: 30,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(Icons.public, size: 24, color: Colors.grey);
-                          },
-                        ),
-                        const SizedBox(width: 12),
-                        Image.asset(
-                          _getSocialIconPath('TikTok'),
-                          height: 30,
-                          width: 30,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(Icons.public, size: 24, color: Colors.grey);
-                          },
-                        ),
-                      ],
+                  // Center(
+                  //   child: Row(
+                  //     mainAxisSize: MainAxisSize.min,
+                  //     children: [
+                  //       Image.asset(
+                  //         _getSocialIconPath('Instagram'),
+                  //         height: 30,
+                  //         width: 30,
+                  //         errorBuilder: (context, error, stackTrace) {
+                  //           return Icon(Icons.public, size: 24, color: Colors.grey);
+                  //         },
+                  //       ),
+                  //       const SizedBox(width: 12),
+                  //       Image.asset(
+                  //         _getSocialIconPath('Facebook'),
+                  //         height: 30,
+                  //         width: 30,
+                  //         errorBuilder: (context, error, stackTrace) {
+                  //           return Icon(Icons.public, size: 24, color: Colors.grey);
+                  //         },
+                  //       ),
+                  //       const SizedBox(width: 12),
+                  //       Image.asset(
+                  //         _getSocialIconPath('TikTok'),
+                  //         height: 30,
+                  //         width: 30,
+                  //         errorBuilder: (context, error, stackTrace) {
+                  //           return Icon(Icons.public, size: 24, color: Colors.grey);
+                  //         },
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+
+                  Text(
+                    user != null ? user!.fullName : '',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                      color: defaultTextColor,
                     ),
                   ),
+                  Text(
+                    user != null ? '@${user!.username}' : '',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: secondaryTextColor,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
                   const SizedBox(height: 6,),
                   Row(
                     children: List.generate(5, (index) {
@@ -433,15 +435,6 @@ class _ProfilePageState extends State<ProfilePage>
                     width: 100,
                     height: 35,
                   ),
-                GestureDetector(
-                  onTap: (){},
-                  child: SvgPicture.asset(
-                    'assets/icons/message.svg', // Replace with your icon's path
-                    height: 32,
-                    width: 35,
-                    colorFilter: ColorFilter.mode(Color(0xFFBDBCBA), BlendMode.srcIn), // You can easily change colors
-                  ),
-                ),
               ],
             ),
             ResizableButton(
@@ -889,11 +882,12 @@ class _ProfilePageState extends State<ProfilePage>
                           padding: const EdgeInsets.only(right: 12.0),
                           child: GestureDetector(
                             onTap: () {
+                              print(item);
                               _showItemPopupModal(
                                 context: context,
-                                imageUrl: item['imageUrl'],
-                                title: item['name']!,
-                                description: item['name']!,
+                                sectionTitle: AppLocalizations.of(context)!.editWealth,
+                                itemData: item,
+                                sectionType: localizedCategory, // Assuming description may be empty
                               );
                             }, // Wealth items don't trigger item_popup
                             child: ImageWithOptionalText(
@@ -1136,9 +1130,9 @@ class _ProfilePageState extends State<ProfilePage>
                       onTap: () {
                         _showItemPopupModal(
                           context: context,
-                          imageUrl: item['imageUrl'],
-                          title: item['title']!,
-                          description: item['description']!,
+                          sectionTitle: AppLocalizations.of(context)!.editPublicPersona,
+                          itemData: item,
+                          sectionType: item['title']!, // Assuming description may be empty
                         );
                       },
                       child: ImageWithOptionalText(
@@ -1186,9 +1180,9 @@ class _ProfilePageState extends State<ProfilePage>
                       onTap: () {
                         _showItemPopupModal(
                           context: context,
-                          imageUrl: item['imageUrl'],
-                          title: item['title']!,
-                          description: item['description']!,
+                          sectionTitle: AppLocalizations.of(context)!.editPublicPersona,
+                          itemData: item,
+                          sectionType: item['title']!, // Assuming description may be empty
                         );
                       },
                       child: ImageWithOptionalText(
@@ -1341,7 +1335,7 @@ class _ProfilePageState extends State<ProfilePage>
                           _showProfilePreviewModal(
                             context: context,
                             userName: family['name'], // Replace with actual name if available
-                            userProfession: family['name'], // Replace with actual relationship type if available
+                            relationshipDesc: family['title'], // Replace with actual relationship type if available
                             userProfileImageUrl: family['imageUrl'],
                             onViewProfile: () {
                               // Add navigation to profile view here
@@ -1391,7 +1385,7 @@ class _ProfilePageState extends State<ProfilePage>
                           _showProfilePreviewModal(
                             context: context,
                             userName: relationship['name'], // Replace with actual name if available
-                            userProfession: relationship['type'], // Replace with actual relationship type if available
+                            relationshipDesc: relationship['title'], // Replace with actual relationship type if available
                             userProfileImageUrl: relationship['imageUrl'],
                             onViewProfile: () {
                               // Add navigation to profile view here
@@ -1419,10 +1413,11 @@ class _ProfilePageState extends State<ProfilePage>
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
                       builder: (context) => AddFunNicheModal(
-                        sectionTitle: AppLocalizations.of(context)!.pets,
+                        sectionType: AppLocalizations.of(context)!.pets,
                         onAdd: (item) {
                           // TODO: Add logic to update dummy data
                         },
+                        sectionTitle: 'Add Pets',
                       ),
                     );
                   }),
@@ -1442,7 +1437,7 @@ class _ProfilePageState extends State<ProfilePage>
                           _showProfilePreviewModal(
                             context: context,
                             userName: pet['name']!,
-                            userProfession: pet['type']!,
+                            relationshipDesc: pet['type']!,
                             userProfileImageUrl: pet['imageUrl'],
                             onViewProfile: () {
                               // Optionally handle view profile action
@@ -1554,8 +1549,22 @@ class _ProfilePageState extends State<ProfilePage>
                             IconButton(
                               icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
                               tooltip: 'Edit Education',
-                              onPressed: (){
-                                //TODO: Add edit lifestyle
+                              onPressed: () async {
+                                await showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.transparent,
+                                  builder: (context) => AddEducationModal(
+                                    initialData: {
+                                      'institution': institution,
+                                      'qualifications': qualifications,
+                                    },
+                                    isEdit: true,
+                                    onAdd: (editedItem) {
+                                      // TODO: Update education entry logic here
+                                    },
+                                  ),
+                                );
                               },
                             ),
                           ],
@@ -1576,10 +1585,11 @@ class _ProfilePageState extends State<ProfilePage>
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
                       builder: (context) => AddFunNicheModal(
-                        sectionTitle: AppLocalizations.of(context)!.hobbies,
+                        sectionType: AppLocalizations.of(context)!.hobbies,
                         onAdd: (item) {
                           // TODO: Add logic to update dummy data
                         },
+                        sectionTitle: 'Add Hobbies',
                       ),
                     );
                   }),
@@ -1591,22 +1601,23 @@ class _ProfilePageState extends State<ProfilePage>
                   scrollDirection: Axis.horizontal,
                   itemCount: celeb.hobbies.length,
                   itemBuilder: (context, index) {
+                    final hobby = celeb.hobbies[index];
                     return Padding(
                       padding: const EdgeInsets.only(right: 12.0),
                       child: GestureDetector(
-                        onTap: () {
+                        onTap: (){
                           _showItemPopupModal(
                             context: context,
-                            imageUrl: celeb.hobbies[index]['imageUrl'],
-                            title: celeb.hobbies[index]['name']!,
-                            description: celeb.hobbies[index]['description'] ?? '', // Assuming description may be empty
+                            sectionTitle: AppLocalizations.of(context)!.editHobbies,
+                            itemData: hobby,
+                            sectionType: AppLocalizations.of(context)!.hobbies, // Assuming description may be empty
                           );
                         },
                         child: ImageWithOptionalText(
                           width: 100,
                           height: 150,
-                          imageUrl: celeb.hobbies[index]['imageUrl'],
-                          bottomText: celeb.hobbies[index]['name'],
+                          imageUrl: hobby['imageUrl'],
+                          bottomText: hobby['name'],
                         ),
                       ),
                     );
@@ -1759,10 +1770,11 @@ class _ProfilePageState extends State<ProfilePage>
                     isScrollControlled: true,
                     backgroundColor: Colors.transparent,
                     builder: (context) => AddFunNicheModal(
-                      sectionTitle: AppLocalizations.of(context)!.tattoos,
+                      sectionType: AppLocalizations.of(context)!.tattoos,
                       onAdd: (item) {
                         // TODO: Add logic to update dummy data
                       },
+                      sectionTitle: 'Add Tattoo',
                     ),
                   );
                 }),
@@ -1780,9 +1792,9 @@ class _ProfilePageState extends State<ProfilePage>
                       onTap: () {
                         _showItemPopupModal(
                           context: context,
-                          imageUrl: tattoo['imageUrl'],
-                          title: tattoo['name'],
-                          description: tattoo['description'],
+                          sectionTitle: 'Tattoo',
+                          itemData: tattoo,
+                          sectionType: tattoo['name']!, // Assuming description may be empty
                         );
                       },
                       child: ImageWithOptionalText(
@@ -1809,10 +1821,11 @@ class _ProfilePageState extends State<ProfilePage>
                     isScrollControlled: true,
                     backgroundColor: Colors.transparent,
                     builder: (context) => AddFunNicheModal(
-                      sectionTitle: AppLocalizations.of(context)!.favoriteThings,
+                      sectionType: AppLocalizations.of(context)!.favoriteThings,
                       onAdd: (item) {
                         // TODO: Add logic to update dummy data
                       },
+                      sectionTitle: 'Add Favourite Things',
                     ),
                   );
                 }),
@@ -1830,16 +1843,16 @@ class _ProfilePageState extends State<ProfilePage>
                       onTap: () {
                         _showItemPopupModal(
                           context: context,
-                          imageUrl: item['imageUrl'],
-                          title:item['item'],
-                          description: item['description']!,
+                          sectionTitle: 'Favourite Things',
+                          itemData: item,
+                          sectionType: item['name']!, // Assuming description may be empty
                         );
                       },
                       child: ImageWithOptionalText(
                         width: 100,
                         height: 150,
                         imageUrl: item['imageUrl'],
-                        bottomText: item['item'],
+                        bottomText: item['name'],
                       ),
                     ),
                   );
@@ -1859,10 +1872,10 @@ class _ProfilePageState extends State<ProfilePage>
                     isScrollControlled: true,
                     backgroundColor: Colors.transparent,
                     builder: (context) => AddFunNicheModal(
-                      sectionTitle: AppLocalizations.of(context)!.hiddenTalents,
+                      sectionType: AppLocalizations.of(context)!.hiddenTalents,
                       onAdd: (item) {
                         // TODO: Add logic to update dummy data
-                      },
+                      }, sectionTitle: 'Add Hidden Talents',
                     ),
                   );
                 }),
@@ -1880,9 +1893,9 @@ class _ProfilePageState extends State<ProfilePage>
                       onTap: () {
                         _showItemPopupModal(
                           context: context,
-                          imageUrl: item['imageUrl'],
-                          title: item['name'],
-                          description: item['name'],
+                          sectionTitle: 'Hidden Talents',
+                          itemData: item,
+                          sectionType: item['name'], // Assuming description may be empty
                         );
                       },
                       child: ImageWithOptionalText(
@@ -1909,10 +1922,10 @@ class _ProfilePageState extends State<ProfilePage>
                     isScrollControlled: true,
                     backgroundColor: Colors.transparent,
                     builder: (context) => AddFunNicheModal(
-                      sectionTitle: AppLocalizations.of(context)!.fanTheoriesInteractions,
+                      sectionType: AppLocalizations.of(context)!.fanTheoriesInteractions,
                       onAdd: (item) {
                         // TODO: Add logic to update dummy data
-                      },
+                      }, sectionTitle: 'Add Fan Theories And Interactions',
                     ),
                   );
                 }),

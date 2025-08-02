@@ -284,5 +284,10 @@
   "website": "Website",
   "nationality": "Nationality",
   "edit": "Edit",
-  "delete": "Delete"
+  "delete": "Delete",
+  "editEducation": "Edit Education",
+  "addQualification": "Add Qualification",
+  "editPublicPersona": "Edit Public Persona",
+  "editWealth": "Edit Wealth",
+  "editHobbies": "Edit Hobbies"
 }

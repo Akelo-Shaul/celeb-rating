@@ -3,10 +3,11 @@ import 'package:celebrating/widgets/profile_avatar.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
+import 'add_relationship_modal.dart';
 
 class ProfilePreviewModalContent extends StatefulWidget {
   final String userName;
-  final String userProfession;
+  final String relationshipDesc;
   final String? userProfileImageUrl;
   final VoidCallback? onViewProfile;
   final Color? defaultTextColor;
@@ -20,7 +21,7 @@ class ProfilePreviewModalContent extends StatefulWidget {
   const ProfilePreviewModalContent({
     Key? key,
     required this.userName,
-    required this.userProfession,
+    required this.relationshipDesc,
     this.userProfileImageUrl,
     this.onViewProfile,
     this.defaultTextColor,
@@ -76,7 +77,7 @@ class _ProfilePreviewModalContentState extends State<ProfilePreviewModalContent>
                     ],
                   ),
                   Text(
-                    widget.userProfession,
+                    widget.relationshipDesc,
                     style: TextStyle(
                       fontSize: 14,
                       color: _secondaryTextColor,
@@ -238,11 +239,32 @@ class _ProfilePreviewModalContentState extends State<ProfilePreviewModalContent>
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton.icon(
-                onPressed: () {
-                  // TODO: Implement edit profile logic or navigation
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Edit profile tapped')),
+                onPressed: () async {
+                  // Open AddRelationshipModal with prefilled data
+                  Navigator.pop(context); // Close modal first
+                  await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) {
+                      return AddRelationshipModal(
+                        sectionTitle: 'Edit Relationship',
+                        onAdd: (editedMember) {
+                          // Call onEdit or similar callback if provided
+                          if (widget.onReview != null) widget.onReview!();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Relationship edited!')),
+                          );
+                        },
+                        initialData: {
+                          'fullName': widget.userName,
+                          'photo': widget.userProfileImageUrl,
+                          'relationshipType': widget.relationshipDesc,
+                          // Add more fields as needed
+                        },
+                        isEdit: true,
+                      );
+                    },
                   );
                 },
                 icon: const Icon(Icons.edit, size: 18),

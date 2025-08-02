@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/add_fun_niche_modal.dart';
+import 'add_persona_modal.dart';
+import 'add_wealth_item_modal.dart';
 
 class ItemPopupModal extends StatefulWidget {
-  final String? imageUrl;
-  final String title;
-  final String description;
+  final Map<String, dynamic> itemData;
+  final String sectionType;
+  final String sectionTitle;
   final Function()? onReview;
   final Function()? onShare;
   final Function()? onSalute;
@@ -12,10 +15,10 @@ class ItemPopupModal extends StatefulWidget {
 
   const ItemPopupModal({
     super.key,
-    this.imageUrl,
-    required this.title,
-    required this.description, this.onReview, this.onShare, this.onSalute,
+    this.onReview, this.onShare, this.onSalute,
     this.isOwnProfile = false,
+    required this.itemData,
+    required this.sectionType, required this.sectionTitle,
   });
 
   @override
@@ -57,7 +60,7 @@ class _ItemPopupModalState extends State<ItemPopupModal> {
           ),
           const SizedBox(height: 20),
           Text(
-            widget.title,
+            widget.itemData['title'] ?? widget.itemData['name'],
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -74,7 +77,7 @@ class _ItemPopupModalState extends State<ItemPopupModal> {
                   decoration: BoxDecoration(
                     color: defaultTextColor.withOpacity(0.05),
                     image: DecorationImage(
-                      image: NetworkImage(widget.imageUrl ?? 'https://via.placeholder.com/150'),
+                      image: NetworkImage(widget.itemData['imageUrl'] ?? 'https://via.placeholder.com/150'),
                       fit: BoxFit.cover,
                       onError: (exception, stackTrace) => const AssetImage('assets/images/profile_placeholder.png'),
                     ),
@@ -85,7 +88,7 @@ class _ItemPopupModalState extends State<ItemPopupModal> {
           ),
           const SizedBox(height: 10),
           Text(
-            widget.description,
+            widget.itemData['description'] ?? widget.itemData['reason'] ?? '',
             style: TextStyle(
               fontSize: 16,
               color: secondaryTextColor,
@@ -112,7 +115,7 @@ class _ItemPopupModalState extends State<ItemPopupModal> {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('You rated ${widget.title} ${index + 1} stars!'),
+                          content: Text('You rated ${widget.itemData['title']} ${index + 1} stars!'),
                           duration: const Duration(seconds: 2),
                         ),
                       );
@@ -156,7 +159,7 @@ class _ItemPopupModalState extends State<ItemPopupModal> {
                       widget.onSalute?.call();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(_isSaluted ? 'Saluted ${widget.title}' : 'Removed salute'),
+                          content: Text(_isSaluted ? 'Saluted ${widget.itemData['title']}' : 'Removed salute'),
                           duration: const Duration(seconds: 2),
                         ),
                       );
@@ -209,11 +212,44 @@ class _ItemPopupModalState extends State<ItemPopupModal> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Implement edit profile logic or navigation
+                  onPressed: () async {
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Edit profile tapped')),
+                    await showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) {
+                        final initialData = widget.itemData;
+                        final title = widget.sectionTitle;
+                        if (title == AppLocalizations.of(context)!.editWealth) {
+                          // Wealth modal
+                          return AddWealthItemModal(
+                            sectionTitle: widget.sectionTitle,
+                            onAdd: (editedItem) {
+                              // TODO: Update wealth entry logic here
+                            },
+                          );
+                        } else if (title == AppLocalizations.of(context)!.editPublicPersona) {
+                          // Persona modal
+                          return AddPersonaModal(
+                            sectionTitle: widget.sectionTitle,
+                            onAdd: (editedItem) {
+                              // TODO: Update persona entry logic here
+                            },
+                          );
+                        } else {
+                          // Default to fun & niche modal
+                          return AddFunNicheModal(
+                            sectionType: widget.sectionType,
+                            initialData: initialData,
+                            sectionTitle: widget.sectionTitle,
+                            isEdit: true,
+                            onAdd: (editedItem) {
+                              // TODO: Update fun & niche entry logic here
+                            },
+                          );
+                        }
+                      },
                     );
                   },
                   icon: const Icon(Icons.edit, size: 18),

@@ -762,4 +762,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get delete => 'Delete';
+
+  @override
+  String get editEducation => 'Edit Education';
+
+  @override
+  String get addQualification => 'Add Qualification';
+
+  @override
+  String get editPublicPersona => 'Edit Public Persona';
+
+  @override
+  String get editWealth => 'Edit Wealth';
+
+  @override
+  String get editHobbies => 'Edit Hobbies';
 }

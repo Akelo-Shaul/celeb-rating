@@ -1576,6 +1576,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete'**
   String get delete;
+
+  /// No description provided for @editEducation.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Education'**
+  String get editEducation;
+
+  /// No description provided for @addQualification.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Qualification'**
+  String get addQualification;
+
+  /// No description provided for @editPublicPersona.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Public Persona'**
+  String get editPublicPersona;
+
+  /// No description provided for @editWealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Wealth'**
+  String get editWealth;
+
+  /// No description provided for @editHobbies.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Hobbies'**
+  String get editHobbies;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

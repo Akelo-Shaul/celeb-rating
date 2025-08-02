@@ -11,7 +11,15 @@ import 'app_date_picker.dart';
 class AddRelationshipModal extends StatefulWidget {
   final void Function(Map<String, dynamic> member) onAdd;
   final String? sectionTitle;
-  const AddRelationshipModal({super.key, required this.onAdd, this.sectionTitle});
+  final Map<String, dynamic>? initialData;
+  final bool isEdit;
+  const AddRelationshipModal({
+    super.key,
+    required this.onAdd,
+    this.sectionTitle,
+    this.initialData,
+    this.isEdit = false,
+  });
 
   @override
   State<AddRelationshipModal> createState() => _AddFamilyMemberModalState();
@@ -36,6 +44,34 @@ class _AddFamilyMemberModalState extends State<AddRelationshipModal> {
   ];
   String? _selectedRelationship;
 
+  @override
+  void initState() {
+    super.initState();
+    // Prefill fields if initialData is provided
+    if (widget.initialData != null) {
+      final data = widget.initialData!;
+      if (data['fullName'] != null) _fullNameController.text = data['fullName'];
+      if (data['dateOfBirth'] != null) _dobController.text = data['dateOfBirth'];
+      if (data['relationshipType'] != null) _selectedRelationship = data['relationshipType'];
+      if (data['photo'] != null) {
+        // If photo is a file path or network url, handle accordingly
+        if (data['photo'] is XFile) {
+          _pickedImage = data['photo'];
+        } else if (data['photo'] is String && (data['photo'] as String).isNotEmpty) {
+          // For network image, you may want to show it in the picker
+          // For demo, ignore as picker only supports local file
+        }
+      }
+      if (data['socials'] != null && data['socials'] is Map) {
+        (data['socials'] as Map).forEach((k, v) {
+          if (_socialControllers.containsKey(k) && v is String) {
+            _socialControllers[k]!.text = v;
+          }
+        });
+      }
+    }
+  }
+
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
     final picked = await picker.pickImage(source: source, imageQuality: 80);
@@ -52,6 +88,7 @@ class _AddFamilyMemberModalState extends State<AddRelationshipModal> {
       'fullName': _fullNameController.text.trim(),
       'dateOfBirth': _dobController.text.trim(),
       'photo': _pickedImage,
+      'relationshipType': _selectedRelationship,
       'socials': _socialControllers.map((k, v) => MapEntry(k, v.text.trim())),
     });
     Navigator.of(context).pop();
@@ -198,9 +235,17 @@ class _AddFamilyMemberModalState extends State<AddRelationshipModal> {
                             width: 100,
                             fit: BoxFit.cover,
                           )
-                        : const Center(
-                            child: Icon(Icons.camera_alt, size: 36, color: Colors.grey),
-                          ),
+                        : (widget.isEdit && widget.initialData != null && widget.initialData!['photo'] is String && (widget.initialData!['photo'] as String).isNotEmpty)
+                            ? Image.network(
+                                widget.initialData!['photo'],
+                                height: 100,
+                                width: 100,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => const Center(child: Icon(Icons.broken_image, size: 36, color: Colors.grey)),
+                              )
+                            : const Center(
+                                child: Icon(Icons.camera_alt, size: 36, color: Colors.grey),
+                              ),
                   ),
                 ),
                 const SizedBox(height: 10,),
@@ -271,8 +316,8 @@ class _AddFamilyMemberModalState extends State<AddRelationshipModal> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    icon: const Icon(Icons.check),
-                    label: Text(AppLocalizations.of(context)!.add),
+                    icon: Icon(widget.isEdit ? Icons.edit : Icons.check),
+                    label: Text(widget.isEdit ? (AppLocalizations.of(context)!.edit ?? 'Edit') : AppLocalizations.of(context)!.add),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: appPrimaryColor,
                       foregroundColor: Colors.white,
