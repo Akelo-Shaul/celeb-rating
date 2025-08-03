@@ -777,4 +777,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editHobbies => 'Edit Hobbies';
+
+  @override
+  String get editCareerHighlight => 'Edit Career Highlight';
 }

@@ -135,9 +135,11 @@ class SearchService {
         {'name': 'Sky Diving', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
       ],
       socials: [{'title': 'reddit', 'link': 'https://www.reddit.com/user/celeb'}],
-      fashionStyle: {
-        'casual': [{'style': 'Bohemian', 'description': 'Earth tones'}]
-      },
+      fashionStyle: [
+        {'title': 'Casual Chic', 'description': 'Known for casual yet chic street style, often incorporating vintage pieces.', 'imageUrl': 'https://i.ibb.co/T4X16yR/fashion-style1.jpg'},
+        {'title': 'Ethereal Gowns', 'description': 'Often seen in flowing, ethereal gowns at events, emphasizing grace and movement.', 'imageUrl': 'https://i.ibb.co/K2sY5sP/fashion-style2.jpg'},
+        {'title': 'Bohemian Edge', 'description': 'Combines bohemian elements with a modern, edgy twist, creating unique looks.', 'imageUrl': 'https://i.ibb.co/2d11VpX/fashion-style3.jpg'},
+      ],
     ),
     User(
       id: 2,
@@ -272,9 +274,11 @@ class SearchService {
       ],
       talents: [{'talent': 'Saxophone', 'details': 'Jazz improvisation'}],
       socials: [{'title': 'tiktok', 'link': 'https://www.tiktok.com/@celeb'}],
-      fashionStyle: {
-        'formal': [{'style': 'Classic', 'description': 'Suits and fedoras'}]
-      },
+      fashionStyle: [
+        {'title': 'Casual Chic', 'description': 'Known for casual yet chic street style, often incorporating vintage pieces.', 'imageUrl': 'https://i.ibb.co/T4X16yR/fashion-style1.jpg'},
+        {'title': 'Ethereal Gowns', 'description': 'Often seen in flowing, ethereal gowns at events, emphasizing grace and movement.', 'imageUrl': 'https://i.ibb.co/K2sY5sP/fashion-style2.jpg'},
+        {'title': 'Bohemian Edge', 'description': 'Combines bohemian elements with a modern, edgy twist, creating unique looks.', 'imageUrl': 'https://i.ibb.co/2d11VpX/fashion-style3.jpg'},
+      ],
     ),
     CelebrityUser(
       id: 4,
@@ -397,9 +401,11 @@ class SearchService {
       ],
       talents: [{'talent': 'Guitar', 'details': 'Lead guitarist'}],
       socials: [{'title': 'reddit', 'link': 'https://www.reddit.com/user/celeb'}],
-      fashionStyle: {
-        'stage': [{'style': 'Rock', 'description': 'Leather and studs'}]
-      },
+      fashionStyle: [
+        {'title': 'Casual Chic', 'description': 'Known for casual yet chic street style, often incorporating vintage pieces.', 'imageUrl': 'https://i.ibb.co/T4X16yR/fashion-style1.jpg'},
+        {'title': 'Ethereal Gowns', 'description': 'Often seen in flowing, ethereal gowns at events, emphasizing grace and movement.', 'imageUrl': 'https://i.ibb.co/K2sY5sP/fashion-style2.jpg'},
+        {'title': 'Bohemian Edge', 'description': 'Combines bohemian elements with a modern, edgy twist, creating unique looks.', 'imageUrl': 'https://i.ibb.co/2d11VpX/fashion-style3.jpg'},
+      ],
       createdAt: DateTime.now(),
     ),
     User(

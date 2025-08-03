@@ -11,7 +11,17 @@ import 'app_dropdown.dart';
 class AddWealthItemModal extends StatefulWidget {
   final void Function(Map<String, dynamic> wealthItem) onAdd;
   final String? sectionTitle;
-  const AddWealthItemModal({super.key, required this.onAdd, this.sectionTitle});
+  final String sectionType;
+  final Map<String, dynamic>? initialData;
+  final bool isEdit;
+
+  const AddWealthItemModal({
+    super.key,
+    required this.sectionType,
+    this.initialData,
+    this.isEdit = false,
+    required this.onAdd,
+    this.sectionTitle});
 
   @override
   State<AddWealthItemModal> createState() => _AddWealthItemModalState();
@@ -36,6 +46,79 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
   ];
 
   String? _selectedCategory;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialData != null) {
+      final data = widget.initialData!;
+      print(data);
+      // Determine type from sectionType or initialData
+      _selectedCategory = widget.sectionType.isNotEmpty
+          ? widget.sectionType
+          : (data['type'] ?? '');
+      if (data['imageUrl'] != null) {
+        // If photo is a file path or network url, handle accordingly
+        if (data['imageUrl'] is XFile) {
+          _pickedImage = data['imageUrl'];
+        } else if (data['imageUrl'] is String &&
+            (data['imageUrl'] as String).isNotEmpty) {
+          // For network image, you may want to show it in the picker
+          // For demo, ignore as picker only supports local file
+        }
+      }
+
+      switch (_selectedCategory) {
+        case 'Car':
+          _modelController.text = data['name'] ?? '';
+          _yearController.text = data['year'] ?? '';
+          _horsepowerController.text = data['horsepower'] ?? '';
+          _priceController.text = data['price'] ?? '';
+          _descController.text = data['description'] ?? '';
+          break;
+        case 'House':
+          _locationController.text = data['name'] ?? data['location'] ?? '';
+          _descController.text = data['description'] ?? '';
+          _valueController.text = data['value'] ?? '';
+          break;
+        case 'Jewelry':
+          _nameController.text = data['name'] ?? '';
+          _descController.text = data['description'] ?? '';
+          _priceController.text = data['price'] ?? '';
+          break;
+        case 'Art':
+          _painterController.text = data['painter'] ?? '';
+          _valueController.text = data['value'] ?? '';
+          _yearController.text = data['year'] ?? '';
+          _nameController.text = data['name'] ?? '';
+          _descController.text = data['description'] ?? '';
+          break;
+        case 'Property':
+          _locationController.text = data['location'] ?? '';
+          _valueController.text = data['value'] ?? '';
+          _descController.text = data['description'] ?? '';
+          _nameController.text = data['name'] ?? '';
+          break;
+        case 'Stocks':
+          _nameController.text = data['name'] ?? '';
+          _valueController.text = data['value'] ?? '';
+          break;
+        case 'Business':
+          _nameController.text = data['name'] ?? '';
+          _valueController.text = data['value'] ?? '';
+          break;
+        case 'Other':
+        default:
+          _nameController.text = data['name'] ?? '';
+          _descController.text = data['description'] ?? '';
+          _valueController.text = data['value'] ?? '';
+          break;
+      }
+    }
+  }
+
+
 
   @override
   void dispose() {
@@ -421,12 +504,13 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final secondaryTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
     final appPrimaryColor = const Color(0xFFD6AF0C);
-    final bool hasSectionTitle = (widget.sectionTitle != null && widget.sectionTitle!.isNotEmpty);
-    if (hasSectionTitle && _selectedCategory != widget.sectionTitle) {
+
+    final bool hasSectionTitle = (widget.sectionType != null && widget.sectionType!.isNotEmpty);
+    if (hasSectionTitle && _selectedCategory != widget.sectionType) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_selectedCategory != widget.sectionTitle) {
+        if (_selectedCategory != widget.sectionType) {
           setState(() {
-            _selectedCategory = widget.sectionTitle;
+            _selectedCategory = widget.sectionType;
           });
         }
       });
@@ -490,16 +574,40 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
                         color: Colors.grey[200],
                       ),
                       clipBehavior: Clip.antiAlias,
-                      child: _pickedImage != null
-                          ? Image.file(
-                              File(_pickedImage!.path),
+                      child: (() {
+                        if (_pickedImage != null) {
+                          return Image.file(
+                            File(_pickedImage!.path),
+                            height: 100,
+                            width: 100,
+                            fit: BoxFit.cover,
+                          );
+                        }
+                        // Prefer imageUrl, fallback to image, fallback to photo
+                        final imageUrl = widget.initialData != null
+                            ? (widget.initialData!['imageUrl'] ?? widget.initialData!['image'] ?? widget.initialData!['photo'])
+                            : null;
+                        if (imageUrl != null && imageUrl.toString().isNotEmpty) {
+                          final urlStr = imageUrl.toString();
+                          if (urlStr.startsWith('http')) {
+                            return Image.network(
+                              urlStr,
                               height: 100,
                               width: 100,
                               fit: BoxFit.cover,
-                            )
-                          : const Center(
-                              child: Icon(Icons.camera_alt, size: 36, color: Colors.grey),
-                            ),
+                              errorBuilder: (context, error, stackTrace) => const Center(child: Icon(Icons.broken_image, size: 36, color: Colors.grey)),
+                            );
+                          } else {
+                            return Image.file(
+                              File(urlStr),
+                              height: 100,
+                              width: 100,
+                              fit: BoxFit.cover,
+                            );
+                          }
+                        }
+                        return const Center(child: Icon(Icons.camera_alt, size: 36, color: Colors.grey));
+                      })(),
                     ),
                   ),
                   const SizedBox(height: 10,),
@@ -542,8 +650,8 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      icon: const Icon(Icons.check),
-                      label: Text(AppLocalizations.of(context)!.add),
+                      icon: Icon(widget.isEdit ? Icons.edit : Icons.check),
+                      label: Text(widget.isEdit ? (AppLocalizations.of(context)!.edit ?? 'Edit') : AppLocalizations.of(context)!.add),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: appPrimaryColor,
                         foregroundColor: Colors.white,
@@ -552,7 +660,7 @@ class _AddWealthItemModalState extends State<AddWealthItemModal> {
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      onPressed: _submit,
+                      onPressed: _isLoading ? null : _submit,
                     ),
                   ),
                   const SizedBox(height: 10),

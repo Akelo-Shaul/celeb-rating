@@ -102,7 +102,7 @@ class CelebrityUser extends User {
   final List<Map<String, dynamic>> publicImageDescription;
   final List<Map<String, dynamic>> redCarpetMoments;
   final List<Map<String, dynamic>> quotesAndPublicStatements;
-  final Map<String, List<Map<String, dynamic>>> fashionStyle;
+  final List<Map<String, dynamic>> fashionStyle;
   final String hometown; // Added hometown field
 
   CelebrityUser({

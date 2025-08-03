@@ -309,16 +309,16 @@ class UserService {
           {'title': 'Musician, Public Speaker'},
         ],
         'Debut Work': [
-          {'title': 'Lead Actor', 'subtitle': 'The Last of Us'},
+          {'title': 'Lead Actor', 'subtitle': 'The Last of Us', 'year': '2024'},
         ],
         'Awards': [
-          {'title': 'Lead Actor, The Last of Us','award': 'Emmy Awards'},
-          {'title': 'Sting on the view','award': 'Grammy Awards'},
-          {'title': 'Best Upcoming Artist','award': 'MTV Awards'},
+          {'title': 'Lead Actor, The Last of Us','award': 'Emmy Awards', 'year': '2064'},
+          {'title': 'Sting on the view','award': 'Grammy Awards', 'year': '2028'},
+          {'title': 'Best Upcoming Artist','award': 'MTV Awards', 'year': '2014'},
         ],
         'Collaborations': [
-          {'title': 'Horror on the Moves', 'subtitle': 'ft Chunk Molksey', 'type': 'Song'},
-          {'title': 'Sting on the view','subtitle': 'ft Alice Mahone', 'type': 'Song'}
+          {'title': 'Horror on the Moves', 'subtitle': 'ft Chunk Molksey', 'type': 'Song', 'year': '2024'},
+          {'title': 'Sting on the view','subtitle': 'ft Alice Mahone', 'type': 'Song', 'year': '2024'}
         ],
       };
 
@@ -374,22 +374,11 @@ class UserService {
         {'title': 'Cannes Film Festival', 'description': 'Wore a shimmering silver dress that captured international attention for its bold silhouette.', 'imageUrl': 'https://i.ibb.co/C0f11Kk/red-carpet3.jpg'},
       ];
 
-      final Map<String, List<Map<String, dynamic>>> fashionStyle = {
-        'vintage': [
-          {'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=200&q=80'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=200&q=80'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=200&q=80'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=200&q=80'},
-        ],
-        'street': [
-          {'imageUrl': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=200&q=80'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=200&q=80'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=200&q=80'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=200&q=80'},
-        ],
-      };
+      final List<Map<String, dynamic>> fashionStyle = [
+        {'title': 'Casual Chic', 'description': 'Known for casual yet chic street style, often incorporating vintage pieces.', 'imageUrl': 'https://i.ibb.co/T4X16yR/fashion-style1.jpg'},
+        {'title': 'Ethereal Gowns', 'description': 'Often seen in flowing, ethereal gowns at events, emphasizing grace and movement.', 'imageUrl': 'https://i.ibb.co/K2sY5sP/fashion-style2.jpg'},
+        {'title': 'Bohemian Edge', 'description': 'Combines bohemian elements with a modern, edgy twist, creating unique looks.', 'imageUrl': 'https://i.ibb.co/2d11VpX/fashion-style3.jpg'},
+      ];
 
       // Additional dummy data for new fields
       final String zodiacSign = 'Libra';

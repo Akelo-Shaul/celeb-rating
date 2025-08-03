@@ -1128,14 +1128,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
 
     final celeb = widget.user as CelebrityUser;
 
-    // Dummy data for Public Persona sections (MODIFIED with image URLs)
-    final Map<String, List<Map<String, String>>> publicPersonaData = {
-      'Quotes or Public Statements': [
-        {'quote': '“Be yourself; everyone else is already taken.”', 'context': 'Interview with Vogue, 2021.'},
-        {'quote': '“The only way to do great work is to love what you do.”', 'context': 'Award acceptance speech, 2023.'},
-      ],
-    };
-
+    final List<Map<String, dynamic>> fashionStyleData = celeb.fashionStyle;
 
     return SingleChildScrollView(
       child: Padding(
@@ -1184,44 +1177,37 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
             _buildSectionHeader(
                 AppLocalizations.of(context)!.fashionStyle,
                 Icons.whatshot,
-              Color(0xFFD6AF0C),),
+                Color(0xFFD6AF0C),),
             const SizedBox(height: 10),
-            ...celeb.fashionStyle.entries.map((entry) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    entry.key[0].toUpperCase() + entry.key.substring(1),
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: defaultTextColor,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    height: 150,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: entry.value.length,
-                      itemBuilder: (context, idx) {
-                        final img = entry.value[idx]['imageUrl'];
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 12.0),
-                          child: ImageWithOptionalText(
-                            width: 100,
-                            height: 150,
-                            imageUrl: img,
-                            bottomText: null, // No bottom text for fashion images
-                          ),
+            SizedBox(
+              height: 170, // Height for horizontal list
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: celeb.fashionStyle.length,
+                itemBuilder: (context, index) {
+                  final item = celeb.fashionStyle[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        _showItemPopupModal(
+                          context: context,
+                          sectionTitle: AppLocalizations.of(context)!.editPublicPersona,
+                          itemData: item,
+                          sectionType: item['title'] ?? '', // Assuming description may be empty
                         );
                       },
+                      child: ImageWithOptionalText(
+                        width: 100,
+                        height: 150,
+                        imageUrl: item['imageUrl'],
+                        bottomText: item['title'],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              );
-            }).toList(),
+                  );
+                },
+              ),
+            ),
             const SizedBox(height: 20),
 
             // Red Carpet Moments (MODIFIED to horizontal list with images)

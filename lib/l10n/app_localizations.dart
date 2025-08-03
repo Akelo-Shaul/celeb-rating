@@ -1606,6 +1606,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit Hobbies'**
   String get editHobbies;
+
+  /// No description provided for @editCareerHighlight.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Career Highlight'**
+  String get editCareerHighlight;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

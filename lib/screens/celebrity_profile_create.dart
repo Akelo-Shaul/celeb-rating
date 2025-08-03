@@ -473,6 +473,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                   backgroundColor: Colors.transparent,
                   builder: (context) => AddPersonaModal(
                     sectionTitle: AppLocalizations.of(context)!.socials,
+                    sectionType: '',
                     onAdd: (social) {
                       // TODO: Add logic to update dummy data
                     },
@@ -650,7 +651,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(AppLocalizations.of(context)!.addedWealthItem(item['name']))),
                       );
-                    },
+                    }, sectionType: '',
                   ),
                 );
                 if (result != null) {

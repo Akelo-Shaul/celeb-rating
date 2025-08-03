@@ -41,6 +41,7 @@ class _AddFunNicheModalState extends State<AddFunNicheModal> {
 
   XFile? _pickedImage;
   DateTime? _selectStartDate;
+  bool _isLoading = false;
 
   final TextEditingController _hobbyNameController = TextEditingController();
   final TextEditingController _hobbyDescController = TextEditingController();
@@ -95,7 +96,7 @@ class _AddFunNicheModalState extends State<AddFunNicheModal> {
           _startYearController.text = data['startYear'] ?? '';
           break;
         case 'Fan Theories or Fan Interactions':
-          _fanTheoryTitleController.text = data['title'] ?? '';
+          _fanTheoryTitleController.text = data['theory'] ?? data['interaction'] ?? '';
           _fanInteractionTypeController.text = data['interactionType'] ?? '';
           _descController.text = data['description'] ?? '';
           break;
@@ -566,10 +567,8 @@ class _AddFunNicheModalState extends State<AddFunNicheModal> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      icon: const Icon(Icons.check),
-                      label: Text(widget.isEdit
-                          ? AppLocalizations.of(context)!.edit
-                          : AppLocalizations.of(context)!.add),
+                      icon: Icon(widget.isEdit ? Icons.edit : Icons.check),
+                      label: Text(widget.isEdit ? (AppLocalizations.of(context)!.edit ?? 'Edit') : AppLocalizations.of(context)!.add),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: appPrimaryColor,
                         foregroundColor: Colors.white,
@@ -578,7 +577,7 @@ class _AddFunNicheModalState extends State<AddFunNicheModal> {
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      onPressed: _submit,
+                      onPressed: _isLoading ? null : _submit,
                     ),
                   ),
                   const SizedBox(height: 10),

@@ -4,12 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../l10n/app_localizations.dart';
 import 'app_buttons.dart';
+import 'app_date_picker.dart';
 import 'app_text_fields.dart';
 import 'app_dropdown.dart';
 
 class AddCareerHighlightsModal extends StatefulWidget {
   final void Function(Map<String, dynamic> careerHighlightItem) onAdd;
-  const AddCareerHighlightsModal({super.key, required this.onAdd});
+  final Map<String, dynamic>? initialData;
+  final bool isEdit;
+  final String? sectionType;
+  const AddCareerHighlightsModal({
+    super.key,
+    required this.onAdd,
+    this.initialData,
+    this.isEdit = false,
+    this.sectionType,
+  });
 
   @override
   State<AddCareerHighlightsModal> createState() => _AddCareerHighlightsModalState();
@@ -18,6 +28,36 @@ class AddCareerHighlightsModal extends StatefulWidget {
 class _AddCareerHighlightsModalState extends State<AddCareerHighlightsModal> {
   final _formKey = GlobalKey<FormState>();
   String? _selectedCareerType;
+  DateTime? _selectStartDate;
+
+  @override
+  void initState() {
+    super.initState();
+    // If editing, prefill fields
+    if (widget.isEdit && widget.initialData != null) {
+      final data = widget.initialData!;
+      _selectedCareerType = widget.sectionType ?? data['type'];
+      switch (_selectedCareerType) {
+        case 'Debut Work':
+          _nameController.text = data['title'] ?? data['name'] ?? '';
+          _yearController.text = data['year'] ?? '';
+          _descriptionController.text = data['description'] ?? '';
+          break;
+        case 'Awards':
+          _awardNameController.text = data['title'] ?? data['awardName'] ?? '';
+          _awardRoleController.text = data['award'] ?? data['role'] ?? '';
+          _awardYearController.text = data['year'] ?? '';
+          _valuePointsController.text = data['valuePoints'] ?? '';
+          break;
+        case 'Collaborations':
+          _collaborationNameController.text = data['title'] ?? data['name'] ?? '';
+          _collaboratorsController.text = data['subtitle'] ?? data['collaborators'] ?? '';
+          _collaborationTypeController.text = data['type'] ?? '';
+          _collaborationDescController.text = data['description'] ?? '';
+          break;
+      }
+    }
+  }
 
   // Controllers for Debut Work
   final TextEditingController _nameController = TextEditingController();
@@ -121,6 +161,24 @@ class _AddCareerHighlightsModalState extends State<AddCareerHighlightsModal> {
             keyboardType: TextInputType.number,
             validator: (v) => v == null || v.trim().isEmpty ? 'Please enter year' : null,
           ),
+          TextFormField(
+            controller: _yearController,
+            decoration: InputDecoration(
+              labelText: 'Year',
+              prefixIcon: Icon(Icons.calendar_today),
+            ),
+            readOnly: true,
+            onTap: () async {
+              final picked = await CustomDatePicker.show(context);
+              if (picked != null) {
+                setState(() {
+                  _selectStartDate = picked;
+                  _yearController.text = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+                });
+              }
+            },
+          ),
+
           const SizedBox(height: 14),
           TextFormField(
             controller: _descriptionController,
@@ -257,7 +315,9 @@ class _AddCareerHighlightsModalState extends State<AddCareerHighlightsModal> {
                   ],
                 ),
                 Text(
-                  AppLocalizations.of(context)!.addCareerHighlight, // Updated string
+                  widget.isEdit
+                      ? AppLocalizations.of(context)!.editCareerHighlight
+                      : AppLocalizations.of(context)!.addCareerHighlight,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
@@ -272,7 +332,7 @@ class _AddCareerHighlightsModalState extends State<AddCareerHighlightsModal> {
                     value: type,
                     child: Text(type),
                   )).toList(),
-                  onChanged: (val) => setState(() => _selectedCareerType = val),
+                  onChanged: widget.isEdit ? null : (val) => setState(() => _selectedCareerType = val),
                   validator: (v) => v == null || v.isEmpty ? 'Please select a career type' : null,
                 ),
                 const SizedBox(height: 14),
@@ -282,7 +342,9 @@ class _AddCareerHighlightsModalState extends State<AddCareerHighlightsModal> {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.check),
-                    label: Text(AppLocalizations.of(context)!.add),
+                    label: Text(widget.isEdit
+                        ? AppLocalizations.of(context)!.edit
+                        : AppLocalizations.of(context)!.add),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: appPrimaryColor,
                       foregroundColor: Colors.white,

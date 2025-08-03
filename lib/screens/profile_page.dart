@@ -603,6 +603,7 @@ class _ProfilePageState extends State<ProfilePage>
                               if (category == 'Awards') {
                                 final title = item['title'];
                                 final award = item['award'];
+                                final year = item['year'];
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 2.0),
                                   child: Expanded(
@@ -624,14 +625,30 @@ class _ProfilePageState extends State<ProfilePage>
                                                   style: TextStyle(
                                                       fontSize: 15,
                                                       color: defaultTextColor.withOpacity(0.8))),
+                                            if (year != null)
+                                              Text(year,
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: defaultTextColor.withOpacity(0.8))),
                                           ],
                                         ),
-
                                         IconButton(
                                           icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
                                           tooltip: 'Edit Awards',
-                                          onPressed: (){
-                                            //TODO: Add edit lifestyle
+                                          onPressed: () async {
+                                            await showModalBottomSheet(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              backgroundColor: Colors.transparent,
+                                              builder: (context) => AddCareerHighlightsModal(
+                                                initialData: item,
+                                                isEdit: true,
+                                                sectionType: 'Awards',
+                                                onAdd: (editedItem) {
+                                                  // TODO: Update awards data with editedItem
+                                                },
+                                              ),
+                                            );
                                           },
                                         ),
                                       ],
@@ -642,6 +659,7 @@ class _ProfilePageState extends State<ProfilePage>
                                 final title = item['title'];
                                 final subtitle = item['subtitle'];
                                 final type = item['type'];
+                                final year = item['year'];
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 2.0),
                                   child: Expanded(
@@ -668,13 +686,30 @@ class _ProfilePageState extends State<ProfilePage>
                                                   style: TextStyle(
                                                       fontSize: 13,
                                                       color: defaultTextColor.withOpacity(0.7))),
+                                            if (year != null)
+                                              Text(year,
+                                                  style: TextStyle(
+                                                      fontSize: 13,
+                                                      color: defaultTextColor.withOpacity(0.7))),
                                           ],
                                         ),
                                         IconButton(
                                           icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
-                                          tooltip: 'Edit lifestyle',
-                                          onPressed: (){
-                                            //TODO: Add edit lifestyle
+                                          tooltip: 'Edit Collaborations',
+                                          onPressed: () async {
+                                            await showModalBottomSheet(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              backgroundColor: Colors.transparent,
+                                              builder: (context) => AddCareerHighlightsModal(
+                                                initialData: item,
+                                                isEdit: true,
+                                                sectionType: 'Collaborations',
+                                                onAdd: (editedItem) {
+                                                  // TODO: Update collaborations data with editedItem
+                                                },
+                                              ),
+                                            );
                                           },
                                         ),
                                       ],
@@ -684,6 +719,7 @@ class _ProfilePageState extends State<ProfilePage>
                               } else if (category == 'Debut Work') {
                                 final title = item['title'];
                                 final subtitle = item['subtitle'];
+                                final year = item['year'];
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 8.0),
                                   child: Expanded(
@@ -707,13 +743,32 @@ class _ProfilePageState extends State<ProfilePage>
                                                       fontSize: 15,
                                                       color: defaultTextColor.withOpacity(0.8))),
                                             ],
+                                            if (year != null) ...[
+                                              const SizedBox(height: 2),
+                                              Text(year,
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: defaultTextColor.withOpacity(0.8))),
+                                            ],
                                           ],
                                         ),
                                         IconButton(
                                           icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
-                                          tooltip: 'Edit lifestyle',
-                                          onPressed: (){
-                                            //TODO: Add edit lifestyle
+                                          tooltip: 'Edit debut work',
+                                          onPressed: () async {
+                                            await showModalBottomSheet(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              backgroundColor: Colors.transparent,
+                                              builder: (context) => AddCareerHighlightsModal(
+                                                initialData: item,
+                                                isEdit: true,
+                                                sectionType: 'Debut Work',
+                                                onAdd: (editedItem) {
+                                                  // TODO: Update debut work data with editedItem
+                                                },
+                                              ),
+                                            );
                                           },
                                         ),
                                       ],
@@ -864,6 +919,7 @@ class _ProfilePageState extends State<ProfilePage>
                           backgroundColor: Colors.transparent,
                           builder: (context) => AddWealthItemModal(
                             sectionTitle: localizedCategory,
+                            sectionType: localizedCategory,
                             onAdd: (item) {
                               // TODO: Add logic to update data
                             },
@@ -945,24 +1001,6 @@ class _ProfilePageState extends State<ProfilePage>
         {'platform': 'Instagram', 'followers': '15M', 'link': 'https://instagram.com/celeba'},
         {'platform': 'TikTok', 'followers': '10M', 'link': 'https://tiktok.com/@celeba'},
       ],
-      'Public Image / Reputation': [
-        {'title': 'Philanthropic Work', 'description': 'Known for extensive charity work and advocacy.'},
-        {'title': 'Role Model', 'description': 'Considered a positive role model by many fans.'},
-      ],
-      'Fashion Style': [
-        {'title': 'Casual Chic', 'description': 'Known for casual yet chic street style, often incorporating vintage pieces.', 'imageUrl': 'https://i.ibb.co/T4X16yR/fashion-style1.jpg'},
-        {'title': 'Ethereal Gowns', 'description': 'Often seen in flowing, ethereal gowns at events, emphasizing grace and movement.', 'imageUrl': 'https://i.ibb.co/K2sY5sP/fashion-style2.jpg'},
-        {'title': 'Bohemian Edge', 'description': 'Combines bohemian elements with a modern, edgy twist, creating unique looks.', 'imageUrl': 'https://i.ibb.co/2d11VpX/fashion-style3.jpg'},
-      ],
-      'Red Carpet Moments': [
-        {'title': 'Met Gala 2023', 'description': 'Stunning custom gown by designer X, widely praised for its innovative design.', 'imageUrl': 'https://i.ibb.co/N73yB9c/red-carpet1.jpg'},
-        {'title': 'Oscars 2024', 'description': 'Epitome of elegance in a classic black tuxedo, breaking traditional gender norms.', 'imageUrl': 'https://i.ibb.co/y4L2k2n/red-carpet2.jpg'},
-        {'title': 'Cannes Film Festival', 'description': 'Wore a shimmering silver dress that captured international attention for its bold silhouette.', 'imageUrl': 'https://i.ibb.co/C0f11Kk/red-carpet3.jpg'},
-      ],
-      'Quotes or Public Statements': [
-        {'quote': '“Be yourself; everyone else is already taken.”', 'context': 'Interview with Vogue, 2021.'},
-        {'quote': '“The only way to do great work is to love what you do.”', 'context': 'Award acceptance speech, 2023.'},
-      ],
     };
 
 
@@ -984,6 +1022,7 @@ class _ProfilePageState extends State<ProfilePage>
                     backgroundColor: Colors.transparent,
                     builder: (context) => AddPersonaModal(
                       sectionTitle: AppLocalizations.of(context)!.socialMediaPresence,
+                      sectionType: AppLocalizations.of(context)!.socialMediaPresence,
                       onAdd: (item) {
                         // TODO: Add logic to update dummy data
                       },
@@ -1056,13 +1095,14 @@ class _ProfilePageState extends State<ProfilePage>
                     backgroundColor: Colors.transparent,
                     builder: (context) => AddPersonaModal(
                       sectionTitle: AppLocalizations.of(context)!.publicImageReputation,
+                      sectionType: AppLocalizations.of(context)!.publicImageReputation,
                       onAdd: (item) {
                         // TODO: Add logic to update dummy data
                       },
                     ),
                   );
                 }),
-            ... (publicPersonaData['Public Image / Reputation'] ?? []).map((item) {
+            ... celeb.publicImageDescription.map((item) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Row(
@@ -1087,9 +1127,22 @@ class _ProfilePageState extends State<ProfilePage>
                     ),
                     IconButton(
                       icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
-                      tooltip: 'Edit lifestyle',
+                      tooltip: 'Edit public image/reputation',
                       onPressed: (){
-                        //TODO: Add edit lifestyle
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => AddPersonaModal(
+                            sectionTitle: AppLocalizations.of(context)!.publicImageReputation,
+                            sectionType: 'Public Image / Reputation',
+                            initialData: item,
+                            isEdit: true,
+                            onAdd: (editedItem) {
+                              // TODO: Update public image/reputation entry logic here
+                            },
+                          ),
+                        );
                       },
                     ),
                   ],
@@ -1110,6 +1163,7 @@ class _ProfilePageState extends State<ProfilePage>
                     backgroundColor: Colors.transparent,
                     builder: (context) => AddPersonaModal(
                       sectionTitle: AppLocalizations.of(context)!.fashionStyle,
+                      sectionType: AppLocalizations.of(context)!.fashionStyle,
                       onAdd: (item) {
                         // TODO: Add logic to update dummy data
                       },
@@ -1121,9 +1175,9 @@ class _ProfilePageState extends State<ProfilePage>
               height: 170, // Height for horizontal list
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: (publicPersonaData['Fashion Style'] ?? []).length,
+                itemCount: celeb.fashionStyle.length,
                 itemBuilder: (context, index) {
-                  final item = publicPersonaData['Fashion Style']![index];
+                  final item = celeb.fashionStyle[index];
                   return Padding(
                     padding: const EdgeInsets.only(right: 12.0),
                     child: GestureDetector(
@@ -1132,7 +1186,7 @@ class _ProfilePageState extends State<ProfilePage>
                           context: context,
                           sectionTitle: AppLocalizations.of(context)!.editPublicPersona,
                           itemData: item,
-                          sectionType: item['title']!, // Assuming description may be empty
+                          sectionType: 'Fashion Style', // Assuming description may be empty
                         );
                       },
                       child: ImageWithOptionalText(
@@ -1160,6 +1214,7 @@ class _ProfilePageState extends State<ProfilePage>
                     backgroundColor: Colors.transparent,
                     builder: (context) => AddPersonaModal(
                       sectionTitle: AppLocalizations.of(context)!.redCarpetMoments,
+                      sectionType: AppLocalizations.of(context)!.fashionStyle,
                       onAdd: (item) {
                         // TODO: Add logic to update dummy data
                       },
@@ -1171,9 +1226,9 @@ class _ProfilePageState extends State<ProfilePage>
               height: 170, // Height for horizontal list
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: (publicPersonaData['Red Carpet Moments'] ?? []).length,
+                itemCount: celeb.redCarpetMoments.length,
                 itemBuilder: (context, index) {
-                  final item = publicPersonaData['Red Carpet Moments']![index];
+                  final item = celeb.redCarpetMoments[index];
                   return Padding(
                     padding: const EdgeInsets.only(right: 12.0),
                     child: GestureDetector(
@@ -1182,7 +1237,7 @@ class _ProfilePageState extends State<ProfilePage>
                           context: context,
                           sectionTitle: AppLocalizations.of(context)!.editPublicPersona,
                           itemData: item,
-                          sectionType: item['title']!, // Assuming description may be empty
+                          sectionType: 'Red Carpet Moments', // Assuming description may be empty
                         );
                       },
                       child: ImageWithOptionalText(
@@ -1210,13 +1265,14 @@ class _ProfilePageState extends State<ProfilePage>
                     backgroundColor: Colors.transparent,
                     builder: (context) => AddPersonaModal(
                       sectionTitle: AppLocalizations.of(context)!.quotesPublicStatements,
+                      sectionType: AppLocalizations.of(context)!.fashionStyle,
                       onAdd: (item) {
                         // TODO: Add logic to update dummy data
                       },
                     ),
                   );
                 }),
-            ... (publicPersonaData['Quotes or Public Statements'] ?? []).map((item) {
+            ...celeb.quotesAndPublicStatements.map((item) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Row(
@@ -1227,23 +1283,36 @@ class _ProfilePageState extends State<ProfilePage>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          item['quote'] ?? item['interaction']!,
+                          item['quote'] ?? item['interaction'] ?? '',
                           style: TextStyle(
                               fontSize: 15,
                               fontStyle: FontStyle.italic,
                               color: defaultTextColor),
                         ),
                         Text(
-                          '- ${item['context']}',
+                          '- ${item['context'] ?? ''}',
                           style: TextStyle(fontSize: 13, color: secondaryTextColor),
                         ),
                       ],
                     ),
                     IconButton(
                       icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
-                      tooltip: 'Edit lifestyle',
+                      tooltip: 'Edit quote or statement',
                       onPressed: (){
-                        //TODO: Add edit lifestyle
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => AddPersonaModal(
+                            sectionType: 'Quotes or Public Statements',
+                            initialData: item,
+                            sectionTitle: 'Edit Quotes or Public Statements',
+                            isEdit: true,
+                            onAdd: (editedItem) {
+                              // TODO: Update fun & niche entry logic here
+                            },
+                          ),
+                        );
                       },
                     ),
                   ],
@@ -1674,6 +1743,7 @@ class _ProfilePageState extends State<ProfilePage>
                       backgroundColor: Colors.transparent,
                       builder: (context) => AddPersonaModal(
                         sectionTitle: AppLocalizations.of(context)!.involvedCauses,
+                        sectionType: 'Involved Causes',
                         onAdd: (item) {
                           // TODO: Add logic to update dummy data
                           Navigator.pop(context);
@@ -1721,9 +1791,26 @@ class _ProfilePageState extends State<ProfilePage>
                             ),
                             IconButton(
                               icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
-                              tooltip: 'Edit lifestyle',
-                              onPressed: (){
-                                //TODO: Add edit lifestyle
+                              tooltip: 'Edit involved cause',
+                              onPressed: () async {
+                                await showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.transparent,
+                                  builder: (context) => AddPersonaModal(
+                                    sectionTitle: AppLocalizations.of(context)!.involvedCauses,
+                                    sectionType: 'Involved Causes',
+                                    initialData: {
+                                      'type': 'Involved Causes',
+                                      'name': cause['name'],
+                                      'role': cause['role'],
+                                    },
+                                    isEdit: true,
+                                    onAdd: (editedItem) {
+                                      // TODO: Update involved cause entry logic here
+                                    },
+                                  ),
+                                );
                               },
                             ),
                           ],
@@ -1794,7 +1881,7 @@ class _ProfilePageState extends State<ProfilePage>
                           context: context,
                           sectionTitle: 'Tattoo',
                           itemData: tattoo,
-                          sectionType: tattoo['name']!, // Assuming description may be empty
+                          sectionType: 'Tattoos or Unique Physical Traits', // Assuming description may be empty
                         );
                       },
                       child: ImageWithOptionalText(
@@ -1845,7 +1932,7 @@ class _ProfilePageState extends State<ProfilePage>
                           context: context,
                           sectionTitle: 'Favourite Things',
                           itemData: item,
-                          sectionType: item['name']!, // Assuming description may be empty
+                          sectionType: 'Favorite Things', // Assuming description may be empty
                         );
                       },
                       child: ImageWithOptionalText(
@@ -1895,7 +1982,7 @@ class _ProfilePageState extends State<ProfilePage>
                           context: context,
                           sectionTitle: 'Hidden Talents',
                           itemData: item,
-                          sectionType: item['name'], // Assuming description may be empty
+                          sectionType: 'Hidden Talents', // Assuming description may be empty
                         );
                       },
                       child: ImageWithOptionalText(
@@ -1958,7 +2045,20 @@ class _ProfilePageState extends State<ProfilePage>
                       icon: const Icon(Icons.edit, color: Color(0xFFD6AF0C)),
                       tooltip: 'Edit lifestyle',
                       onPressed: (){
-                        //TODO: Add edit lifestyle
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => AddFunNicheModal(
+                            sectionType: 'Fan Theories or Fan Interactions',
+                            initialData: item,
+                            sectionTitle: 'Edit Fan Theories or Fan Interactions',
+                            isEdit: true,
+                            onAdd: (editedItem) {
+                              // TODO: Update fun & niche entry logic here
+                            },
+                          ),
+                        );
                       },
                     ),
                   ],

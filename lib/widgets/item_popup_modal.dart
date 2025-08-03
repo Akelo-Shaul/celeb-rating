@@ -225,6 +225,9 @@ class _ItemPopupModalState extends State<ItemPopupModal> {
                           // Wealth modal
                           return AddWealthItemModal(
                             sectionTitle: widget.sectionTitle,
+                            sectionType: widget.sectionType,
+                            initialData: initialData,
+                            isEdit: true,
                             onAdd: (editedItem) {
                               // TODO: Update wealth entry logic here
                             },
@@ -233,6 +236,8 @@ class _ItemPopupModalState extends State<ItemPopupModal> {
                           // Persona modal
                           return AddPersonaModal(
                             sectionTitle: widget.sectionTitle,
+                            sectionType: widget.sectionType,
+                            isEdit: true,
                             onAdd: (editedItem) {
                               // TODO: Update persona entry logic here
                             },

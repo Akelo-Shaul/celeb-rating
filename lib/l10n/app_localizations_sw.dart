@@ -777,4 +777,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get editHobbies => 'Hariri Shughuli za ziada';
+
+  @override
+  String get editCareerHighlight => 'Hariri Tukio la Kazi';
 }
