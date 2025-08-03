@@ -473,7 +473,7 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
                   backgroundColor: Colors.transparent,
                   builder: (context) => AddPersonaModal(
                     sectionTitle: AppLocalizations.of(context)!.socials,
-                    sectionType: '',
+                    sectionType: 'Social Media Presence',
                     onAdd: (social) {
                       // TODO: Add logic to update dummy data
                     },

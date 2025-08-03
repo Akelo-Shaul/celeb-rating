@@ -1354,16 +1354,16 @@ class _ViewProfilePageState extends State<ViewProfilePage> with SingleTickerProv
                       onTap: () {
                         _showItemPopupModal(
                           context: context,
-                          sectionTitle: AppLocalizations.of(context)!.favoriteThings,
+                          sectionTitle: 'Favourite Things',
                           itemData: item,
-                          sectionType: item['item'], // Assuming description may be empty
+                          sectionType: 'Favorite Things', // Assuming description may be empty
                         );
                       },
                       child: ImageWithOptionalText(
                         width: 100,
                         height: 150,
                         imageUrl: item['imageUrl'],
-                        bottomText: item['item'],
+                        bottomText: item['name'],
                       ),
                     ),
                   );

@@ -119,8 +119,8 @@ class SearchService {
         {'interaction': 'Surprise Fan Meetup', 'description': 'Known for organizing spontaneous meetups with fans in different cities.'},
       ],
       favouriteThings: [
-        {'item': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
-        {'item': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
       ],
       favouritePlaces : [
         {'name': 'Vienna', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
@@ -262,8 +262,8 @@ class SearchService {
         {'name': 'Aloha titan','imageUrl':'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=200&q=80', 'description': 'A playful golden retriever, often featured on social media.'},
       ],
       favouriteThings: [
-        {'item': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
-        {'item': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
       ],
       favouritePlaces : [
         {'name': 'Vienna', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
@@ -389,9 +389,9 @@ class SearchService {
         {'name': 'Aloha titan','imageUrl':'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=200&q=80', 'description': 'A playful golden retriever, often featured on social media.'},
       ],
       favouriteThings: [
-        {'item': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
-        {'item': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
-        ],
+        {'name': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+        {'name': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+      ],
       favouritePlaces : [
         {'name': 'Vienna', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
         {'name': 'Seattle', 'imageUrl': 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=200&q=80'},

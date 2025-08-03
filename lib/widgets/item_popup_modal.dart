@@ -115,7 +115,7 @@ class _ItemPopupModalState extends State<ItemPopupModal> {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('You rated ${widget.itemData['title']} ${index + 1} stars!'),
+                          content: Text('You rated ${widget.itemData['title'] ?? widget.itemData['name']} ${index + 1} stars!'),
                           duration: const Duration(seconds: 2),
                         ),
                       );
@@ -159,7 +159,7 @@ class _ItemPopupModalState extends State<ItemPopupModal> {
                       widget.onSalute?.call();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(_isSaluted ? 'Saluted ${widget.itemData['title']}' : 'Removed salute'),
+                          content: Text(_isSaluted ? 'Saluted ${widget.itemData['title'] ?? widget.itemData['name']}' : 'Removed salute'),
                           duration: const Duration(seconds: 2),
                         ),
                       );
