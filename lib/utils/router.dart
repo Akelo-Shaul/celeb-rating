@@ -130,11 +130,7 @@ class AppRouter {
         name: 'notifications',
         builder: (context, state) => const NotificationScreen(),
       ),
-      GoRoute(
-        path: '/chat',
-        name: 'chat',
-        builder: (context, state) => const ChatScreen(),
-      ),
+
       GoRoute(
         path: '/chat/:chatId',
         name: 'chatMessage',
@@ -243,9 +239,28 @@ class AppRouter {
                 builder: (context, state) => const AwardScreen(),
               ),
               GoRoute(
-                path: 'celebrity-rankings',
-                name: 'celebrityRankings',
-                builder: (context, state) => const CelebrityRankingsScreen(),
+                path: 'stream',
+                name: 'stream',
+                builder: (context, state) => const StreamPage(),
+                routes: [
+                  // Live Stream Detail (pops back to Stream)
+                  // GoRoute(
+                  //   path: ':streamId', // Path is relative to /stream
+                  //   name: 'streamDetail',
+                  //   builder: (context, state) {
+                  //     final streamId = state.pathParameters['streamId']!;
+                  //     return LiveStreamDetailPage(streamId: streamId);
+                  //   },
+                  // ),
+                ],
+              ),
+              GoRoute(
+                path: 'profile',
+                name: 'profile',
+                builder: (context, state) => const ProfilePage(),
+                routes: [
+                  // Any sub-routes for profile (e.g., Edit Profile, Settings - though settings is top-level)
+                ],
               ),
             ],
           ),
@@ -356,33 +371,23 @@ class AppRouter {
             ],
           ),
 
-          // Stream Section - Main Bottom Nav Tab
+          // Chat Section - Main Bottom Nav Tab
           GoRoute(
-            path: '/stream',
-            name: 'stream',
-            builder: (context, state) => const StreamPage(),
+            path: '/chat',
+            name: 'chat',
+            builder: (context, state) => const ChatScreen(),
+          ),
+
+          // Rankings section -Main Bottom Nat Tab
+          GoRoute(
+            path: '/celebrity-rankings',
+            name: 'celebrityRankings',
+            builder: (context, state) => const CelebrityRankingsScreen(),
             routes: [
-              // Live Stream Detail (pops back to Stream)
-              // GoRoute(
-              //   path: ':streamId', // Path is relative to /stream
-              //   name: 'streamDetail',
-              //   builder: (context, state) {
-              //     final streamId = state.pathParameters['streamId']!;
-              //     return LiveStreamDetailPage(streamId: streamId);
-              //   },
-              // ),
+              // Any sub-routes for flicks
             ],
           ),
 
-          // Profile Section - Main Bottom Nav Tab (own profile)
-          GoRoute(
-            path: '/profile',
-            name: 'profile',
-            builder: (context, state) => const ProfilePage(),
-            routes: [
-              // Any sub-routes for profile (e.g., Edit Profile, Settings - though settings is top-level)
-            ],
-          ),
         ],
       ),
     ],
@@ -444,8 +449,8 @@ class ScaffoldWithBottomNav extends StatelessWidget {
     if (location.startsWith('/search')) return 1;
     if (location.startsWith('/celebrate')) return 2;
     if (location.startsWith('/flicks')) return 3;
-    if (location.startsWith('/stream')) return 4;
-    if (location.startsWith('/profile')) return 5;
+    if (location.startsWith('/chat')) return 4;
+    if (location.startsWith('/celebrity-rankings')) return 5;
     return 0; // Default to Feed if no match
   }
 
@@ -464,10 +469,10 @@ class ScaffoldWithBottomNav extends StatelessWidget {
         context.go('/flicks');
         break;
       case 4:
-        context.go('/stream');
+        context.go('/chat');
         break;
       case 5:
-        context.go('/profile');
+        context.go('/celebrity-rankings');
         break;
     }
   }
@@ -478,8 +483,8 @@ class ScaffoldWithBottomNav extends StatelessWidget {
         location == '/search' ||
         location == '/celebrate' ||
         location == '/flicks' ||
-        location == '/stream' ||
-        location == '/profile';
+        location == '/chat' ||
+        location == '/celebrity-rankings';
   }
 
   Future<bool> _showExitDialog(BuildContext context) async {
@@ -570,8 +575,8 @@ class ScaffoldWithBottomNav extends StatelessWidget {
               label: 'Home',
             ),
             NavigationDestination(
-              icon: Icon(Icons.search_outlined, color: unselectedIconColor),
-              selectedIcon: Icon(Icons.search, color: selectedIconColor),
+              icon: Icon(Icons.star_border, color: unselectedIconColor),
+              selectedIcon: Icon(Icons.star , color: selectedIconColor),
               label: 'Celebrities',
             ),
             NavigationDestination(
@@ -585,14 +590,14 @@ class ScaffoldWithBottomNav extends StatelessWidget {
               label: 'Flick',
             ),
             NavigationDestination(
-              icon: Icon(Icons.live_tv_outlined, color: unselectedIconColor),
-              selectedIcon: Icon(Icons.live_tv, color: selectedIconColor),
-              label: 'Stream',
+              icon: Icon(Icons.chat_bubble_outline, color: unselectedIconColor),
+              selectedIcon: Icon(Icons.chat_bubble, color: selectedIconColor),
+              label: 'Chat',
             ),
             NavigationDestination(
-              icon: Icon(Icons.person_outline, color: unselectedIconColor),
-              selectedIcon: Icon(Icons.person, color: selectedIconColor),
-              label: 'Profile',
+              icon: Icon(Icons.bar_chart_rounded, color: unselectedIconColor),
+              selectedIcon: Icon(Icons.bar_chart_rounded, color: selectedIconColor),
+              label: 'LeaderBoard',
             ),
           ],
         )

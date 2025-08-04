@@ -102,9 +102,8 @@ class _FeedScreenState extends State<FeedScreen> {
                   alignment: Alignment.center, // Typically aligns content to the left
                   child: GestureDetector(
                     onTap: () {
-                      // Implement profile navigation
-                      print('Profile picture tapped');
-                      // Example: Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfilePage()));
+                      context.pushNamed('profile');
+                      Navigator.pop(context);
                     },
                     child: ProfileAvatar(
                       imageUrl: currentUser?.profileImageUrl,
@@ -198,7 +197,19 @@ class _FeedScreenState extends State<FeedScreen> {
                 // iconColor: Colors.blueAccent, // Custom icon color
                 fontSize: 20,
                 onPressed: () {
-                  context.go('/profile');
+                  context.pushNamed('profile');
+                  Navigator.pop(context);
+                },
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                borderRadius: BorderRadius.circular(25), // More rounded corners
+              ),
+              AppTransparentButton(
+                text: 'Stream',
+                icon: Icons.live_tv,
+                // iconColor: Colors.blueAccent, // Custom icon color
+                fontSize: 20,
+                onPressed: () {
+                  context.pushNamed('stream');
                   Navigator.pop(context);
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
@@ -223,7 +234,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 fontSize: 20,
                 onPressed: () {
                   print('Notifications tapped');
-                  context.push('/notifications');
+                  context.pushNamed('notifications');
                 },
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners

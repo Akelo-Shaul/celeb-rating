@@ -206,6 +206,7 @@ class _ProfilePageState extends State<ProfilePage>
               SliverAppBar(
                 expandedHeight: 430.0, // Estimated height of header content
                 floating: true,
+                automaticallyImplyLeading: false,
                 pinned: true,
                 snap: true, // Optional: for snapping effect
                 elevation: 0, // No shadow for a cleaner look
