@@ -67,7 +67,7 @@ class _ProfilePageState extends State<ProfilePage>
     // Use widget.userId if provided, otherwise a default for testing/own profile
     final String userIdToFetch = widget.userId ?? '456';
     final fetchedUser =
-    await UserService.fetchUser(userIdToFetch, isCelebrity: true);
+    await UserService.fetchUser('69dd2706-99ad-4c63-9cb4-668d54741fd5', isCelebrity: true);
     if (fetchedUser is CelebrityUser) {
       setState(() {
         user = fetchedUser;
@@ -1392,7 +1392,7 @@ class _ProfilePageState extends State<ProfilePage>
                   }),
               const SizedBox(height: 10),
               SizedBox(
-                height: 60,
+                height: 80,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: celeb.familyMembers.length,
@@ -1412,9 +1412,14 @@ class _ProfilePageState extends State<ProfilePage>
                             },
                           );
                         },
-                        child: ProfileAvatar(
-                          radius: 30,
-                          imageUrl: family['imageUrl'],
+                        child: Column(
+                          children: [
+                            ProfileAvatar(
+                              radius: 30,
+                              imageUrl: family['imageUrl'],
+                            ),
+                            Text(family['title'])
+                          ],
                         ),
                       ),
                     );
@@ -1442,7 +1447,7 @@ class _ProfilePageState extends State<ProfilePage>
                   }),
               const SizedBox(height: 10),
               SizedBox(
-                height: 60,
+                height: 80,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: celeb.relationships.length,
@@ -1462,9 +1467,14 @@ class _ProfilePageState extends State<ProfilePage>
                             },
                           );
                         },
-                        child: ProfileAvatar(
-                          radius: 30,
-                          imageUrl: relationship['imageUrl'],
+                        child: Column(
+                          children: [
+                            ProfileAvatar(
+                              radius: 30,
+                              imageUrl: relationship['imageUrl'],
+                            ),
+                            Text(relationship['name'])
+                          ],
                         ),
                       ),
                     );

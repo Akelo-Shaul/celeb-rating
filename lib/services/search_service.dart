@@ -10,7 +10,7 @@ class SearchService {
   // Dummy user data for search
   static final List<User> dummyUsers = [
     CelebrityUser(
-      id: 1,
+      id: '69dd2706-99ad-4c63-9cb4-668d34ws41fd5',
       username: 'hamcurd',
       password: '',
       email: 'hamcurd@example.com',
@@ -142,7 +142,7 @@ class SearchService {
       ],
     ),
     User(
-      id: 2,
+      id: '4er5d2706-99ad-4c63-9cb4-668d54741fd5',
       username: 'musicfan',
       password: '',
       email: 'musicfan@example.com',
@@ -153,7 +153,7 @@ class SearchService {
       createdAt: DateTime.now(),
     ),
     CelebrityUser(
-      id: 3,
+      id: '69dd2706-3f4fe4-4c63-9cb4-668d54741fd5',
       username: 'jazzcat',
       password: '',
       email: 'jazzcat@example.com',
@@ -281,7 +281,7 @@ class SearchService {
       ],
     ),
     CelebrityUser(
-      id: 4,
+      id: '63de356-99ad-4c63-9cb4-668d54741fd5',
       username: 'rockstar',
       password: '',
       email: 'rockstar@example.com',
@@ -409,7 +409,7 @@ class SearchService {
       createdAt: DateTime.now(),
     ),
     User(
-      id: 5,
+      id: '34rtd2706-99ad-4c63-9cb4-668d54741fd5',
       username: 'popqueen',
       password: '',
       email: 'popqueen@example.com',
@@ -420,7 +420,7 @@ class SearchService {
       createdAt: DateTime.now(),
     ),
     User(
-      id: 6,
+      id: '646ft2706-99ad-4c63-9cb4-668d54741fd5',
       username: 'classicman',
       password: '',
       email: 'classicman@example.com',
@@ -431,7 +431,7 @@ class SearchService {
       createdAt: DateTime.now(),
     ),
     User(
-      id: 7,
+      id: '69der566-99ad-4c63-9cb4-668d54741fd5',
       username: 'hiphophead',
       password: '',
       email: 'hiphophead@example.com',
@@ -442,7 +442,7 @@ class SearchService {
       createdAt: DateTime.now(),
     ),
     User(
-      id: 8,
+      id: '69de343e706-99ad-4c63-9cb4-668d54741fd5',
       username: 'countrygal',
       password: '',
       email: 'countrygal@example.com',
@@ -453,7 +453,7 @@ class SearchService {
       createdAt: DateTime.now(),
     ),
     User(
-      id: 9,
+      id: '69dd2456-99ad-4c63-9cb4-668d54741fd5',
       username: 'reggaeking',
       password: '',
       email: 'reggaeking@example.com',

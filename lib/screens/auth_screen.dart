@@ -40,6 +40,7 @@ class _AuthScreenState extends State<AuthScreen> {
   XFile? _selectedImage;
   DateTime? _registerDob; // Added for Date of Birth
   String? errorMessage;
+  String? successMessage;
   bool isSubmitting = false;
   final PageController _pageController = PageController();
 
@@ -56,10 +57,12 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void _submitLogin() async {
+    // Navigator.pushReplacementNamed(context, '/onboarding');
     if (!_formKeyLogin.currentState!.validate()) {
       setState(() {
         isSubmitting = false;
-        errorMessage = null;
+        errorMessage = 'Invalid form data';
+        successMessage = null;
       });
       return;
     }
@@ -67,22 +70,27 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() {
       isSubmitting = true;
       errorMessage = null;
+      successMessage = null;
     });
     try {
       await AuthService.instance.login(_loginUsername, _loginPassword);
-      if (!mounted) return;
-      context.goNamed('feed'); // Replaces the current stack with feed // Redirect to feed after successful login
+      setState(() {
+        isSubmitting = false;
+        successMessage = 'Login successful! Redirecting to feed...';
+      });
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted) {
+          setState(() {
+            successMessage = null;
+            errorMessage = null;
+          });
+          context.go("/feed");
+        }
+      });
     } catch (e) {
       setState(() {
         isSubmitting = false;
-        errorMessage = e.toString().replaceFirst('Exception: ', '');
-      });
-      Future.delayed(const Duration(seconds: 3), () {
-        if (mounted) {
-          setState(() {
-            errorMessage = null;
-          });
-        }
+        errorMessage = e is String ? e : e.toString();
       });
     }
   }
@@ -114,13 +122,20 @@ class _AuthScreenState extends State<AuthScreen> {
     }
     _formKeyRegister.currentState!.save();
     // Check all required fields AFTER saving form
-    if (_registerFirstName == null || _registerFirstName!.isEmpty ||
-        _registerLastName == null || _registerLastName!.isEmpty ||
-        _registerEmail == null || _registerEmail!.isEmpty ||
-        _registerUsername == null || _registerUsername!.isEmpty ||
-        _registerPassword == null || _registerPassword!.isEmpty ||
-        _registerConfirmPassword == null || _registerConfirmPassword!.isEmpty ||
-        _registerDob == null) { // Added _registerDob to validation
+    if (_registerFirstName == null ||
+        _registerFirstName!.isEmpty ||
+        _registerLastName == null ||
+        _registerLastName!.isEmpty ||
+        _registerEmail == null ||
+        _registerEmail!.isEmpty ||
+        _registerUsername == null ||
+        _registerUsername!.isEmpty ||
+        _registerPassword == null ||
+        _registerPassword!.isEmpty ||
+        _registerConfirmPassword == null ||
+        _registerConfirmPassword!.isEmpty ||
+        _registerDob == null) {
+      // Added _registerDob to validation
       setState(() {
         errorMessage = 'Please fill in all required fields.';
       });
@@ -150,9 +165,10 @@ class _AuthScreenState extends State<AuthScreen> {
       isSubmitting = true;
     });
     try {
-
       print("#########################%%%%%%%%%%%%%%%*************%%%%%%#####");
-      print('username: [33m$_registerUsername[0m, password: [33m$_registerPassword[0m, email: [33m$_registerEmail[0m, role: [33m$_registerRole[0m, fullName: [33m${_registerFirstName ?? ''} ${_registerLastName ?? ''}[0m, profileImage: [33m${_selectedImage?.path}[0m');
+      print(
+        'username: [33m$_registerUsername[0m, password: [33m$_registerPassword[0m, email: [33m$_registerEmail[0m, role: [33m$_registerRole[0m, fullName: [33m${_registerFirstName ?? ''} ${_registerLastName ?? ''}[0m, profileImage: [33m${_selectedImage?.path}[0m',
+      );
       final user = await UserService.register(
         User(
           username: _registerUsername ?? '',
@@ -172,7 +188,9 @@ class _AuthScreenState extends State<AuthScreen> {
       });
       Future.delayed(const Duration(seconds: 3), () {
         if (mounted) {
-          context.goNamed('onboarding'); // Replaces the current stack with onboarding
+          context.goNamed(
+            'onboarding',
+          ); // Replaces the current stack with onboarding
           setState(() {
             errorMessage = null;
           });
@@ -210,7 +228,9 @@ class _AuthScreenState extends State<AuthScreen> {
               labelText: AppLocalizations.of(context)!.emailOrUsername,
               icon: Icons.person_outline,
               onSaved: (v) => _loginUsername = v ?? '',
-              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.usernameRequired : null,
+              validator: (v) => v == null || v.isEmpty
+                  ? AppLocalizations.of(context)!.usernameRequired
+                  : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
@@ -218,7 +238,9 @@ class _AuthScreenState extends State<AuthScreen> {
               icon: Icons.lock_outline,
               isPassword: true,
               onSaved: (v) => _loginPassword = v ?? '',
-              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.passwordRequired : null,
+              validator: (v) => v == null || v.isEmpty
+                  ? AppLocalizations.of(context)!.passwordRequired
+                  : null,
             ),
             const SizedBox(height: 24),
             AppButton(
@@ -248,36 +270,45 @@ class _AuthScreenState extends State<AuthScreen> {
             GestureDetector(
               onTap: _openCamera,
               child: Stack(
-                  children: [
-                    Positioned(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: _selectedImage != null ?
-                        SizedBox(
-                          height: 130,
-                          width: 130,
-                          child: Image.file(File(_selectedImage!.path), fit: BoxFit.cover), // Use fit to avoid overflow
-                        ) :
-                        Image.asset(
-                          'assets/images/profile_placeholder.png',
-                          height: 130,
-                          width: 130,
-                        ),
-                      ),
+                children: [
+                  Positioned(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: _selectedImage != null
+                          ? SizedBox(
+                              height: 130,
+                              width: 130,
+                              child: Image.file(
+                                File(_selectedImage!.path),
+                                fit: BoxFit.cover,
+                              ), // Use fit to avoid overflow
+                            )
+                          : Image.asset(
+                              'assets/images/profile_placeholder.png',
+                              height: 130,
+                              width: 130,
+                            ),
                     ),
-                    Positioned(
-                      right: -10,
-                      top: -10,
-                      child: IconButton(
-                        icon: _selectedImage != null ? Icon(
-                          Icons.edit_square,
-                          color: const Color(0xFFD6AF0C),
-                          size: 35,
-                        ): Icon(Icons.camera_alt, size: 35, color:  const Color(0xFFD6AF0C)),
-                        onPressed: _openCamera,
-                      ),
+                  ),
+                  Positioned(
+                    right: -10,
+                    top: -10,
+                    child: IconButton(
+                      icon: _selectedImage != null
+                          ? Icon(
+                              Icons.edit_square,
+                              color: const Color(0xFFD6AF0C),
+                              size: 35,
+                            )
+                          : Icon(
+                              Icons.camera_alt,
+                              size: 35,
+                              color: const Color(0xFFD6AF0C),
+                            ),
+                      onPressed: _openCamera,
                     ),
-                  ]
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
@@ -285,14 +316,18 @@ class _AuthScreenState extends State<AuthScreen> {
               labelText: AppLocalizations.of(context)!.firstName,
               icon: Icons.person_outline,
               onSaved: (v) => _registerFirstName = v,
-              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.firstNameRequired : null,
+              validator: (v) => v == null || v.isEmpty
+                  ? AppLocalizations.of(context)!.firstNameRequired
+                  : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
               labelText: AppLocalizations.of(context)!.lastName,
               icon: Icons.person_outline,
               onSaved: (v) => _registerLastName = v,
-              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.lastNameRequired : null,
+              validator: (v) => v == null || v.isEmpty
+                  ? AppLocalizations.of(context)!.lastNameRequired
+                  : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
@@ -301,7 +336,8 @@ class _AuthScreenState extends State<AuthScreen> {
               keyboardType: TextInputType.emailAddress,
               onSaved: (v) => _registerEmail = v,
               validator: (v) {
-                if (v == null || v.isEmpty) return AppLocalizations.of(context)!.enterValidEmail;
+                if (v == null || v.isEmpty)
+                  return AppLocalizations.of(context)!.enterValidEmail;
                 return null;
               },
             ),
@@ -310,7 +346,9 @@ class _AuthScreenState extends State<AuthScreen> {
               labelText: AppLocalizations.of(context)!.username,
               icon: Icons.person_outline,
               onSaved: (v) => _registerUsername = v,
-              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.usernameRequired : null,
+              validator: (v) => v == null || v.isEmpty
+                  ? AppLocalizations.of(context)!.usernameRequired
+                  : null,
             ),
             const SizedBox(height: 16),
             AppDatePicker(
@@ -320,7 +358,9 @@ class _AuthScreenState extends State<AuthScreen> {
                   _registerDob = date;
                 });
               },
-              validator: (v) => _registerDob == null ? AppLocalizations.of(context)!.dobRequired : null,
+              validator: (v) => _registerDob == null
+                  ? AppLocalizations.of(context)!.dobRequired
+                  : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
@@ -328,7 +368,9 @@ class _AuthScreenState extends State<AuthScreen> {
               icon: Icons.lock_outline,
               isPassword: true,
               onSaved: (v) => _registerPassword = v,
-              validator: (v) => v == null || v.length < 6 ? AppLocalizations.of(context)!.passwordMinLength : null,
+              validator: (v) => v == null || v.length < 6
+                  ? AppLocalizations.of(context)!.passwordMinLength
+                  : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
@@ -336,7 +378,9 @@ class _AuthScreenState extends State<AuthScreen> {
               icon: Icons.lock_outline,
               isPassword: true,
               onSaved: (v) => _registerConfirmPassword = v,
-              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.confirmPasswordRequired : null,
+              validator: (v) => v == null || v.isEmpty
+                  ? AppLocalizations.of(context)!.confirmPasswordRequired
+                  : null,
             ),
 
             const SizedBox(height: 24),
@@ -366,7 +410,6 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -389,13 +432,17 @@ class _AuthScreenState extends State<AuthScreen> {
             child: DropdownButton<SupportedLanguage>(
               icon: const Icon(Icons.language, color: Colors.white),
               value: supportedLanguages.firstWhere(
-                    (l) => l.code == currentLocale?.languageCode,
+                (l) => l.code == currentLocale?.languageCode,
                 orElse: () => supportedLanguages[0],
               ),
-              items: supportedLanguages.map((lang) => DropdownMenuItem(
-                value: lang,
-                child: Text('${lang.flag} ${lang.label}'),
-              )).toList(),
+              items: supportedLanguages
+                  .map(
+                    (lang) => DropdownMenuItem(
+                      value: lang,
+                      child: Text('${lang.flag} ${lang.label}'),
+                    ),
+                  )
+                  .toList(),
               onChanged: (lang) {
                 if (lang != null) appState.setLocale(Locale(lang.code));
               },
@@ -412,8 +459,8 @@ class _AuthScreenState extends State<AuthScreen> {
         child: Column(
           children: [
             const SizedBox(height: 32),
-            if (errorMessage != null)
-              ErrorMessageBox(message: errorMessage!),
+            if (errorMessage != null || successMessage != null)
+              ErrorMessageBox(message: errorMessage ?? successMessage!),
             Center(
               child: Text(
                 _pageController.hasClients && _pageController.page == 1
@@ -430,10 +477,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   // but for now, we'll keep a consistent header.
                 },
                 physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  _buildLoginForm(),
-                  _buildRegisterForm(),
-                ],
+                children: [_buildLoginForm(), _buildRegisterForm()],
               ),
             ),
           ],

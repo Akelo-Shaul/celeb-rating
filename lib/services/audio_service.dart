@@ -1,6 +1,23 @@
 import '../models/audio_post.dart';
 import '../models/user.dart';
 
+import '../models/audio_post.dart';
+import '../models/user.dart';
+import '../services/api_service.dart';
+//
+// class AudioService {
+//   static Future<List<AudioPost>> fetchAudioPosts(
+//       {required String token}) async {
+//     final response = await ApiService.fetchList(
+//       'audio-posts',
+//           (json) => AudioPost.fromJson(json),
+//       token: token,
+//     );
+//     return response;
+//   }
+// }
+
+
 class AudioService {
   static final List<AudioPost> dummyAudioPosts = [
     AudioPost(
@@ -14,7 +31,7 @@ class AudioService {
       ),
       thumbnailUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4',
       from: User(
-        id: 1,
+        id: '69dd2706-99ad-4c63-9cb4-668d5474die8',
         username: 'audiomaster',
         password: '',
         email: 'audiomaster@example.com',
@@ -43,7 +60,7 @@ class AudioService {
       ),
       thumbnailUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb',
       from: User(
-        id: 2,
+        id: '69dd2706-99ad-4c63-9cb4-668d56841fd5',
         dob: DateTime(1990, 1, 1),
         username: 'naturefan',
         password: '',

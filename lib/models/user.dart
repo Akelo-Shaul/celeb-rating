@@ -1,7 +1,7 @@
 import 'post.dart';
 
 class User {
-  final int? id;
+  final String? id;
   final String username;
   final String password;
   final String email;
@@ -52,13 +52,21 @@ class User {
       role: json['role'],
       fullName: json['fullName'],
       dob: DateTime.parse(dobString), // Directly parse as it's required
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
-      lastLogin: json['lastLogin'] != null ? DateTime.parse(json['lastLogin']) : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
+          : null,
+      lastLogin: json['lastLogin'] != null
+          ? DateTime.parse(json['lastLogin'])
+          : null,
       isActive: json['isActive'],
       profileImageUrl: json['profileImageUrl'] as String?,
       profileImage: json['profileImage'] as String?,
-      postsList: json['postsList'] != null ? (json['postsList'] as List).map((e) => Post.fromJson(e)).toList() : null,
+      postsList: json['postsList'] != null
+          ? (json['postsList'] as List).map((e) => Post.fromJson(e)).toList()
+          : null,
     );
   }
 
@@ -86,14 +94,14 @@ class CelebrityUser extends User {
   final Map<String, List<Map<String, String>>> wealthEntries;
   final String zodiacSign;
   final List<Map<String, dynamic>> familyMembers;
-  final List<Map<String,dynamic>> relationships;
+  final List<Map<String, dynamic>> relationships;
   final List<Map<String, dynamic>> educationEntries;
   final List<Map<String, dynamic>> hobbies;
   final String diet;
   final String spirituality;
   final List<Map<String, String>> involvedCauses;
   final List<Map<String, String>> pets;
-  final List<Map<String,dynamic>> tattoos;
+  final List<Map<String, dynamic>> tattoos;
   final List<Map<String, dynamic>> favouritePlaces;
   final List<Map<String, dynamic>> favouriteThings;
   final List<Map<String, dynamic>> fanTheoriesOrInteractions;
@@ -106,7 +114,7 @@ class CelebrityUser extends User {
   final String hometown; // Added hometown field
 
   CelebrityUser({
-    required int id,
+    required String id,
     required String username,
     required String password,
     required String email,
@@ -149,18 +157,18 @@ class CelebrityUser extends User {
     required DateTime dob, // dob is passed correctly here
     required this.hometown, // Added hometown to constructor
   }) : super(
-    id: id,
-    username: username,
-    password: password,
-    email: email,
-    role: role,
-    fullName: fullName,
-    profileImageUrl: profileImageUrl,
-    createdAt: createdAt,
-    updatedAt: updatedAt,
-    lastLogin: lastLogin,
-    isActive: isActive,
-    postsList: postsList,
-    dob: dob,
-  );
+         id: id,
+         username: username,
+         password: password,
+         email: email,
+         role: role,
+         fullName: fullName,
+         profileImageUrl: profileImageUrl,
+         createdAt: createdAt,
+         updatedAt: updatedAt,
+         lastLogin: lastLogin,
+         isActive: isActive,
+         postsList: postsList,
+         dob: dob,
+       );
 }

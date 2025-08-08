@@ -29,10 +29,15 @@ class _FeedScreenState extends State<FeedScreen> {
   User? currentUser;
 
   // Global mute state for feed videos
-  static final ValueNotifier<bool> feedMuteNotifier = ValueNotifier<bool>(true); // true = muted by default
+  static final ValueNotifier<bool> feedMuteNotifier = ValueNotifier<bool>(
+    true,
+  ); // true = muted by default
 
   Future<void> _loadCurrentUser() async {
-    final user = await UserService.fetchUser(UserService.currentUserId.toString(), isCelebrity: true);
+    final user = await UserService.fetchUser(
+      '69dd2706-99ad-4c63-9cb4-668d54741fd5',
+      isCelebrity: true,
+    );
     if (mounted) {
       setState(() {
         currentUser = user;
@@ -96,10 +101,14 @@ class _FeedScreenState extends State<FeedScreen> {
               DrawerHeader(
                 // You can set a background decoration for the entire header if needed
                 decoration: BoxDecoration(
-                  color: Color(0x93A3A3A3), // Example: a light background for the header area
+                  color: Color(
+                    0x93A3A3A3,
+                  ), // Example: a light background for the header area
                 ),
-                child: Align( // Use Align to position the profile picture within the header's default space
-                  alignment: Alignment.center, // Typically aligns content to the left
+                child: Align(
+                  // Use Align to position the profile picture within the header's default space
+                  alignment:
+                      Alignment.center, // Typically aligns content to the left
                   child: GestureDetector(
                     onTap: () {
                       context.pushNamed('profile');
@@ -108,23 +117,28 @@ class _FeedScreenState extends State<FeedScreen> {
                     child: ProfileAvatar(
                       imageUrl: currentUser?.profileImageUrl,
                       radius: 60,
-                      backgroundColor: const Color(0xFF9E9E9E), // Custom background color
+                      backgroundColor: const Color(
+                        0xFF9E9E9E,
+                      ), // Custom background color
                     ),
                   ),
                 ),
               ),
               AppTransparentButton(
-                 text: 'Chats',
-                 icon: Icons.messenger,
-                 // iconColor: Colors.blueAccent, // Custom icon color
-                 fontSize: 20,
-                 onPressed: () {
-                   print('Go to chat');
-                   Navigator.pop(context);
-                   context.pushNamed('chat');
-                 },
-                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
-                 borderRadius: BorderRadius.circular(25), // More rounded corners
+                text: 'Chats',
+                icon: Icons.messenger,
+                // iconColor: Colors.blueAccent, // Custom icon color
+                fontSize: 20,
+                onPressed: () {
+                  print('Go to chat');
+                  Navigator.pop(context);
+                  context.pushNamed('chat');
+                },
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ), // Custom padding
+                borderRadius: BorderRadius.circular(25), // More rounded corners
               ),
               // AppTransparentButton(
               //   text: 'Hall of Fame',
@@ -149,7 +163,10 @@ class _FeedScreenState extends State<FeedScreen> {
                   context.pushNamed('uhondoKona'); // Pushes onto /feed stack
                   Navigator.pop(context);
                 },
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
               ),
               AppTransparentButton(
@@ -162,7 +179,10 @@ class _FeedScreenState extends State<FeedScreen> {
                   context.pushNamed('celebrityRankings');
                   Navigator.pop(context);
                 },
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
               ),
               AppTransparentButton(
@@ -175,7 +195,10 @@ class _FeedScreenState extends State<FeedScreen> {
                   context.pushNamed('versus'); // Pushes onto /feed stack
                   Navigator.pop(context);
                 },
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
               ),
               // AppTransparentButton(
@@ -200,7 +223,10 @@ class _FeedScreenState extends State<FeedScreen> {
                   context.pushNamed('profile');
                   Navigator.pop(context);
                 },
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
               ),
               AppTransparentButton(
@@ -212,7 +238,10 @@ class _FeedScreenState extends State<FeedScreen> {
                   context.pushNamed('stream');
                   Navigator.pop(context);
                 },
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
               ),
               AppTransparentButton(
@@ -224,7 +253,10 @@ class _FeedScreenState extends State<FeedScreen> {
                   print('Saved tapped');
                   //TODO: Add navigation logic
                 },
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
               ),
               NotificationButton(
@@ -236,7 +268,10 @@ class _FeedScreenState extends State<FeedScreen> {
                   print('Notifications tapped');
                   context.pushNamed('notifications');
                 },
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
               ),
               AppTransparentButton(
@@ -249,7 +284,10 @@ class _FeedScreenState extends State<FeedScreen> {
                   context.pushNamed('settings');
                   Navigator.pop(context);
                 },
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Custom padding
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ), // Custom padding
                 borderRadius: BorderRadius.circular(25), // More rounded corners
               ),
               AppTransparentButton(
@@ -262,7 +300,10 @@ class _FeedScreenState extends State<FeedScreen> {
                   if (!mounted) return;
                   context.goNamed('auth');
                 },
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
                 borderRadius: BorderRadius.circular(25),
               ),
             ],
@@ -275,14 +316,13 @@ class _FeedScreenState extends State<FeedScreen> {
           post: posts[i],
           feedMuteNotifier: feedMuteNotifier,
           showFollowButton: true,
-          onSharePressed: (post){
+          onSharePressed: (post) {
             showShareModal(context, post);
           },
         ),
       ),
     );
   }
-
 }
 
 class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -304,10 +344,13 @@ class _MyAppBarState extends State<MyAppBar> {
     // You might want to get theme colors dynamically here if needed for icons/text,
     // but default AppBar styling usually handles it well.
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color textColor = isDark ? Colors.white : Colors.black; // Example for text color if needed
+    final Color textColor = isDark
+        ? Colors.white
+        : Colors.black; // Example for text color if needed
 
     return AppBar(
-      backgroundColor: Colors.transparent, // Make AppBar transparent to show background if any
+      backgroundColor: Colors
+          .transparent, // Make AppBar transparent to show background if any
       elevation: 0, // No shadow
       title: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -352,8 +395,10 @@ class _MyAppBarState extends State<MyAppBar> {
             child: ProfileAvatar(
               imageUrl: widget.currentUser?.profileImageUrl,
               radius: 20,
-              backgroundColor: const Color(0xFF9E9E9E), // Custom background color
-            )
+              backgroundColor: const Color(
+                0xFF9E9E9E,
+              ), // Custom background color
+            ),
           ),
         ),
         const SizedBox(width: 8), // Some padding on the right edge

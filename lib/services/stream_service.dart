@@ -7,7 +7,7 @@ class StreamService {
   // Dummy users for linking
   static final List<User> _users = [
     User(
-      id: 1,
+      id: '69dd3456-99ad-4c63-9cb4-668d54741fd5',
       username: 'streamer1',
       password: '',
       email: 'streamer1@example.com',
@@ -17,7 +17,7 @@ class StreamService {
       profileImageUrl: 'https://randomuser.me/api/portraits/men/1.jpg',
     ),
     User(
-      id: 2,
+      id: '69dd234506-99ad-4c63-9cb4-668d54741fd5',
       username: 'streamer2',
       password: '',
       email: 'streamer2@example.com',

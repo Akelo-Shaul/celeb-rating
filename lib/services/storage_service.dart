@@ -15,15 +15,23 @@ class StorageService {
     return _instance!;
   }
 
+  static const String _refreshTokenKey = 'refresh_token';
+  static const String _emailKey = 'email';
+
   Future<void> storeAuthData({
-    required String token,
+    required token,
     required String userId,
     required String role,
+    String? refreshToken,
+    String? email,
   }) async {
     await Future.wait([
       _storage.write(key: _authTokenKey, value: token),
       _storage.write(key: _userIdKey, value: userId),
       _storage.write(key: _userRoleKey, value: role),
+      if (refreshToken != null)
+        _storage.write(key: _refreshTokenKey, value: refreshToken),
+      if (email != null) _storage.write(key: _emailKey, value: email),
     ]);
   }
 
@@ -32,6 +40,8 @@ class StorageService {
       'token': await _storage.read(key: _authTokenKey),
       'userId': await _storage.read(key: _userIdKey),
       'role': await _storage.read(key: _userRoleKey),
+      'refreshToken': await _storage.read(key: _refreshTokenKey),
+      'email': await _storage.read(key: _emailKey),
     };
   }
 
@@ -40,6 +50,8 @@ class StorageService {
       _storage.delete(key: _authTokenKey),
       _storage.delete(key: _userIdKey),
       _storage.delete(key: _userRoleKey),
+      _storage.delete(key: _refreshTokenKey),
+      _storage.delete(key: _emailKey),
     ]);
   }
 

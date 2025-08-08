@@ -3,32 +3,20 @@ import 'package:celebrating/models/user.dart';
 import 'package:celebrating/services/storage_service.dart';
 import 'package:celebrating/services/user_service.dart';
 
-enum AuthStatus {
-  unknown,
-  authenticated,
-  unauthenticated,
-}
+enum AuthStatus { unknown, authenticated, unauthenticated }
 
 class AuthState {
   final AuthStatus status;
   final User? user;
   final String? error;
 
-  AuthState({
-    required this.status,
-    this.user,
-    this.error,
-  });
+  AuthState({required this.status, this.user, this.error});
 
   factory AuthState.unknown() => AuthState(status: AuthStatus.unknown);
-  factory AuthState.authenticated(User user) => AuthState(
-        status: AuthStatus.authenticated,
-        user: user,
-      );
-  factory AuthState.unauthenticated([String? error]) => AuthState(
-        status: AuthStatus.unauthenticated,
-        error: error,
-      );
+  factory AuthState.authenticated(User user) =>
+      AuthState(status: AuthStatus.authenticated, user: user);
+  factory AuthState.unauthenticated([String? error]) =>
+      AuthState(status: AuthStatus.unauthenticated, error: error);
 }
 
 class AuthService {
@@ -60,10 +48,11 @@ class AuthService {
       if (authData['userId'] == null) {
         throw Exception('User ID not found');
       }
-
+      var role = authData['role'] ?? 'User';
+      role = role.toString().toUpperCase();
       final user = await UserService.fetchUser(
         authData['userId']!,
-        isCelebrity: authData['role'] == 'Celebrity',
+        isCelebrity: role == 'CELEBRITY',
       );
 
       _updateState(AuthState.authenticated(user));
@@ -75,14 +64,27 @@ class AuthService {
 
   Future<void> login(String username, String password) async {
     try {
-      final token = await UserService.login(username, password);
-      // Assuming the login response includes user data
-      final user = await UserService.fetchUser(username, isCelebrity: false); // We'll update this after fetching
+      final loginResp = await UserService.login(username, password);
+      final token = loginResp['accessToken'] as String?;
+      final refreshToken = loginResp['refreshToken'] as String?;
+      final userId = loginResp['userId']?.toString();
+      final email = loginResp['email'] as String?;
+      var role = loginResp['role'] as String? ?? 'User';
+      role = role.toUpperCase();
+      if (token == null || userId == null) {
+        throw Exception('Login failed: missing token or userId');
+      }
+      final user = await UserService.fetchUser(
+        userId,
+        isCelebrity: role == 'CELEBRITY',
+      );
 
       await _storageService.storeAuthData(
         token: token,
         userId: user.id.toString(),
-        role: user.role,
+        role: role,
+        refreshToken: refreshToken,
+        email: email,
       );
 
       _updateState(AuthState.authenticated(user));
@@ -95,12 +97,23 @@ class AuthService {
   Future<void> register(User user) async {
     try {
       final registeredUser = await UserService.register(user);
-      final token = await UserService.login(user.username, user.password);
+      final loginResp = await UserService.login(user.username, user.password);
+      final token = loginResp['accessToken'] as String?;
+      final refreshToken = loginResp['refreshToken'] as String?;
+      final userId = loginResp['userId']?.toString();
+      final email = loginResp['email'] as String?;
+      var role = loginResp['role'] as String? ?? 'User';
+      role = role.toUpperCase();
+      if (token == null || userId == null) {
+        throw Exception('Registration failed: missing token or userId');
+      }
 
       await _storageService.storeAuthData(
         token: token,
         userId: registeredUser.id.toString(),
-        role: registeredUser.role,
+        role: role,
+        refreshToken: refreshToken,
+        email: email,
       );
 
       _updateState(AuthState.authenticated(registeredUser));

@@ -40,18 +40,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   String? _onboardingState;
   String? _onboardingCity;
 
-
   String? errorMessage; // For general/backend errors
   bool isSubmitting = false;
 
   // --- Dropdown Data ---
   final List<String> _sexOptions = ['Male', 'Female', 'Other'];
   final List<String> _months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
-  final List<String> _days = List.generate(31, (index) => (index + 1).toString());
-  final List<String> _years = List.generate(100, (index) => (DateTime.now().year - index).toString());
+  final List<String> _days = List.generate(
+    31,
+    (index) => (index + 1).toString(),
+  );
+  final List<String> _years = List.generate(
+    100,
+    (index) => (DateTime.now().year - index).toString(),
+  );
 
   final List<String> _countries = ['USA', 'Canada', 'UK', 'Kenya', 'Germany'];
   final Map<String, List<String>> _states = {
@@ -73,7 +88,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     'Bavaria': ['Munich', 'Nuremberg'],
     'Berlin': ['Berlin City'],
   };
-
 
   // The submit function for the onboarding form
   void _submitOnboardingForm() async {
@@ -104,7 +118,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     try {
       // Format birth date as yyyy-MM-dd
       final monthIndex = _months.indexOf(_onboardingMonth!) + 1;
-      final birthDate = '${_onboardingYear!}-${monthIndex.toString().padLeft(2, '0')}-${_onboardingDay!.padLeft(2, '0')}';
+      final birthDate =
+          '${_onboardingYear!}-${monthIndex.toString().padLeft(2, '0')}-${_onboardingDay!.padLeft(2, '0')}';
       final data = OnboardingData(
         firstName: _onboardingFirstName!,
         lastName: _onboardingLastName!,
@@ -147,7 +162,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Expanded(
             child: Text(
               errorMessage!,
-              style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
@@ -168,25 +187,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Center(
               child: Text(
                 AppLocalizations.of(context)!.completeYourProfile,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 24),
 
-            if (errorMessage != null)
-              ErrorMessageBox(message: errorMessage!),
+            if (errorMessage != null) ErrorMessageBox(message: errorMessage!),
             AppTextFormField(
               labelText: AppLocalizations.of(context)!.firstName,
               icon: Icons.person_outline,
               onSaved: (v) => _onboardingFirstName = v,
-              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.firstNameRequired : null,
+              validator: (v) => v == null || v.isEmpty
+                  ? AppLocalizations.of(context)!.firstNameRequired
+                  : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
               labelText: AppLocalizations.of(context)!.lastName,
               icon: Icons.person_outline,
               onSaved: (v) => _onboardingLastName = v,
-              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.lastNameRequired : null,
+              validator: (v) => v == null || v.isEmpty
+                  ? AppLocalizations.of(context)!.lastNameRequired
+                  : null,
             ),
             const SizedBox(height: 16),
             AppDropdownFormField<String>(
@@ -196,7 +220,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               items: _sexOptions.map((String sex) {
                 return DropdownMenuItem<String>(
                   value: sex,
-                  child: Text(sex, overflow: TextOverflow.ellipsis, softWrap: false),
+                  child: Text(
+                    sex,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: false,
+                  ),
                 );
               }).toList(),
               onChanged: (String? newValue) {
@@ -205,12 +233,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 });
               },
               onSaved: (newValue) => _onboardingSex = newValue,
-              validator: (value) => value == null ? AppLocalizations.of(context)!.pleaseSelectSex : null,
+              validator: (value) => value == null
+                  ? AppLocalizations.of(context)!.pleaseSelectSex
+                  : null,
             ),
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Text(AppLocalizations.of(context)!.birthDate, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              child: Text(
+                AppLocalizations.of(context)!.birthDate,
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
             ),
             Row(
               children: [
@@ -222,7 +255,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     items: _months.map((String month) {
                       return DropdownMenuItem<String>(
                         value: month,
-                        child: Text(month, overflow: TextOverflow.ellipsis, softWrap: false),
+                        child: Text(
+                          month,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                        ),
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
@@ -231,7 +268,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       });
                     },
                     onSaved: (newValue) => _onboardingMonth = newValue,
-                    validator: (value) => value == null ? AppLocalizations.of(context)!.req : null,
+                    validator: (value) => value == null
+                        ? AppLocalizations.of(context)!.req
+                        : null,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -243,7 +282,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     items: _days.map((String day) {
                       return DropdownMenuItem<String>(
                         value: day,
-                        child: Text(day, overflow: TextOverflow.ellipsis, softWrap: false),
+                        child: Text(
+                          day,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                        ),
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
@@ -252,7 +295,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       });
                     },
                     onSaved: (newValue) => _onboardingDay = newValue,
-                    validator: (value) => value == null ? AppLocalizations.of(context)!.req : null,
+                    validator: (value) => value == null
+                        ? AppLocalizations.of(context)!.req
+                        : null,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -264,7 +309,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     items: _years.map((String year) {
                       return DropdownMenuItem<String>(
                         value: year,
-                        child: Text(year, overflow: TextOverflow.ellipsis, softWrap: false),
+                        child: Text(
+                          year,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                        ),
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
@@ -273,7 +322,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       });
                     },
                     onSaved: (newValue) => _onboardingYear = newValue,
-                    validator: (value) => value == null ? AppLocalizations.of(context)!.req : null,
+                    validator: (value) => value == null
+                        ? AppLocalizations.of(context)!.req
+                        : null,
                   ),
                 ),
               ],
@@ -291,14 +342,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               icon: Icons.email_outlined,
               keyboardType: TextInputType.emailAddress,
               onSaved: (v) => _onboardingEmail = v,
-              validator: (v) => v == null || !v.contains('@') ? AppLocalizations.of(context)!.enterValidEmail : null,
+              validator: (v) => v == null || !v.contains('@')
+                  ? AppLocalizations.of(context)!.enterValidEmail
+                  : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
               labelText: AppLocalizations.of(context)!.username,
               icon: Icons.person_outline,
               onSaved: (v) => _onboardingUsername = v,
-              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.usernameRequired : null,
+              validator: (v) => v == null || v.isEmpty
+                  ? AppLocalizations.of(context)!.usernameRequired
+                  : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
@@ -306,7 +361,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               icon: Icons.lock_outline,
               isPassword: true,
               onSaved: (v) => _onboardingPassword = v,
-              validator: (v) => v == null || v.length < 6 ? AppLocalizations.of(context)!.passwordMinLength : null,
+              validator: (v) => v == null || v.length < 6
+                  ? AppLocalizations.of(context)!.passwordMinLength
+                  : null,
             ),
             const SizedBox(height: 16),
             AppTextFormField(
@@ -314,7 +371,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               icon: Icons.lock_outline,
               isPassword: true,
               onSaved: (v) => _onboardingConfirmPassword = v,
-              validator: (v) => v == null || v.isEmpty ? AppLocalizations.of(context)!.confirmPasswordRequired : null,
+              validator: (v) => v == null || v.isEmpty
+                  ? AppLocalizations.of(context)!.confirmPasswordRequired
+                  : null,
             ),
             const SizedBox(height: 16),
             AppDropdownFormField<String>(
@@ -324,7 +383,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               items: _countries.map((String country) {
                 return DropdownMenuItem<String>(
                   value: country,
-                  child: Text(country, overflow: TextOverflow.ellipsis, softWrap: false),
+                  child: Text(
+                    country,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: false,
+                  ),
                 );
               }).toList(),
               onChanged: (String? newValue) {
@@ -335,7 +398,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 });
               },
               onSaved: (newValue) => _onboardingCountry = newValue,
-              validator: (value) => value == null ? AppLocalizations.of(context)!.pleaseSelectCountry : null,
+              validator: (value) => value == null
+                  ? AppLocalizations.of(context)!.pleaseSelectCountry
+                  : null,
             ),
             const SizedBox(height: 16),
             AppDropdownFormField<String>(
@@ -345,7 +410,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               items: (_states[_onboardingCountry] ?? []).map((String state) {
                 return DropdownMenuItem<String>(
                   value: state,
-                  child: Text(state, overflow: TextOverflow.ellipsis, softWrap: false),
+                  child: Text(
+                    state,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: false,
+                  ),
                 );
               }).toList(),
               onChanged: (String? newValue) {
@@ -355,7 +424,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 });
               },
               onSaved: (newValue) => _onboardingState = newValue,
-              validator: (value) => value == null ? AppLocalizations.of(context)!.pleaseSelectState : null,
+              validator: (value) => value == null
+                  ? AppLocalizations.of(context)!.pleaseSelectState
+                  : null,
             ),
             const SizedBox(height: 16),
             AppDropdownFormField<String>(
@@ -365,7 +436,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               items: (_cities[_onboardingState] ?? []).map((String city) {
                 return DropdownMenuItem<String>(
                   value: city,
-                  child: Text(city, overflow: TextOverflow.ellipsis, softWrap: false),
+                  child: Text(
+                    city,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: false,
+                  ),
                 );
               }).toList(),
               onChanged: (String? newValue) {
@@ -374,7 +449,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 });
               },
               onSaved: (newValue) => _onboardingCity = newValue,
-              validator: (value) => value == null ? AppLocalizations.of(context)!.pleaseSelectCity : null,
+              validator: (value) => value == null
+                  ? AppLocalizations.of(context)!.pleaseSelectCity
+                  : null,
             ),
             const SizedBox(height: 24),
             AppButton(
@@ -413,20 +490,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         child: Stack(
           children: [
             // Show the correct tab based on _currentIndex
-            if (_currentIndex == 0)
-              _onboardingStart(),
-            if (_currentIndex == 1)
-              _verifyOTP(),
-            if (_currentIndex == 2)
-              _countrySelect(),
-            if (_currentIndex == 3)
-              _selectAccountType(),
+            if (_currentIndex == 0) _onboardingStart(),
+            if (_currentIndex == 1) _verifyOTP(),
+            if (_currentIndex == 2) _countrySelect(),
+            if (_currentIndex == 3) _selectAccountType(),
             PositionedDirectional(
               bottom: 0,
               start: 0,
               end: 0,
               child: Container(
-                padding: const EdgeInsetsDirectional.only(start: 30, end: 30, bottom: 30),
+                padding: const EdgeInsetsDirectional.only(
+                  start: 30,
+                  end: 30,
+                  bottom: 30,
+                ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -508,7 +585,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final secondaryTextColor = theme.textTheme.bodyMedium?.color ?? textColor;
     final accentColor = theme.colorScheme.primary;
     final List<FocusNode> _focusNodes = List.generate(4, (_) => FocusNode());
-    final List<TextEditingController> _controllers = List.generate(4, (_) => TextEditingController());
+    final List<TextEditingController> _controllers = List.generate(
+      4,
+      (_) => TextEditingController(),
+    );
 
     // Helper to move focus automatically
     void _onChanged(String value, int index) {
@@ -581,26 +661,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               );
             }),
           ),
-          const SizedBox(height: 20, ),
+          const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: AppButton(text: AppLocalizations.of(context)!.verify, onPressed: (){
-              // Navigate to next tab (account type selection)
-              setState(() {
-                _currentIndex = 2;
-              });
-            }),
+            child: AppButton(
+              text: AppLocalizations.of(context)!.verify,
+              onPressed: () {
+                // Navigate to next tab (account type selection)
+                setState(() {
+                  _currentIndex = 2;
+                });
+              },
+            ),
           ),
-          const SizedBox(height: 10, ),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(AppLocalizations.of(context)!.didNotReceiveEmail, style: theme.textTheme.bodyMedium?.copyWith(color: secondaryTextColor)),
+              Text(
+                AppLocalizations.of(context)!.didNotReceiveEmail,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: secondaryTextColor,
+                ),
+              ),
               TextButton(
                 onPressed: () => {},
                 child: Text(
                   AppLocalizations.of(context)!.resendOtp,
-                  style: theme.textTheme.bodyMedium?.copyWith(color: accentColor, fontWeight: FontWeight.bold),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: accentColor,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -655,10 +746,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     const SizedBox(height: 8),
                     Text(
                       AppLocalizations.of(context)!.memberDescription,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Color(0xFF222222),
-                      ),
+                      style: TextStyle(fontSize: 15, color: Color(0xFF222222)),
                     ),
                   ],
                 ),
@@ -686,10 +774,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     const SizedBox(height: 8),
                     Text(
                       AppLocalizations.of(context)!.celebrityDescription,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Color(0xFF222222),
-                      ),
+                      style: TextStyle(fontSize: 15, color: Color(0xFF222222)),
                     ),
                   ],
                 ),
@@ -700,8 +785,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 textColor: Color(0xFFD6AF0C),
                 onPressed: () {
                   context.goNamed('interestsSelection');
-                  setState(() {
-                  });
+                  setState(() {});
                 },
               ),
               const SizedBox(height: 14),
@@ -711,7 +795,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   context.goNamed('verification');
                 },
               ),
-
 
               // PartedButton(
               //   onPressed: () {
@@ -738,8 +821,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Image.asset(
-              'assets/images/celebratinglogo.png',
-              width: MediaQuery.of(context).size.width * 0.8
+            'assets/images/celebratinglogo.png',
+            width: MediaQuery.of(context).size.width * 0.8,
           ),
           AppDropdownFormField<String>(
             labelText: AppLocalizations.of(context)!.selectCountry,
@@ -748,7 +831,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             items: _countries.map((String country) {
               return DropdownMenuItem<String>(
                 value: country,
-                child: Text(country, overflow: TextOverflow.ellipsis, softWrap: false),
+                child: Text(
+                  country,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
+                ),
               );
             }).toList(),
             onChanged: (String? newValue) {
@@ -758,7 +845,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               });
             },
             onSaved: (newValue) => _onboardingCountry = newValue,
-            validator: (value) => value == null ? AppLocalizations.of(context)!.pleaseSelectCountry : null,
+            validator: (value) => value == null
+                ? AppLocalizations.of(context)!.pleaseSelectCountry
+                : null,
           ),
           const SizedBox(height: 16),
           AppDropdownFormField<String>(
@@ -768,7 +857,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             items: (_states[_onboardingCountry] ?? []).map((String state) {
               return DropdownMenuItem<String>(
                 value: state,
-                child: Text(state, overflow: TextOverflow.ellipsis, softWrap: false),
+                child: Text(
+                  state,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
+                ),
               );
             }).toList(),
             onChanged: (String? newValue) {
@@ -777,20 +870,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               });
             },
             onSaved: (newValue) => _onboardingState = newValue,
-            validator: (value) => value == null ? AppLocalizations.of(context)!.pleaseSelectState : null,
+            validator: (value) => value == null
+                ? AppLocalizations.of(context)!.pleaseSelectState
+                : null,
           ),
-          const SizedBox(height: 50,),
-          AppButton(text: AppLocalizations.of(context)!.continueText, onPressed: (){
-            setState(() {
-              _currentIndex = 3;
-            });
-          })
+          const SizedBox(height: 50),
+          AppButton(
+            text: AppLocalizations.of(context)!.continueText,
+            onPressed: () {
+              setState(() {
+                _currentIndex = 3;
+              });
+            },
+          ),
         ],
       ),
     );
   }
-
-
 }
 
 class CelebrityLeftClipper extends CustomClipper<Path> {
@@ -799,7 +895,12 @@ class CelebrityLeftClipper extends CustomClipper<Path> {
     final path = Path();
     path.moveTo(0, 0);
     path.lineTo(size.width - 8, 0);
-    path.quadraticBezierTo(size.width, size.height / 2, size.width - 8, size.height);
+    path.quadraticBezierTo(
+      size.width,
+      size.height / 2,
+      size.width - 8,
+      size.height,
+    );
     path.lineTo(0, size.height);
     path.close();
     return path;

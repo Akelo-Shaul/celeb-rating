@@ -15,7 +15,7 @@ class NotificationService {
   // Dummy users for notifications
   final List<User> _dummyUsers = [
     User(
-      id: 1,
+      id: '69dd2706-99ad-4c63-9cb4-668d5474fs78',
       username: 'john_doe',
       password: '',
       email: 'john@example.com',
@@ -25,7 +25,7 @@ class NotificationService {
       profileImageUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
     ),
     User(
-      id: 2,
+      id: '69dd2706-99ad-4c63-9cb4-668d54741sere',
       username: 'jane_smith',
       password: '',
       email: 'jane@example.com',
@@ -35,7 +35,7 @@ class NotificationService {
       profileImageUrl: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
     ),
     User(
-      id: 3,
+      id: '64t4s706-99ad-4c63-9cb4-668d54741fd5',
       username: 'mike_wilson',
       password: '',
       dob: DateTime(1990, 1, 1),
@@ -45,7 +45,7 @@ class NotificationService {
       profileImageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
     ),
     User(
-      id: 4,
+      id: '7heud3706-99ad-4c63-9cb4-668d54741fd5',
       username: 'sarah_jones',
       password: '',
       dob: DateTime(1990, 1, 1),
@@ -55,7 +55,7 @@ class NotificationService {
       profileImageUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
     ),
     User(
-      id: 5,
+      id: '69def6406-99ad-4c63-9cb4-668d54741fd5',
       username: 'david_brown',
       password: '',
       dob: DateTime(1990, 1, 1),
@@ -65,7 +65,7 @@ class NotificationService {
       profileImageUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
     ),
     User(
-      id: 6,
+      id: '45dd2706-99ad-4c63-9cb4-668d54741fd5',
       username: 'emma_davis',
       password: '',
       dob: DateTime(1990, 1, 1),
@@ -75,7 +75,7 @@ class NotificationService {
       profileImageUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
     ),
     User(
-      id: 7,
+      id: '69dd2346-99ad-4c63-9cb4-668d54741fd5',
       username: 'alex_taylor',
       password: '',
       email: 'alex@example.com',
@@ -85,7 +85,7 @@ class NotificationService {
       profileImageUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face',
     ),
     User(
-      id: 8,
+      id: '69duhe676-99ad-4c63-9cb4-668d54741fd5',
       dob: DateTime(1990, 1, 1),
       username: 'lisa_garcia',
       password: '',
@@ -99,7 +99,7 @@ class NotificationService {
   // Dummy celebrity users
   final List<User> _dummyCelebrities = [
     User(
-      id: 101,
+      id: '34rd2706-99ad-4c63-9cb4-668d54741fd5',
       username: 'celebrity_1',
       password: '',
       dob: DateTime(1990, 1, 1),
@@ -109,7 +109,7 @@ class NotificationService {
       profileImageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
     ),
     User(
-      id: 102,
+      id: '35fed2706-99ad-4c63-9cb4-668d54741fd5',
       username: 'celebrity_2',
       password: '',
       dob: DateTime(1990, 1, 1),
@@ -119,7 +119,7 @@ class NotificationService {
       profileImageUrl: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
     ),
     User(
-      id: 103,
+      id: '6575fd2706-99ad-4c63-9cb4-668d54741fd5',
       username: 'celebrity_3',
       password: '',
       dob: DateTime(1990, 1, 1),

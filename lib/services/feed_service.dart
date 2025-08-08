@@ -13,7 +13,7 @@ class FeedService{
   static List<Post> generateDummyPosts() {
     // Dummy Users
     final User user1 = User(
-      id: 1,
+      id: '69dd2706-99ad-4c63-9cb4-6668754741fd5',
       dob: DateTime(1990, 1, 1),
       username: 'brumm_h',
       fullName: 'Brumm Halaberry',
@@ -26,7 +26,7 @@ class FeedService{
 
     final User user2 = User(
       dob: DateTime(1990, 1, 1),
-      id: 2,
+      id: '578d2706-99ad-4c63-9cb4-668d54741fd5',
       username: 'jane_d',
       fullName: 'Jane Doe',
       profileImageUrl: 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=facearea&w=200&h=200&facepad=2&q=80',
@@ -38,7 +38,7 @@ class FeedService{
 
     final User user3 = User(
       dob: DateTime(1990, 1, 1),
-      id: 3,
+      id: '456dt706-99ad-4c63-9cb4-668d54741fd5',
       username: 'code_m',
       fullName: 'Code Master',
       profileImageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=facearea&w=200&h=200&facepad=2&q=80',
@@ -49,7 +49,7 @@ class FeedService{
     );
 
     final User user4 = User(
-      id: 4,
+      id: '69def4606-99ad-4c63-9cb4-668d54741fd5',
       dob: DateTime(1990, 1, 1),
       username: 'whiteLotis',
       fullName: 'White Lotis Z',

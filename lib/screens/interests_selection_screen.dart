@@ -29,7 +29,7 @@ class _InterestsSelectionScreenState extends State<InterestsSelectionScreen> wit
   int _tabIndex = 0;
   late CardSwiperController _cardController;
   List<User> _celebrities = [];
-  Map<int, bool> _following = {};
+  Map<String, bool> _following = {};
   bool _loadingCelebs = true;
 
   @override
@@ -90,7 +90,7 @@ class _InterestsSelectionScreenState extends State<InterestsSelectionScreen> wit
   }
 
 
-  void _toggleFollow(int? id) {
+  void _toggleFollow(String? id) {
     if (id == null) return;
     setState(() {
       _following[id] = true;

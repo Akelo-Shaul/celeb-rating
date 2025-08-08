@@ -101,9 +101,9 @@ class _CelebrityProfileCreateState extends State<CelebrityProfileCreate> {
     setState(() { _isLoadingUsers = true; });
     final posts = FeedService.generateDummyPosts();
     // Extract unique users from posts
-    final users = <int, User>{};
+    final users = <String, User>{};
     for (var post in posts) {
-      users[post.from.id ?? 0] = post.from;
+      users[post.from.id ?? ''] = post.from;
     }
     setState(() {
       _allUsers = users.values.toList();

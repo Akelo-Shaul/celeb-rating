@@ -4,19 +4,21 @@ import '../models/post.dart';
 import '../models/comment.dart';
 
 class UserService {
-  static int currentUserId = 999; // Demo user ID
+  static String currentUserId = '999'; // Demo user ID
 
-  static Future<String> login(String username, String password) async {
-    // DEMO PATCH: Commented out real API call for offline/demo use
-    // final response = await ApiService.post('auth/login', {
-    //   'username': username,
-    //   'password': password,
-    // }, (json) => json['token'] as String);
-    // return response;
-
-    // Return a dummy token for any login
-    await Future.delayed(const Duration(milliseconds: 500));
-    return 'demo_token_123';
+  static Future<Map<String, dynamic>> login(
+    String username,
+    String password,
+  ) async {
+    try {
+      final response = await ApiService.post('auth/login', {
+        'username': username,
+        'password': password,
+      }, (json) => json);
+      return response;
+    } catch (e) {
+      throw Exception('Failed to login: $e');
+    }
   }
 
   static Future<User> register(User user) async {
@@ -27,7 +29,7 @@ class UserService {
     // Return the user object with a fake id for demo
     await Future.delayed(const Duration(milliseconds: 500));
     return User(
-      id: 999,
+      id: '999',
       username: user.username,
       password: user.password,
       email: user.email,
@@ -40,13 +42,16 @@ class UserService {
     );
   }
 
-  static Future<User> fetchUser(String userId, {bool isCelebrity = false}) async {
+  static Future<User> fetchUser(
+    String userId, {
+    bool isCelebrity = false,
+  }) async {
     // Dummy comments
     List<Comment> comments = [
       Comment(
         id: '1',
         user: User(
-          id: 2,
+          id: userId ?? '1',
           username: 'fan_1',
           password: '',
           email: 'fan1@example.com',
@@ -60,7 +65,7 @@ class UserService {
           Comment(
             id: '1-1',
             user: User(
-              id: 4,
+              id: userId ?? '1',
               username: 'reply_guy',
               dob: DateTime(1990, 1, 1),
               password: '',
@@ -77,7 +82,7 @@ class UserService {
       Comment(
         id: '2',
         user: User(
-          id: 3,
+          id: userId ?? '1',
           username: 'fan_2',
           password: '',
           dob: DateTime(1990, 1, 1),
@@ -97,7 +102,7 @@ class UserService {
         id: '1',
         content: 'This is my first post! Excited to share with you all.',
         from: User(
-          id: int.tryParse(userId) ?? 1,
+          id: userId ?? '1',
           dob: DateTime(1990, 1, 1),
           username: isCelebrity ? 'celeb_user' : 'dummy_user',
           fullName: isCelebrity ? 'Celebrity User' : 'Dummy User',
@@ -114,8 +119,16 @@ class UserService {
         mediaLink: '',
         timeAgo: '1d',
         media: [
-          MediaItem(url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80', type: 'image'),
-          MediaItem(url: 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4', type: 'video'),
+          MediaItem(
+            url:
+                'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+            type: 'image',
+          ),
+          MediaItem(
+            url:
+                'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+            type: 'video',
+          ),
         ],
         initialRating: 4,
         likes: [],
@@ -126,7 +139,7 @@ class UserService {
         id: '2',
         content: 'Backstage moments before the big show!',
         from: User(
-          id: int.tryParse(userId) ?? 1,
+          id: userId ?? '1',
           username: isCelebrity ? 'celeb_user' : 'dummy_user',
           dob: DateTime(1990, 1, 1),
           fullName: isCelebrity ? 'Celebrity User' : 'Dummy User',
@@ -143,7 +156,11 @@ class UserService {
         mediaLink: '',
         timeAgo: '5h',
         media: [
-          MediaItem(url: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=800&q=80', type: 'image'),
+          MediaItem(
+            url:
+                'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=800&q=80',
+            type: 'image',
+          ),
         ],
         initialRating: 5,
         likes: [],
@@ -152,9 +169,10 @@ class UserService {
       ),
       Post(
         id: '3',
-        content: 'Thank you all for the amazing support at last night’s concert!',
+        content:
+            'Thank you all for the amazing support at last night’s concert!',
         from: User(
-          id: int.tryParse(userId) ?? 1,
+          id: userId ?? '1',
           dob: DateTime(1990, 1, 1),
           username: isCelebrity ? 'celeb_user' : 'dummy_user',
           fullName: isCelebrity ? 'Celebrity User' : 'Dummy User',
@@ -171,7 +189,11 @@ class UserService {
         mediaLink: '',
         timeAgo: '2d',
         media: [
-          MediaItem(url: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80', type: 'image'),
+          MediaItem(
+            url:
+                'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80',
+            type: 'image',
+          ),
         ],
         initialRating: 5,
         likes: [],
@@ -183,7 +205,7 @@ class UserService {
         content: 'Behind the scenes: prepping for the next big event!',
         from: User(
           dob: DateTime(1990, 1, 1),
-          id: int.tryParse(userId) ?? 1,
+          id: userId ?? '1',
           username: isCelebrity ? 'celeb_user' : 'dummy_user',
           fullName: isCelebrity ? 'Celebrity User' : 'Dummy User',
           profileImageUrl: isCelebrity
@@ -208,7 +230,7 @@ class UserService {
         id: '5',
         content: 'Q&A session coming up! Drop your questions below.',
         from: User(
-          id: int.tryParse(userId) ?? 1,
+          id: userId ?? '1',
           username: isCelebrity ? 'celeb_user' : 'dummy_user',
           dob: DateTime(1990, 1, 1),
           fullName: isCelebrity ? 'Celebrity User' : 'Dummy User',
@@ -236,7 +258,7 @@ class UserService {
         id: '6',
         content: 'Throwback to my favorite performance of the year!',
         from: User(
-          id: int.tryParse(userId) ?? 1,
+          id: userId ?? '1',
           username: isCelebrity ? 'celeb_user' : 'dummy_user',
           dob: DateTime(1990, 1, 1),
           fullName: isCelebrity ? 'Celebrity User' : 'Dummy User',
@@ -264,7 +286,7 @@ class UserService {
         id: '7',
         content: 'Announcing my next tour dates soon. Stay tuned!',
         from: User(
-          id: int.tryParse(userId) ?? 1,
+          id: userId ?? '1',
           dob: DateTime(1990, 1, 1),
           username: isCelebrity ? 'celeb_user' : 'dummy_user',
           fullName: isCelebrity ? 'Celebrity User' : 'Dummy User',
@@ -291,10 +313,11 @@ class UserService {
     if (!isCelebrity) {
       // Return a dummy common user
       return User(
-        id: int.tryParse(userId) ?? 0,
+        id: userId ?? '1',
         username: 'dummy_user',
         fullName: 'Dummy User',
-        profileImageUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&h=200&fit=crop&auto=format',
+        profileImageUrl:
+            'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&h=200&fit=crop&auto=format',
         dob: DateTime(1990, 1, 1),
         password: 'dummy_password',
         email: 'dummy@example.com',
@@ -312,45 +335,147 @@ class UserService {
           {'title': 'Lead Actor', 'subtitle': 'The Last of Us', 'year': '2024'},
         ],
         'Awards': [
-          {'title': 'Lead Actor, The Last of Us','award': 'Emmy Awards', 'year': '2064'},
-          {'title': 'Sting on the view','award': 'Grammy Awards', 'year': '2028'},
-          {'title': 'Best Upcoming Artist','award': 'MTV Awards', 'year': '2014'},
+          {
+            'title': 'Lead Actor, The Last of Us',
+            'award': 'Emmy Awards',
+            'year': '2064',
+          },
+          {
+            'title': 'Sting on the view',
+            'award': 'Grammy Awards',
+            'year': '2028',
+          },
+          {
+            'title': 'Best Upcoming Artist',
+            'award': 'MTV Awards',
+            'year': '2014',
+          },
         ],
         'Collaborations': [
-          {'title': 'Horror on the Moves', 'subtitle': 'ft Chunk Molksey', 'type': 'Song', 'year': '2024'},
-          {'title': 'Sting on the view','subtitle': 'ft Alice Mahone', 'type': 'Song', 'year': '2024'}
+          {
+            'title': 'Horror on the Moves',
+            'subtitle': 'ft Chunk Molksey',
+            'type': 'Song',
+            'year': '2024',
+          },
+          {
+            'title': 'Sting on the view',
+            'subtitle': 'ft Alice Mahone',
+            'type': 'Song',
+            'year': '2024',
+          },
         ],
       };
 
       // Dummy data for Wealth tab
       final Map<String, List<Map<String, String>>> wealthEntries = {
         'Cars': [
-          {'imageUrl': 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=400&q=80', 'name': 'Lamborghini Aventador'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1461632830798-3adb3034e4c8?auto=format&fit=crop&w=400&q=80', 'name': 'Ferrari 488'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1511918984145-48de785d4c4e?auto=format&fit=crop&w=400&q=80', 'name': 'Rolls Royce Phantom'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=400&q=80', 'name': 'Porsche 911'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80', 'name': 'Tesla Model S'},
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=400&q=80',
+            'name': 'Lamborghini Aventador',
+          },
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1461632830798-3adb3034e4c8?auto=format&fit=crop&w=400&q=80',
+            'name': 'Ferrari 488',
+          },
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1511918984145-48de785d4c4e?auto=format&fit=crop&w=400&q=80',
+            'name': 'Rolls Royce Phantom',
+          },
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=400&q=80',
+            'name': 'Porsche 911',
+          },
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80',
+            'name': 'Tesla Model S',
+          },
         ],
         'Houses': [
-          {'imageUrl': 'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=400&q=80', 'name': 'Malibu Mansion'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1460518451285-97b6aa326961?auto=format&fit=crop&w=400&q=80', 'name': 'NYC Penthouse'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80', 'name': 'Lake House'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80', 'name': 'Paris Apartment'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80', 'name': 'Dubai Villa'},
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=400&q=80',
+            'name': 'Malibu Mansion',
+          },
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1460518451285-97b6aa326961?auto=format&fit=crop&w=400&q=80',
+            'name': 'NYC Penthouse',
+          },
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
+            'name': 'Lake House',
+          },
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80',
+            'name': 'Paris Apartment',
+          },
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
+            'name': 'Dubai Villa',
+          },
         ],
         'Art Collection': [
-          {'imageUrl': 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80', 'name': 'Van Gogh Painting'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=400&q=80', 'name': 'Picasso Sculpture'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=400&q=80', 'name': 'Modern Abstract'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=400&q=80', 'name': 'Classic Portrait'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80', 'name': 'Street Art'},
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80',
+            'name': 'Van Gogh Painting',
+          },
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=400&q=80',
+            'name': 'Picasso Sculpture',
+          },
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=400&q=80',
+            'name': 'Modern Abstract',
+          },
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=400&q=80',
+            'name': 'Classic Portrait',
+          },
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
+            'name': 'Street Art',
+          },
         ],
         'Watch Collection': [
-          {'imageUrl': 'https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=400&q=80', 'name': 'Rolex Daytona'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80', 'name': 'Patek Philippe'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80', 'name': 'Audemars Piguet'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80', 'name': 'Omega Seamaster'},
-          {'imageUrl': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80', 'name': 'Tag Heuer'},
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=400&q=80',
+            'name': 'Rolex Daytona',
+          },
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80',
+            'name': 'Patek Philippe',
+          },
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
+            'name': 'Audemars Piguet',
+          },
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
+            'name': 'Omega Seamaster',
+          },
+          {
+            'imageUrl':
+                'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80',
+            'name': 'Tag Heuer',
+          },
         ],
       };
 
@@ -363,84 +488,268 @@ class UserService {
         {'title': 'snapchat', 'link': 'https://www.snapchat.com/add/celeb'},
       ];
 
-      final List<Map<String,dynamic>> publicImageDescription = [
-        {'title': 'Philanthropic Work', 'description': 'Known for extensive charity work and advocacy.'},
-        {'title': 'Role Model', 'description': 'Considered a positive role model by many fans.'},
+      final List<Map<String, dynamic>> publicImageDescription = [
+        {
+          'title': 'Philanthropic Work',
+          'description': 'Known for extensive charity work and advocacy.',
+        },
+        {
+          'title': 'Role Model',
+          'description': 'Considered a positive role model by many fans.',
+        },
       ];
 
       final List<Map<String, dynamic>> redCarpetMoments = [
-        {'title': 'Met Gala 2023', 'description': 'Stunning custom gown by designer X, widely praised for its innovative design.', 'imageUrl': 'https://i.ibb.co/N73yB9c/red-carpet1.jpg'},
-        {'title': 'Oscars 2024', 'description': 'Epitome of elegance in a classic black tuxedo, breaking traditional gender norms.', 'imageUrl': 'https://i.ibb.co/y4L2k2n/red-carpet2.jpg'},
-        {'title': 'Cannes Film Festival', 'description': 'Wore a shimmering silver dress that captured international attention for its bold silhouette.', 'imageUrl': 'https://i.ibb.co/C0f11Kk/red-carpet3.jpg'},
+        {
+          'title': 'Met Gala 2023',
+          'description':
+              'Stunning custom gown by designer X, widely praised for its innovative design.',
+          'imageUrl': 'https://i.ibb.co/N73yB9c/red-carpet1.jpg',
+        },
+        {
+          'title': 'Oscars 2024',
+          'description':
+              'Epitome of elegance in a classic black tuxedo, breaking traditional gender norms.',
+          'imageUrl': 'https://i.ibb.co/y4L2k2n/red-carpet2.jpg',
+        },
+        {
+          'title': 'Cannes Film Festival',
+          'description':
+              'Wore a shimmering silver dress that captured international attention for its bold silhouette.',
+          'imageUrl': 'https://i.ibb.co/C0f11Kk/red-carpet3.jpg',
+        },
       ];
 
       final List<Map<String, dynamic>> fashionStyle = [
-        {'title': 'Casual Chic', 'description': 'Known for casual yet chic street style, often incorporating vintage pieces.', 'imageUrl': 'https://i.ibb.co/T4X16yR/fashion-style1.jpg'},
-        {'title': 'Ethereal Gowns', 'description': 'Often seen in flowing, ethereal gowns at events, emphasizing grace and movement.', 'imageUrl': 'https://i.ibb.co/K2sY5sP/fashion-style2.jpg'},
-        {'title': 'Bohemian Edge', 'description': 'Combines bohemian elements with a modern, edgy twist, creating unique looks.', 'imageUrl': 'https://i.ibb.co/2d11VpX/fashion-style3.jpg'},
+        {
+          'title': 'Casual Chic',
+          'description':
+              'Known for casual yet chic street style, often incorporating vintage pieces.',
+          'imageUrl': 'https://i.ibb.co/T4X16yR/fashion-style1.jpg',
+        },
+        {
+          'title': 'Ethereal Gowns',
+          'description':
+              'Often seen in flowing, ethereal gowns at events, emphasizing grace and movement.',
+          'imageUrl': 'https://i.ibb.co/K2sY5sP/fashion-style2.jpg',
+        },
+        {
+          'title': 'Bohemian Edge',
+          'description':
+              'Combines bohemian elements with a modern, edgy twist, creating unique looks.',
+          'imageUrl': 'https://i.ibb.co/2d11VpX/fashion-style3.jpg',
+        },
       ];
 
       // Additional dummy data for new fields
       final String zodiacSign = 'Libra';
       final List<Map<String, dynamic>> familyMembers = [
-        {'title': 'Father', 'name': 'Hamk Mcoy', 'imageUrl': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=facearea&w=200&h=200&q=80'},
-        {'title': 'Grand Father', 'imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
-        {'title': 'Mother', 'imageUrl': 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=facearea&w=200&h=200&q=80'},
-        {'title': 'Spouse', 'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=facearea&w=200&h=200&q=80'},
-        {'title': 'Brother', 'imageUrl': 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=facearea&w=200&h=200&q=80'},
-        {'title': 'Sister', 'imageUrl': 'https://images.unsplash.com/photo-1461632830798-3adb3034e4c8?auto=format&fit=facearea&w=200&h=200&q=80'},
+        {
+          'title': 'Father',
+          'name': 'Hamk Mcoy',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=facearea&w=200&h=200&q=80',
+        },
+        {
+          'title': 'Grand Father',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80',
+        },
+        {
+          'title': 'Mother',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=facearea&w=200&h=200&q=80',
+        },
+        {
+          'title': 'Spouse',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=facearea&w=200&h=200&q=80',
+        },
+        {
+          'title': 'Brother',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=facearea&w=200&h=200&q=80',
+        },
+        {
+          'title': 'Sister',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1461632830798-3adb3034e4c8?auto=format&fit=facearea&w=200&h=200&q=80',
+        },
       ];
-      final List<Map<String,String>> relationships = [
-        {'name': 'Jane Doe', 'title': 'Friend', 'description': 'Best friend from college.','imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
-        {'name': 'John Smith', 'title': 'Sibling', 'description': 'Older brother.','imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
-        {'name': 'Bund Smith', 'title': 'Sibling', 'description': 'Older brother.', 'imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
-        {'name': 'Hank Smith', 'title': 'Sibling', 'description': 'Older brother.', 'imageUrl': 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80'},
+      final List<Map<String, String>> relationships = [
+        {
+          'name': 'Jane Doe',
+          'title': 'Friend',
+          'description': 'Best friend from college.',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80',
+        },
+        {
+          'name': 'John Smith',
+          'title': 'Sibling',
+          'description': 'Older brother.',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80',
+        },
+        {
+          'name': 'Bund Smith',
+          'title': 'Sibling',
+          'description': 'Older brother.',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80',
+        },
+        {
+          'name': 'Hank Smith',
+          'title': 'Sibling',
+          'description': 'Older brother.',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&q=80',
+        },
       ];
       final List<Map<String, dynamic>> hobbies = [
-        {'name': 'Basketball', 'imageUrl': 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=200&q=80'},
-        {'name': 'Skiing', 'imageUrl': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=200&q=80'},
-        {'name': 'Sky Diving', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
-        {'name': 'Swimming', 'imageUrl': 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=200&q=80'},
-        {'name': 'Fishing', 'imageUrl': 'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=200&q=80'},
+        {
+          'name': 'Basketball',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=200&q=80',
+        },
+        {
+          'name': 'Skiing',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=200&q=80',
+        },
+        {
+          'name': 'Sky Diving',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80',
+        },
+        {
+          'name': 'Swimming',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=200&q=80',
+        },
+        {
+          'name': 'Fishing',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=200&q=80',
+        },
       ];
-      final List<Map<String,dynamic>> tattoos = [
-        {'name': 'Eye of the titan','imageUrl':'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80', 'description': 'A playful golden retriever, often featured on social media.'},
-        {'name': 'Last titan','imageUrl':'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=200&q=80', 'description': 'A playful golden retriever, often featured on social media.'},
-        {'name': 'Aloha titan','imageUrl':'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=200&q=80', 'description': 'A playful golden retriever, often featured on social media.'},
+      final List<Map<String, dynamic>> tattoos = [
+        {
+          'name': 'Eye of the titan',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80',
+          'description':
+              'A playful golden retriever, often featured on social media.',
+        },
+        {
+          'name': 'Last titan',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=200&q=80',
+          'description':
+              'A playful golden retriever, often featured on social media.',
+        },
+        {
+          'name': 'Aloha titan',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=200&q=80',
+          'description':
+              'A playful golden retriever, often featured on social media.',
+        },
       ];
       final List<Map<String, dynamic>> favouritePlaces = [
-        {'name': 'Vienna', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
-        {'name': 'Seattle', 'imageUrl': 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=200&q=80'},
-        {'name': 'New York', 'imageUrl': 'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=200&q=80'},
-        {'name': 'Lagos', 'imageUrl': 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=200&q=80'},
-        {'name': 'Kenya', 'imageUrl': 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=200&q=80'},
+        {
+          'name': 'Vienna',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80',
+        },
+        {
+          'name': 'Seattle',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=200&q=80',
+        },
+        {
+          'name': 'New York',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=200&q=80',
+        },
+        {
+          'name': 'Lagos',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=200&q=80',
+        },
+        {
+          'name': 'Kenya',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=200&q=80',
+        },
       ];
       final List<Map<String, dynamic>> favouriteThings = [
-        {'name': 'Sushi', 'description': 'Loves all kinds of sushi, especially salmon nigiri.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
-        {'name': 'Jazz', 'description': 'Finds inspiration and relaxation in jazz music.', 'reason': ' A place to unwind and chill', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+        {
+          'name': 'Sushi',
+          'description': 'Loves all kinds of sushi, especially salmon nigiri.',
+          'reason': ' A place to unwind and chill',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80',
+        },
+        {
+          'name': 'Jazz',
+          'description': 'Finds inspiration and relaxation in jazz music.',
+          'reason': ' A place to unwind and chill',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80',
+        },
       ];
       final List<Map<String, dynamic>> talents = [
-        {'name': 'Basketball', 'imageUrl': 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=200&q=80'},
-        {'name': 'Skiing', 'imageUrl': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=200&q=80'},
-        {'name': 'Sky Diving', 'imageUrl': 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80'},
+        {
+          'name': 'Basketball',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=200&q=80',
+        },
+        {
+          'name': 'Skiing',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=200&q=80',
+        },
+        {
+          'name': 'Sky Diving',
+          'imageUrl':
+              'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=200&q=80',
+        },
       ];
 
-      final List<Map<String,dynamic>> quotesAndPublicStatements = [
-        {'quote': '“Be yourself; everyone else is already taken.”', 'context': 'Interview with Vogue, 2021.'},
-        {'quote': '“The only way to do great work is to love what you do.”', 'context': 'Award acceptance speech, 2023.'},
+      final List<Map<String, dynamic>> quotesAndPublicStatements = [
+        {
+          'quote': '“Be yourself; everyone else is already taken.”',
+          'context': 'Interview with Vogue, 2021.',
+        },
+        {
+          'quote': '“The only way to do great work is to love what you do.”',
+          'context': 'Award acceptance speech, 2023.',
+        },
       ];
 
-      final List<Map<String,dynamic>> fanTheoriesOrInteractions = [
-        {'theory': 'Secret Album Theory', 'description': 'Fans speculate about a hidden album to be released on a specific date.'},
-        {'interaction': 'Surprise Fan Meetup', 'description': 'Known for organizing spontaneous meetups with fans in different cities.'},
+      final List<Map<String, dynamic>> fanTheoriesOrInteractions = [
+        {
+          'theory': 'Secret Album Theory',
+          'description':
+              'Fans speculate about a hidden album to be released on a specific date.',
+        },
+        {
+          'interaction': 'Surprise Fan Meetup',
+          'description':
+              'Known for organizing spontaneous meetups with fans in different cities.',
+        },
       ];
 
       // Dummy data for Education, Diet, Spirituality, and Involved Causes
       final List<Map<String, dynamic>> educationEntries = [
-        {'institution': 'Princeton University', 'qualifications': [
-          {"title":"Bachelor's degree in Sociology", "year":"2013"},
-          {"title": "Bachelor's degree in Psychology", "year": "2013"}
-        ],},
+        {
+          'institution': 'Princeton University',
+          'qualifications': [
+            {"title": "Bachelor's degree in Sociology", "year": "2013"},
+            {"title": "Bachelor's degree in Psychology", "year": "2013"},
+          ],
+        },
       ];
       final String diet = 'Vegan';
       final String spirituality = 'Buddhist';
@@ -450,26 +759,44 @@ class UserService {
       ];
 
       final List<Map<String, String>> pets = [
-        {'name': 'Buddy', 'type': 'Golden Retriever', 'description': 'A playful golden retriever, often featured on social media.', 'imageUrl': 'https://i.ibb.co/S6wPzJc/pet1.jpg'},
-        {'name': 'Whiskers', 'type': 'Siamese Cat', 'description': 'A shy but affectionate Siamese cat.', 'imageUrl': 'https://i.ibb.co/L84k7b4/pet2.jpg'},
-        {'name': 'Rex', 'type': 'Parrot', 'description': 'An intelligent parrot who can mimic human speech.', 'imageUrl': 'https://i.ibb.co/g421t2C/pet3.jpg'},
+        {
+          'name': 'Buddy',
+          'type': 'Golden Retriever',
+          'description':
+              'A playful golden retriever, often featured on social media.',
+          'imageUrl': 'https://i.ibb.co/S6wPzJc/pet1.jpg',
+        },
+        {
+          'name': 'Whiskers',
+          'type': 'Siamese Cat',
+          'description': 'A shy but affectionate Siamese cat.',
+          'imageUrl': 'https://i.ibb.co/L84k7b4/pet2.jpg',
+        },
+        {
+          'name': 'Rex',
+          'type': 'Parrot',
+          'description': 'An intelligent parrot who can mimic human speech.',
+          'imageUrl': 'https://i.ibb.co/g421t2C/pet3.jpg',
+        },
       ];
 
       // Return a dummy celebrity user with extra fields
       return CelebrityUser(
-        id: int.tryParse(userId) ?? 1,
+        id: userId ?? '1',
         username: 'celeb_user',
         fullName: 'Celebrity User',
-        profileImageUrl: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&facepad=2&q=80',
+        profileImageUrl:
+            'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=200&h=200&facepad=2&q=80',
         password: 'celeb_password',
         email: 'celeb@example.com',
         hometown: 'Rongo, Migori',
         role: 'Celebrity',
         createdAt: DateTime.now(),
         occupation: 'Musician, Public Speaker',
-        dob: DateTime(1990, 1, 1), 
+        dob: DateTime(1990, 1, 1),
         nationality: 'Kenyan',
-        bio: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+        bio:
+            "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
         website: 'https://www.lpsum.com/',
         followers: 23700,
         posts: 50,
